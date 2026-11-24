@@ -8,7 +8,6 @@ import { ruleKey } from '../../models/helpers/rule-key.ts'
 import { upsertRules } from '../../models/repositories/rules.repository.ts'
 import type { Rule } from '../../models/types/rule.ts'
 import { PublicRulesEvaluationError } from '../errors/simulations.error.ts'
-import { toNewRuleEvaluations } from '../helpers/to-new-rule-evaluations.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
 
 interface EvaluateSimulationDeps {
@@ -42,9 +41,12 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
       simulationId,
     })
 
+    const createdAt = new Date()
     const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
       engine,
       rules: publicRules,
+      simulationId,
+      createdAt,
     })
 
     if (errors.length > 0) {
@@ -73,13 +75,12 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
       { session }
     )
 
-    const newEvaluations = toNewRuleEvaluations(simulationId, evaluations, [
-      ...publicRules,
-      ...missingRules,
-    ])
-
-    if (newEvaluations.length > 0) {
-      await createRuleEvaluations(newEvaluations, { session })
+    if (evaluations.length > 0) {
+      await createRuleEvaluations(
+        evaluations,
+        [...publicRules, ...missingRules],
+        { session }
+      )
     }
 
     return success()

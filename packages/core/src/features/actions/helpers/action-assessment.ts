@@ -68,11 +68,21 @@ export const toNewActionAssessment = (
 export const evaluateAction = ({
   engine,
   dottedName,
+  simulationId,
+  createdAt,
 }: {
   engine: Engine
   dottedName: DottedName
+  simulationId: string
+  createdAt: Date
 }): Result<ActionEvaluation, RuleEvaluationError> => {
-  const evaluation = evaluateModelRule({ engine, dottedName, metric: 'carbon' })
+  const evaluation = evaluateModelRule({
+    engine,
+    dottedName,
+    metric: 'carbon',
+    simulationId,
+    createdAt,
+  })
 
   if (!evaluation.success) {
     return evaluation

@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -6,11 +7,21 @@ import {
 } from '../../../simulation-computation/factories/engine.factory.ts'
 import { RuleEvaluationThrewError } from '../../errors.ts'
 import type { Metric, Rule } from '../../types/rule.ts'
-import { evaluateModelRulesAndTheirMissingVariables } from '../evaluate-model-rules-and-their-missing-variables.ts'
+import { evaluateModelRulesAndTheirMissingVariables as evaluateBase } from '../evaluate-model-rules-and-their-missing-variables.ts'
 
 /** An engine with the given rules, next to the metric they are evaluated for. */
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
+
+const base = {
+  simulationId: faker.string.uuid(),
+  createdAt: new Date('2026-11-23T00:00:00.000Z'),
+}
+
+/** The helper bound to a fixed simulation, so expectations can name its binding. */
+const evaluateRules = (
+  args: Omit<Parameters<typeof evaluateBase>[0], keyof typeof base>
+) => evaluateBase({ ...args, ...base })
 
 let nextRuleId = 0
 
@@ -28,7 +39,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
 
   it('returns no evaluation and no error for no rules', () => {
     expect(
-      evaluateModelRulesAndTheirMissingVariables({
+      evaluateRules({
         engine: engineWith({}),
         rules: [],
       })
@@ -42,7 +53,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
     })
 
     expect(
-      evaluateModelRulesAndTheirMissingVariables({
+      evaluateRules({
         engine,
         rules: [rule('footprint . total')],
       })
@@ -52,6 +63,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
           name: 'footprint . total',
           metric: 'carbon',
           applicable: undefined,
+          ...base,
           missingVariables: [{ name: 'transport . km', weight: 1 }],
         },
         {
@@ -59,6 +71,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
           metric: 'carbon',
           applicable: undefined,
           // The engine reports the question itself; the domain layer leaves it out.
+          ...base,
           missingVariables: [],
         },
       ],
@@ -74,7 +87,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
     })
 
     expect(
-      evaluateModelRulesAndTheirMissingVariables({
+      evaluateRules({
         engine,
         rules: [rule('footprint . total')],
       })
@@ -84,6 +97,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
           name: 'footprint . total',
           metric: 'carbon',
           applicable: undefined,
+          ...base,
           missingVariables: [
             { name: 'n . var', weight: 1 },
             { name: 'm . var', weight: 2 },
@@ -93,12 +107,14 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
           name: 'n . var',
           metric: 'carbon',
           applicable: undefined,
+          ...base,
           missingVariables: [],
         },
         {
           name: 'm . var',
           metric: 'carbon',
           applicable: undefined,
+          ...base,
           missingVariables: [{ name: 'n . var', weight: 1 }],
         },
       ],
@@ -113,7 +129,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
       'transport . km': { question: 'Combien de km ?', unité: 'km' },
     })
 
-    const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
+    const { evaluations, errors } = evaluateRules({
       engine,
       rules: [rule('footprint . double'), rule('footprint . half')],
     })
@@ -124,18 +140,21 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
         name: 'footprint . double',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [{ name: 'transport . km', weight: 1 }],
       },
       {
         name: 'footprint . half',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [{ name: 'transport . km', weight: 1 }],
       },
       {
         name: 'transport . km',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [],
       },
     ])
@@ -147,7 +166,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
       'transport . km': { question: 'Combien de km ?', unité: 'km' },
     })
 
-    const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
+    const { evaluations, errors } = evaluateRules({
       engine,
       rules: [rule('footprint . total'), rule('transport . km')],
     })
@@ -158,12 +177,14 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
         name: 'footprint . total',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [{ name: 'transport . km', weight: 1 }],
       },
       {
         name: 'transport . km',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [],
       },
     ])
@@ -184,7 +205,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
       'water . question': { question: 'Eau ?' },
     })
 
-    const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
+    const { evaluations, errors } = evaluateRules({
       engine,
       rules: [
         rule('footprint . dependent', 'carbon'),
@@ -198,24 +219,28 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
         name: 'footprint . dependent',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [{ name: 'carbon . question', weight: 1 }],
       },
       {
         name: 'footprint . dependent',
         metric: 'water',
         applicable: undefined,
+        ...base,
         missingVariables: [{ name: 'water . question', weight: 1 }],
       },
       {
         name: 'carbon . question',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [],
       },
       {
         name: 'water . question',
         metric: 'water',
         applicable: undefined,
+        ...base,
         missingVariables: [],
       },
     ])
@@ -227,7 +252,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
       'footprint . division': { public: 'oui', valeur: '1 / 0' },
     })
 
-    const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
+    const { evaluations, errors } = evaluateRules({
       engine,
       rules: [rule('footprint . ok'), rule('footprint . division')],
     })
@@ -238,6 +263,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
         metric: 'carbon',
         applicable: true,
         value: 1,
+        ...base,
         missingVariables: [],
       },
     ])
@@ -269,7 +295,7 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
       return evaluate(expression)
     })
 
-    const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
+    const { evaluations, errors } = evaluateRules({
       engine,
       rules: [rule('footprint . ok'), rule('footprint . throwing')],
     })
@@ -285,12 +311,14 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
         name: 'footprint . ok',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [{ name: 'ghost . variable', weight: 1 }],
       },
       {
         name: 'ghost . variable',
         metric: 'carbon',
         applicable: undefined,
+        ...base,
         missingVariables: [],
       },
     ])

@@ -19,15 +19,25 @@ import { ruleKey } from './rule-key.ts'
 export const evaluateModelRulesAndTheirMissingVariables = ({
   engine,
   rules,
+  simulationId,
+  createdAt,
 }: {
   engine: Engine
   rules: Rule[]
+  simulationId: string
+  createdAt: Date
 }): { evaluations: ModelRuleEvaluation[]; errors: RuleEvaluationError[] } => {
   const evaluations: ModelRuleEvaluation[] = []
   const errors: RuleEvaluationError[] = []
 
   const evaluate = (name: string, metric: Metric) => {
-    const evaluation = evaluateModelRule({ engine, dottedName: name, metric })
+    const evaluation = evaluateModelRule({
+      engine,
+      dottedName: name,
+      metric,
+      simulationId,
+      createdAt,
+    })
     if (!evaluation.success) {
       errors.push(evaluation.error)
       return undefined

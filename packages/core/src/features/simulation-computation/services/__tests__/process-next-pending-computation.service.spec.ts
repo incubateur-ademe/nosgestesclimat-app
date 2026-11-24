@@ -289,11 +289,14 @@ describe('processNextPendingComputation', () => {
             await createRuleEvaluations(
               publicRules.map((rule) => ({
                 simulationId,
-                ruleId: rule.id,
+                createdAt: new Date(),
+                name: rule.name,
+                metric: rule.metric,
                 applicable: true,
                 value: 1,
                 missingVariables: [],
               })),
+              publicRules,
               { session }
             )
             return success()

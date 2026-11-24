@@ -64,6 +64,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
       )
     }
 
+    const createdAt = new Date()
     const assessments: NewActionAssessment[] = actions.flatMap(
       ({ id, ruleId }) => {
         const dottedName = ruleIdToDottedName.get(ruleId)
@@ -72,7 +73,12 @@ export function createAssessActions(deps: AssessActionsDeps) {
           return []
         }
 
-        const evaluation = evaluateAction({ engine, dottedName })
+        const evaluation = evaluateAction({
+          engine,
+          dottedName,
+          simulationId,
+          createdAt,
+        })
 
         if (!evaluation.success) {
           logger.error(evaluation.error, { actionId: id, ruleId, dottedName })

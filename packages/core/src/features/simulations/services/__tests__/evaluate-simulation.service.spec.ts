@@ -7,6 +7,7 @@ import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
+import { ruleKey } from '../../../models/helpers/rule-key.ts'
 import { findRuleByNameAndMetric } from '../../../models/repositories/rules.repository.ts'
 import type { Applicability } from '../../../models/types/model-rule-evaluation.ts'
 import {
@@ -20,10 +21,7 @@ import {
 } from '../../../simulation-computation/factories/engine.factory.ts'
 import { PublicRulesEvaluationError } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import {
-  findDetailedRuleEvaluationsBySimulation,
-  findRuleEvaluationsBySimulation,
-} from '../../repository/rule-evaluations.repository.ts'
+import { findRuleEvaluationsBySimulation } from '../../repository/rule-evaluations.repository.ts'
 import type { Simulation } from '../../types/simulation.ts'
 import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
 
@@ -73,11 +71,27 @@ describe('evaluateSimulation', () => {
    * whatever order they are stored in.
    */
   const findRuleEvaluations = async (rules: Rule[]) => {
-    const ruleIds = rules.map(({ id }) => id)
+    const keys = rules.map(({ name, metric }) => ruleKey(metric, name))
     return (await findRuleEvaluationsBySimulation(simulation.id)).toSorted(
-      (a, b) => ruleIds.indexOf(a.ruleId) - ruleIds.indexOf(b.ruleId)
+      (a, b) =>
+        keys.indexOf(ruleKey(a.metric, a.name)) -
+        keys.indexOf(ruleKey(b.metric, b.name))
     )
   }
+
+  /** A stored rule evaluation of the simulation, read back by its rule. */
+  const evaluation = (
+    { name, metric }: Rule,
+    applicability: Applicability,
+    missingVariables: { name: string; weight: number }[] = []
+  ) => ({
+    simulationId: simulation.id,
+    createdAt: expect.any(Date),
+    name,
+    metric,
+    missingVariables,
+    ...applicability,
+  })
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -105,34 +119,10 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: transportCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 12.5,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: transportWater.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 12.5,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: foodCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 0,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: foodWater.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 0,
-      },
+      evaluation(transportCarbon, { applicable: true, value: 12.5 }),
+      evaluation(transportWater, { applicable: true, value: 12.5 }),
+      evaluation(foodCarbon, { applicable: true, value: 0 }),
+      evaluation(foodWater, { applicable: true, value: 0 }),
     ])
   })
 
@@ -149,34 +139,10 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: yesCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: true,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: yesWater.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: true,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: noCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: false,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: noWater.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: false,
-      },
+      evaluation(yesCarbon, { applicable: true, value: true }),
+      evaluation(yesWater, { applicable: true, value: true }),
+      evaluation(noCarbon, { applicable: true, value: false }),
+      evaluation(noWater, { applicable: true, value: false }),
     ])
   })
 
@@ -193,34 +159,10 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: textCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 'texte',
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: textWater.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 'texte',
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: emptyCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: '',
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: emptyWater.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: '',
-      },
+      evaluation(textCarbon, { applicable: true, value: 'texte' }),
+      evaluation(textWater, { applicable: true, value: 'texte' }),
+      evaluation(emptyCarbon, { applicable: true, value: '' }),
+      evaluation(emptyWater, { applicable: true, value: '' }),
     ])
   })
 
@@ -261,42 +203,12 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: numberCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: false,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: numberWater.id,
-        createdAt: expect.any(Date),
-        applicable: false,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: booleanCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: false,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: booleanWater.id,
-        createdAt: expect.any(Date),
-        applicable: false,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: stringCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: false,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: stringWater.id,
-        createdAt: expect.any(Date),
-        applicable: false,
-      },
+      evaluation(numberCarbon, { applicable: false }),
+      evaluation(numberWater, { applicable: false }),
+      evaluation(booleanCarbon, { applicable: false }),
+      evaluation(booleanWater, { applicable: false }),
+      evaluation(stringCarbon, { applicable: false }),
+      evaluation(stringWater, { applicable: false }),
     ])
   })
 
@@ -321,30 +233,10 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: unansweredCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: undefined,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: unansweredWater.id,
-        createdAt: expect.any(Date),
-        applicable: undefined,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: noFormulaCarbon.id,
-        createdAt: expect.any(Date),
-        applicable: undefined,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: noFormulaWater.id,
-        createdAt: expect.any(Date),
-        applicable: undefined,
-      },
+      evaluation(unansweredCarbon, { applicable: undefined }),
+      evaluation(unansweredWater, { applicable: undefined }),
+      evaluation(noFormulaCarbon, { applicable: undefined }),
+      evaluation(noFormulaWater, { applicable: undefined }),
     ])
   })
 
@@ -365,20 +257,8 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: carbonRule.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 10,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: waterRule.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 5,
-      },
+      evaluation(carbonRule, { applicable: true, value: 10 }),
+      evaluation(waterRule, { applicable: true, value: 5 }),
     ])
   })
 
@@ -394,13 +274,7 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations([carbonRule])).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: carbonRule.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 1,
-      },
+      evaluation(carbonRule, { applicable: true, value: 1 }),
     ])
   })
 
@@ -417,20 +291,8 @@ describe('evaluateSimulation', () => {
 
     expect(result).toEqual(success())
     expect(await findRuleEvaluations(rules)).toEqual([
-      {
-        simulationId: simulation.id,
-        ruleId: carbonRule.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 3,
-      },
-      {
-        simulationId: simulation.id,
-        ruleId: waterRule.id,
-        createdAt: expect.any(Date),
-        applicable: true,
-        value: 3,
-      },
+      evaluation(carbonRule, { applicable: true, value: 3 }),
+      evaluation(waterRule, { applicable: true, value: 3 }),
     ])
   })
 
@@ -561,19 +423,10 @@ describe('evaluateSimulation', () => {
       if (!rule) {
         throw new Error(`Rule ${name} (${metric}) was not stored`)
       }
-      return rule.id
+      return rule
     }
 
-    /** A stored rule evaluation of the simulation. */
-    const evaluation = (ruleId: number, applicability: Applicability) => ({
-      simulationId: simulation.id,
-      ruleId,
-      createdAt: expect.any(Date),
-      ...applicability,
-    })
-
-    const findDetailed = () =>
-      findDetailedRuleEvaluationsBySimulation(simulation.id)
+    const findEvaluations = () => findRuleEvaluationsBySimulation(simulation.id)
 
     it('stores each missing variable as an evaluation of its own, linked to the evaluations that reported it with its weight', async () => {
       const rules = await storeRules(['footprint . total'])
@@ -589,30 +442,24 @@ describe('evaluateSimulation', () => {
 
       expect(result).toEqual(success())
 
-      const kmCarbonId = await findRule('transport . km', 'carbon')
-      const kmWaterId = await findRule('transport . km', 'water')
+      const kmCarbon = await findRule('transport . km', 'carbon')
+      const kmWater = await findRule('transport . km', 'water')
       const unanswered = { applicable: undefined }
 
       // The missing variable is evaluated like any rule: unanswered, it is
       // not defined.
-      const detailed = await findDetailed()
-      expect(detailed).toHaveLength(4)
-      expect(detailed).toEqual(
+      const evaluations = await findEvaluations()
+      expect(evaluations).toHaveLength(4)
+      expect(evaluations).toEqual(
         expect.arrayContaining([
-          {
-            ...evaluation(totalCarbon.id, unanswered),
-            missingVariables: [
-              { ...evaluation(kmCarbonId, unanswered), weight: 1 },
-            ],
-          },
-          {
-            ...evaluation(totalWater.id, unanswered),
-            missingVariables: [
-              { ...evaluation(kmWaterId, unanswered), weight: 1 },
-            ],
-          },
-          { ...evaluation(kmCarbonId, unanswered), missingVariables: [] },
-          { ...evaluation(kmWaterId, unanswered), missingVariables: [] },
+          evaluation(totalCarbon, unanswered, [
+            { name: 'transport . km', weight: 1 },
+          ]),
+          evaluation(totalWater, unanswered, [
+            { name: 'transport . km', weight: 1 },
+          ]),
+          evaluation(kmCarbon, unanswered),
+          evaluation(kmWater, unanswered),
         ])
       )
     })
@@ -637,30 +484,24 @@ describe('evaluateSimulation', () => {
 
       expect(result).toEqual(success())
 
-      const kmCarbonId = await findRule('transport . km', 'carbon')
-      const kmWaterId = await findRule('transport . km', 'water')
+      const kmCarbon = await findRule('transport . km', 'carbon')
+      const kmWater = await findRule('transport . km', 'water')
       const byDefault = { applicable: true, value: 100 } as const
 
-      const detailed = await findDetailed()
-      expect(detailed).toHaveLength(4)
-      expect(detailed).toEqual(
+      const evaluations = await findEvaluations()
+      expect(evaluations).toHaveLength(4)
+      expect(evaluations).toEqual(
         expect.arrayContaining([
           // The public rule still outputs a value: the default's.
-          {
-            ...evaluation(totalCarbon.id, { applicable: true, value: 200 }),
-            missingVariables: [
-              { ...evaluation(kmCarbonId, byDefault), weight: 1 },
-            ],
-          },
-          {
-            ...evaluation(totalWater.id, { applicable: true, value: 200 }),
-            missingVariables: [
-              { ...evaluation(kmWaterId, byDefault), weight: 1 },
-            ],
-          },
+          evaluation(totalCarbon, { applicable: true, value: 200 }, [
+            { name: 'transport . km', weight: 1 },
+          ]),
+          evaluation(totalWater, { applicable: true, value: 200 }, [
+            { name: 'transport . km', weight: 1 },
+          ]),
           // The missing variable's own evaluation is its default.
-          { ...evaluation(kmCarbonId, byDefault), missingVariables: [] },
-          { ...evaluation(kmWaterId, byDefault), missingVariables: [] },
+          evaluation(kmCarbon, byDefault),
+          evaluation(kmWater, byDefault),
         ])
       )
     })
@@ -682,22 +523,19 @@ describe('evaluateSimulation', () => {
 
       expect(result).toEqual(success())
 
-      const kmCarbonId = await findRule('transport . km', 'carbon')
-      const km = { ...evaluation(kmCarbonId, { applicable: true, value: 10 }) }
+      const kmCarbon = await findRule('transport . km', 'carbon')
 
-      const detailed = await findDetailed()
-      expect(detailed).toHaveLength(3)
-      expect(detailed).toEqual(
+      const evaluations = await findEvaluations()
+      expect(evaluations).toHaveLength(3)
+      expect(evaluations).toEqual(
         expect.arrayContaining([
-          {
-            ...evaluation(doubleCarbon.id, { applicable: true, value: 20 }),
-            missingVariables: [{ ...km, weight: 1 }],
-          },
-          {
-            ...evaluation(halfCarbon.id, { applicable: true, value: 5 }),
-            missingVariables: [{ ...km, weight: 1 }],
-          },
-          { ...km, missingVariables: [] },
+          evaluation(doubleCarbon, { applicable: true, value: 20 }, [
+            { name: 'transport . km', weight: 1 },
+          ]),
+          evaluation(halfCarbon, { applicable: true, value: 5 }, [
+            { name: 'transport . km', weight: 1 },
+          ]),
+          evaluation(kmCarbon, { applicable: true, value: 10 }),
         ])
       )
     })
@@ -712,19 +550,13 @@ describe('evaluateSimulation', () => {
       )
 
       expect(result).toEqual(success())
-      expect(await findDetailed()).toEqual(
+      expect(await findEvaluations()).toEqual(
         expect.arrayContaining([
-          {
-            ...evaluation(selfCarbon.id, { applicable: true, value: 5 }),
-            missingVariables: [],
-          },
-          {
-            ...evaluation(selfWater.id, { applicable: true, value: 5 }),
-            missingVariables: [],
-          },
+          evaluation(selfCarbon, { applicable: true, value: 5 }),
+          evaluation(selfWater, { applicable: true, value: 5 }),
         ])
       )
-      expect(await findDetailed()).toHaveLength(2)
+      expect(await findEvaluations()).toHaveLength(2)
     })
 
     it('stores the missing variables of each metric under that metric', async () => {
@@ -750,8 +582,8 @@ describe('evaluateSimulation', () => {
 
       expect(result).toEqual(success())
 
-      const carbonQuestionId = await findRule('carbon . question', 'carbon')
-      const waterQuestionId = await findRule('water . question', 'water')
+      const carbonQuestion = await findRule('carbon . question', 'carbon')
+      const waterQuestion = await findRule('water . question', 'water')
       // Each metric's missing variable got its own rule row.
       expect(
         await prisma.rule.count({ where: { name: 'carbon . question' } })
@@ -761,20 +593,14 @@ describe('evaluateSimulation', () => {
       ).toBe(1)
 
       const unanswered = { applicable: undefined }
-      expect(await findDetailed()).toEqual(
+      expect(await findEvaluations()).toEqual(
         expect.arrayContaining([
-          {
-            ...evaluation(dependentCarbon.id, unanswered),
-            missingVariables: [
-              { ...evaluation(carbonQuestionId, unanswered), weight: 1 },
-            ],
-          },
-          {
-            ...evaluation(dependentWater.id, unanswered),
-            missingVariables: [
-              { ...evaluation(waterQuestionId, unanswered), weight: 1 },
-            ],
-          },
+          evaluation(dependentCarbon, unanswered, [
+            { name: carbonQuestion.name, weight: 1 },
+          ]),
+          evaluation(dependentWater, unanswered, [
+            { name: waterQuestion.name, weight: 1 },
+          ]),
         ])
       )
     })
@@ -792,7 +618,7 @@ describe('evaluateSimulation', () => {
       )
 
       expect(failedRules(result)).toHaveLength(PUBLIC_RULE_METRICS.length)
-      expect(await findDetailed()).toEqual([])
+      expect(await findEvaluations()).toEqual([])
       expect(
         await prisma.rule.findMany({ where: { name: 'missing . var' } })
       ).toEqual([])
@@ -817,11 +643,11 @@ describe('evaluateSimulation', () => {
       expect(
         await prisma.rule.count({ where: { name: 'transport . km' } })
       ).toBe(PUBLIC_RULE_METRICS.length)
-      const otherDetailed = await findDetailedRuleEvaluationsBySimulation(
+      const otherEvaluations = await findRuleEvaluationsBySimulation(
         otherSimulation.id
       )
       expect(
-        otherDetailed.flatMap(({ missingVariables }) => missingVariables)
+        otherEvaluations.flatMap(({ missingVariables }) => missingVariables)
       ).toHaveLength(PUBLIC_RULE_METRICS.length)
     })
   })

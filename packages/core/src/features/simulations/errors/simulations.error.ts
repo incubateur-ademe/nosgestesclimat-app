@@ -1,5 +1,6 @@
 import type { InvalidPayloadError } from '../../../lib/errors.ts'
 import { DomainError } from '../../../lib/errors.ts'
+import type { Metric } from '../../models/types/rule.ts'
 import type { ComputationAlreadyExistsError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
@@ -45,20 +46,23 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
  */
 export class CorruptRuleEvaluationError extends DomainError<'corrupt_rule_evaluation'> {
   public readonly simulationId: string
-  public readonly ruleId: number
+  public readonly name: string
+  public readonly metric: Metric
 
   constructor(params: {
     simulationId: string
-    ruleId: number
+    name: string
+    metric: Metric
     reason: string
   }) {
-    const { simulationId, ruleId, reason } = params
+    const { simulationId, name, metric, reason } = params
     super(
       'corrupt_rule_evaluation',
-      `Rule evaluation of rule ${ruleId} for simulation ${simulationId} ${reason}`
+      `Rule evaluation of rule ${name} (${metric}) for simulation ${simulationId} ${reason}`
     )
     this.simulationId = simulationId
-    this.ruleId = ruleId
+    this.name = name
+    this.metric = metric
   }
 }
 

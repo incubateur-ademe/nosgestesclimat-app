@@ -16,15 +16,19 @@ export type Applicability =
   | { applicable: undefined }
 
 /**
- * A rule of the model evaluated for a metric, with the missing variables the
- * engine reported for that same evaluation: the rules the situation does not
- * answer that it needed, each with a weight counting how many times it needed
- * it. They are reported, never evaluated.
+ * A rule of the model evaluated for a given metric and simulation.
  */
 export type ModelRuleEvaluation = {
   name: string
   metric: Metric
-  missingVariables: { name: string; weight: number }[]
+  /** The rules the situation does not answer and that an evaluation needed */
+  missingVariables: {
+    name: string
+    /** How many times this rule was needed */
+    weight: number
+  }[]
+  simulationId: string
+  createdAt: Date
 } & Applicability
 
 export type ModelRuleEvaluationResult = Result<

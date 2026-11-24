@@ -112,15 +112,20 @@ describe('reconcileSimulationsAfterLogin', () => {
         .params({ userId: anonymousUser.id })
         .create()
       const rule = await ruleFactory.create()
-      await createRuleEvaluations([
-        {
-          simulationId: anonymousSimulation.id,
-          ruleId: rule.id,
-          applicable: true,
-          value: 42,
-          missingVariables: [],
-        },
-      ])
+      await createRuleEvaluations(
+        [
+          {
+            simulationId: anonymousSimulation.id,
+            createdAt: new Date(),
+            name: rule.name,
+            metric: rule.metric,
+            applicable: true,
+            value: 42,
+            missingVariables: [],
+          },
+        ],
+        [rule]
+      )
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
@@ -138,10 +143,12 @@ describe('reconcileSimulationsAfterLogin', () => {
       ).toEqual([
         {
           simulationId: anonymousSimulation.id,
-          ruleId: rule.id,
+          createdAt: expect.any(Date),
+          name: rule.name,
+          metric: rule.metric,
           applicable: true,
           value: 42,
-          createdAt: expect.any(Date),
+          missingVariables: [],
         },
       ])
     })

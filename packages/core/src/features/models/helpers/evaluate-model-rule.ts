@@ -29,10 +29,14 @@ export const evaluateModelRule = ({
   engine,
   dottedName,
   metric,
+  simulationId,
+  createdAt,
 }: {
   engine: Engine
   dottedName: string
   metric: Metric
+  simulationId: string
+  createdAt: Date
 }): ModelRuleEvaluationResult => {
   let nodeValue: unknown
   let reported: Record<string, number>
@@ -49,6 +53,8 @@ export const evaluateModelRule = ({
   const rule = {
     name: dottedName,
     metric,
+    simulationId,
+    createdAt,
     // Publicodes lists a `par défaut` rule among its own missing variables.
     missingVariables: Object.entries(reported)
       .filter(([name]) => name !== dottedName)
