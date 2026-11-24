@@ -1,5 +1,5 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
-import logger, { errorMeta } from '../src/logger.ts'
+import logger, { errorMeta } from '../../src/logger.ts'
 
 /**
  * Seeds the state the NGC-4121 deduplication repairs, for a review app: 218
