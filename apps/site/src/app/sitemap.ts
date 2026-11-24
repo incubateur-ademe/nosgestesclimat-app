@@ -2,6 +2,7 @@ import { GUIDE_CATEGORIES } from '@/app/[locale]/(server)/(narrow)/guide/guideCa
 import { ACTIONS_PATH } from '@/constants/urls/paths'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { getPosts } from '@/helpers/markdown/getPosts'
+import { getSiteUrl } from '@/helpers/metadata/getSiteUrl'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import i18nConfig, { type Locale } from '@/i18nConfig'
 import { fetchAllArticleTitlesAndSlugs } from '@/services/cms/fetchAllArticleTitlesAndSlugs'
@@ -40,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL
+const BASE_URL = getSiteUrl()
 
 // Intersecting `Config['locales']` (readonly string[]) with `Locale[]` on i18nConfig's
 // declared type confuses inference on .map/.flatMap callbacks; a locally-typed copy fixes it.

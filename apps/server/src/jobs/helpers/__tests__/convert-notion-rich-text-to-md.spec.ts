@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   convertNotionRichTextToMd,
+  convertNotionRichTextToPlainText,
   type RichTextItemResponse,
 } from '../convert-notion-rich-text-to-md.ts'
 
@@ -97,6 +98,26 @@ describe('convertNotionRichTextToMd', () => {
 
   it('returns empty string for empty array', () => {
     expect(convertNotionRichTextToMd([])).toBe('')
+  })
+})
+
+describe('convertNotionRichTextToPlainText', () => {
+  it('drops the Markdown link wrapping a URL', () => {
+    expect(
+      convertNotionRichTextToPlainText([
+        textItem('{"@context": "'),
+        textItem('https://schema.org', {}, 'https://schema.org/'),
+        textItem('"}'),
+      ])
+    ).toBe('{"@context": "https://schema.org"}')
+  })
+
+  it('drops annotations', () => {
+    expect(
+      convertNotionRichTextToPlainText([
+        textItem('hello', { bold: true, italic: true }),
+      ])
+    ).toBe('hello')
   })
 })
 
