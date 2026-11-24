@@ -1,6 +1,6 @@
 'use client'
 
-import TransClient from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransClient'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
@@ -12,12 +12,12 @@ export default function StatsContent() {
   return (
     <div className="mb-24">
       <Title size="xl">
-        <TransClient i18nKey="stats.title">Statistiques</TransClient>
+        <Trans i18nKey="stats.title">Statistiques</Trans>
       </Title>
       <p>
-        <TransClient i18nKey="stats.description">
+        <Trans i18nKey="stats.description">
           Cette section est générée via Posthog.
-        </TransClient>
+        </Trans>
       </p>
       <PosthogIframe
         id="stats-general"
@@ -35,17 +35,15 @@ export default function StatsContent() {
       />
 
       <Title tag="h2" size="lg" className="mt-10">
-        <TransClient i18nKey="stats.impact_matrix.title">
-          Matrice d'impact
-        </TransClient>
+        <Trans i18nKey="stats.impact_matrix.title">Matrice d'impact</Trans>
       </Title>
       <p>
-        <TransClient i18nKey="stats.impact_matrix.description">
+        <Trans i18nKey="stats.impact_matrix.description">
           Consultez notre{' '}
           <InlineLink href="/matrice-impact">matrice d'impact</InlineLink> afin
           de prendre connaissance de{' '}
           <strong>nos indicateurs d’usage et d’impact</strong>.
-        </TransClient>
+        </Trans>
       </p>
     </div>
   )
