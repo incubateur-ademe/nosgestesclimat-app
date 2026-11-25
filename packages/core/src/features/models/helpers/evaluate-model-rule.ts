@@ -4,7 +4,7 @@ import {
   RuleEvaluationThrewError,
   UnexpectedNodeValueError,
 } from '../errors.ts'
-import type { ModelRuleEvaluationResult } from '../types/model-rule-evaluation.ts'
+import type { NewRuleEvaluationResult } from '../types/rule-evaluation.ts'
 import type { Metric } from '../types/rule.ts'
 
 /**
@@ -32,7 +32,7 @@ export const evaluateModelRule = ({
   createdAt: Date
   /** The metric to evaluate the rule for; none is the default one. */
   metric?: Metric | null
-}): ModelRuleEvaluationResult => {
+}): NewRuleEvaluationResult => {
   let nodeValue: unknown
   let reported: Record<string, number>
 

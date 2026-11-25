@@ -5,35 +5,32 @@ import {
   ruleIdByKey,
   ruleIdOf,
 } from '../../models/helpers/rule-key.ts'
-import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
+import type {
+  NewRuleEvaluation,
+  RuleEvaluation,
+} from '../../models/types/rule-evaluation.ts'
 import type { Rule } from '../../models/types/rule.ts'
 import {
-  mapModelRuleEvaluation,
-  mapModelRuleEvaluationMissingVariablesToPrisma,
-  mapModelRuleEvaluationToPrisma,
+  mapNewRuleEvaluationMissingVariablesToPrisma,
+  mapNewRuleEvaluationToPrisma,
+  mapRuleEvaluation,
 } from './rule-evaluation.mapper.ts'
 
 /**
  * Finds a simulation's rule evaluations, each with its rule's name and water
- * mark (its metric) and the missing variables it reported, resolved to their
- * rule names.
+ * mark (its metric). The missing variables are not read: they are stored as
+ * links, and reading them would need a join on every evaluation.
  */
 export const findRuleEvaluationsBySimulation = async (
   simulationId: string
-): Promise<ModelRuleEvaluation[]> => {
+): Promise<RuleEvaluation[]> => {
   const rows = await prisma.ruleEvaluation.findMany({
     where: { simulationId },
     include: {
       rule: { select: { name: true, appliesToWaterMetric: true } },
-      missingVariables: {
-        select: {
-          weight: true,
-          missingVariable: { select: { name: true } },
-        },
-      },
     },
   })
-  return rows.map(mapModelRuleEvaluation)
+  return rows.map(mapRuleEvaluation)
 }
 
 /**
@@ -49,7 +46,7 @@ export const findRuleEvaluationsBySimulation = async (
  * simulation computation.
  */
 export const createRuleEvaluations = async (
-  evaluations: ModelRuleEvaluation[],
+  evaluations: NewRuleEvaluation[],
   rules: Rule[],
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<void> => {
@@ -57,7 +54,7 @@ export const createRuleEvaluations = async (
 
   await session.ruleEvaluation.createMany({
     data: evaluations.map((evaluation) =>
-      mapModelRuleEvaluationToPrisma(
+      mapNewRuleEvaluationToPrisma(
         ruleIdOf(idByKey, evaluation.name, evaluation.metric),
         evaluation
       )
@@ -67,7 +64,7 @@ export const createRuleEvaluations = async (
   const missingVariables = evaluations.flatMap((evaluation) => {
     const ruleId = ruleIdOf(idByKey, evaluation.name, evaluation.metric)
     return evaluation.missingVariables.map((missingVariable) =>
-      mapModelRuleEvaluationMissingVariablesToPrisma(
+      mapNewRuleEvaluationMissingVariablesToPrisma(
         ruleId,
         missingVariableRuleIdOf(
           idByKey,

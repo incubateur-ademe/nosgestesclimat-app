@@ -1,6 +1,6 @@
 import type Engine from 'publicodes'
 import type { RuleEvaluationError } from '../errors.ts'
-import type { ModelRuleEvaluation } from '../types/model-rule-evaluation.ts'
+import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
 import { evaluateModelRule } from './evaluate-model-rule.ts'
 
 /**
@@ -22,8 +22,8 @@ export const evaluateModelRules = ({
   rules: { name: string; appliesToWaterMetric?: boolean }[]
   simulationId: string
   createdAt: Date
-}): { evaluations: ModelRuleEvaluation[]; errors: RuleEvaluationError[] } => {
-  const evaluations: ModelRuleEvaluation[] = []
+}): { evaluations: NewRuleEvaluation[]; errors: RuleEvaluationError[] } => {
+  const evaluations: NewRuleEvaluation[] = []
   const errors: RuleEvaluationError[] = []
 
   for (const { name, appliesToWaterMetric = false } of rules) {

@@ -5,7 +5,7 @@ import type { Logger } from '../../logger/index.ts'
 import { evaluateModelRules } from '../../models/helpers/evaluate-model-rules.ts'
 import { getModelRule } from '../../models/helpers/model-rules.ts'
 import { upsertRules } from '../../models/repositories/rules.repository.ts'
-import type { ModelRule, Rule } from '../../models/types/rule.ts'
+import type { NewRule, Rule } from '../../models/types/rule.ts'
 import { PublicRulesEvaluationError } from '../errors/simulations.error.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
 
@@ -63,7 +63,7 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
     // it — a missing variable is not evaluated, and most rules are not
     // specific to a metric.
     const seen = new Set(publicRules.map((rule) => rule.name))
-    const newRules: ModelRule[] = []
+    const newRules: NewRule[] = []
     for (const evaluation of evaluations) {
       for (const missingVariable of evaluation.missingVariables) {
         if (!seen.has(missingVariable.name)) {

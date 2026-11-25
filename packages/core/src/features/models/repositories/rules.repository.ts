@@ -1,6 +1,6 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { Metric, ModelRule, Rule } from '../types/rule.ts'
+import type { Metric, NewRule, Rule } from '../types/rule.ts'
 import { mapRule, type RuleRow } from './rule.mapper.ts'
 
 /** Finds a unique rule by its name and metric, the default one when none. */
@@ -33,7 +33,7 @@ export const findRule = async (
  * makes the second one update the rows the first one inserted.
  */
 export const upsertRules = async (
-  rules: ModelRule[],
+  rules: NewRule[],
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<Rule[]> => {
   if (rules.length === 0) return []

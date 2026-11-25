@@ -148,7 +148,6 @@ describe('reconcileSimulationsAfterLogin', () => {
           metric: null,
           applicable: true,
           value: 42,
-          missingVariables: [],
         },
       ])
     })

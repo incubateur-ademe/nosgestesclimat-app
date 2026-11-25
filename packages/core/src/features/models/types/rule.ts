@@ -5,13 +5,13 @@
 export type Metric = 'water'
 
 /**
- * A rule of the model. `title` and `description` are the model's French
- * `titre` and `description`, persisted for readability in 3rd party tools.
- * `appliesToWaterMetric` is the model's `empreinte eau: oui` mark: the rule
- * also has an evaluation with the water metric context — today under the same
- * name, in future models under its own name.
+ * A rule of the model as the row(s) to store for it. `title` and `description`
+ * are the model's French `titre` and `description`, persisted for readability
+ * in 3rd party tools. `appliesToWaterMetric` is the model's `empreinte eau:
+ * oui` mark: the rule also has an evaluation with the water metric context —
+ * today under the same name, in future models under its own name.
  */
-export interface ModelRule {
+export interface NewRule {
   /** Dotted name, a plain string: it may be a rule of any model version. */
   name: string
   /** The model's `public: oui` mark: the rule is part of the model's output contract. */

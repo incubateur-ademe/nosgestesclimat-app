@@ -9,7 +9,7 @@ import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
 import { ruleKey } from '../../../models/helpers/rule-key.ts'
 import { findRule } from '../../../models/repositories/rules.repository.ts'
-import type { Applicability } from '../../../models/types/model-rule-evaluation.ts'
+import type { Applicability } from '../../../models/types/rule-evaluation.ts'
 import type { Metric, Rule } from '../../../models/types/rule.ts'
 import {
   createTestEngine,
@@ -90,14 +90,12 @@ describe('evaluateSimulation', () => {
   /** A stored rule evaluation of the simulation, read back by its rule. */
   const evaluation = (
     { name, metric = null }: { name: string; metric?: Metric | null },
-    applicability: Applicability,
-    missingVariables: { name: string; weight: number }[] = []
+    applicability: Applicability
   ) => ({
     simulationId: simulation.id,
     createdAt: expect.any(Date),
     name,
     metric,
-    missingVariables,
     ...applicability,
   })
 
@@ -483,9 +481,7 @@ describe('evaluateSimulation', () => {
       // and is not marked `public: oui` in the model.
       expect(km.public).toBe(false)
       expect(await findEvaluations()).toEqual([
-        evaluation(total, { applicable: undefined }, [
-          { name: 'transport . km', weight: 1 },
-        ]),
+        evaluation(total, { applicable: undefined }),
       ])
       expect(await findLinks()).toEqual([
         {
@@ -520,9 +516,7 @@ describe('evaluateSimulation', () => {
       await findStoredRule('transport . km')
       // The public rule still outputs a value: the default's.
       expect(await findEvaluations()).toEqual([
-        evaluation(total, { applicable: true, value: 200 }, [
-          { name: 'transport . km', weight: 1 },
-        ]),
+        evaluation(total, { applicable: true, value: 200 }),
       ])
     })
 
@@ -550,12 +544,8 @@ describe('evaluateSimulation', () => {
 
       expect(await findEvaluations()).toEqual(
         expect.arrayContaining([
-          evaluation(double, { applicable: true, value: 20 }, [
-            { name: 'transport . km', weight: 1 },
-          ]),
-          evaluation(half, { applicable: true, value: 5 }, [
-            { name: 'transport . km', weight: 1 },
-          ]),
+          evaluation(double, { applicable: true, value: 20 }),
+          evaluation(half, { applicable: true, value: 5 }),
         ])
       )
       // No evaluation for the missing variable itself.
@@ -619,7 +609,6 @@ describe('evaluateSimulation', () => {
 
       const dependentWater = { ...dependent, metric: 'water' as const }
       const carbonQuestion = await findStoredRule('carbon . question')
-      const waterQuestion = await findStoredRule('water . question')
       const waterQuestionWater = await findStoredRule(
         'water . question',
         'water'
@@ -634,12 +623,8 @@ describe('evaluateSimulation', () => {
       ).toBe(2)
 
       expect(await findRuleEvaluations([dependent, dependentWater])).toEqual([
-        evaluation(dependent, { applicable: undefined }, [
-          { name: carbonQuestion.name, weight: 1 },
-        ]),
-        evaluation(dependentWater, { applicable: undefined }, [
-          { name: waterQuestion.name, weight: 1 },
-        ]),
+        evaluation(dependent, { applicable: undefined }),
+        evaluation(dependentWater, { applicable: undefined }),
       ])
       expect(await findLinks()).toEqual([
         {
@@ -730,12 +715,12 @@ describe('evaluateSimulation', () => {
       expect(
         await prisma.rule.count({ where: { name: 'transport . km' } })
       ).toBe(1)
-      const otherEvaluations = await findRuleEvaluationsBySimulation(
-        otherSimulation.id
-      )
+      // The other simulation's evaluation links to the same missing variable.
       expect(
-        otherEvaluations.flatMap(({ missingVariables }) => missingVariables)
-      ).toHaveLength(1)
+        await prisma.ruleEvaluationMissingVariable.count({
+          where: { simulationId: otherSimulation.id },
+        })
+      ).toBe(1)
     })
   })
 })

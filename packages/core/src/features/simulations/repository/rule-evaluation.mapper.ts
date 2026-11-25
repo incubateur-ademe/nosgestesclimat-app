@@ -2,21 +2,22 @@ import type { Prisma } from '../../../prisma/generated/client.ts'
 import type { RuleEvaluationModel } from '../../../prisma/generated/models/RuleEvaluation.ts'
 import type {
   Applicability,
-  ModelRuleEvaluation,
-  ModelRuleValue,
-} from '../../models/types/model-rule-evaluation.ts'
+  NewRuleEvaluation,
+  RuleEvaluation,
+  RuleValue,
+} from '../../models/types/rule-evaluation.ts'
 import { CorruptRuleEvaluationError } from '../errors/simulations.error.ts'
 
 /** Each value is stored in the column of its type, the others left null. */
-const mapValueToPrisma = (value: ModelRuleValue | undefined) => ({
+const mapValueToPrisma = (value: RuleValue | undefined) => ({
   valueNumber: typeof value === 'number' ? value : null,
   valueBoolean: typeof value === 'boolean' ? value : null,
   valueString: typeof value === 'string' ? value : null,
 })
 
-export const mapModelRuleEvaluationToPrisma = (
+export const mapNewRuleEvaluationToPrisma = (
   ruleId: number,
-  evaluation: ModelRuleEvaluation
+  evaluation: NewRuleEvaluation
 ): Prisma.RuleEvaluationCreateManyInput => ({
   simulationId: evaluation.simulationId,
   ruleId,
@@ -32,11 +33,11 @@ export const mapModelRuleEvaluationToPrisma = (
  * ids resolved by the caller. The missing variable is not evaluated: the link
  * points to its rule row only.
  */
-export const mapModelRuleEvaluationMissingVariablesToPrisma = (
+export const mapNewRuleEvaluationMissingVariablesToPrisma = (
   ruleId: number,
   missingRuleId: number,
-  evaluation: ModelRuleEvaluation,
-  missingVariable: ModelRuleEvaluation['missingVariables'][number]
+  evaluation: NewRuleEvaluation,
+  missingVariable: NewRuleEvaluation['missingVariables'][number]
 ): Prisma.RuleEvaluationMissingVariableCreateManyInput => ({
   simulationId: evaluation.simulationId,
   ruleId,
@@ -44,13 +45,9 @@ export const mapModelRuleEvaluationMissingVariablesToPrisma = (
   weight: missingVariable.weight,
 })
 
-/** A rule evaluation row joined with its rule and its missing variables' rules. */
+/** A rule evaluation row joined with its rule. */
 type RuleEvaluationRow = RuleEvaluationModel & {
   rule: { name: string; appliesToWaterMetric: boolean }
-  missingVariables: {
-    weight: number
-    missingVariable: { name: string }
-  }[]
 }
 
 /** Throws a `CorruptRuleEvaluationError` on a row breaking the invariant. */
@@ -81,16 +78,10 @@ const applicabilityOf = (db: RuleEvaluationRow): Applicability => {
   return { applicable: db.applicable ?? undefined }
 }
 
-export const mapModelRuleEvaluation = (
-  db: RuleEvaluationRow
-): ModelRuleEvaluation => ({
+export const mapRuleEvaluation = (db: RuleEvaluationRow): RuleEvaluation => ({
   simulationId: db.simulationId,
   createdAt: db.createdAt,
   name: db.rule.name,
   metric: db.rule.appliesToWaterMetric ? 'water' : null,
-  missingVariables: db.missingVariables.map(({ weight, missingVariable }) => ({
-    name: missingVariable.name,
-    weight,
-  })),
   ...applicabilityOf(db),
 })
