@@ -1,4 +1,5 @@
 'use client'
+import { useFormDebug } from '@/form-controller'
 
 import CloseIcon from '@/components/icons/Close'
 import ContentLarge from '@/components/layout/ContentLarge'
@@ -6,7 +7,6 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useDebug } from '@/hooks/useDebug'
-import { useFormState } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { cn } from 'cn'
 import Question from './summary/Question'
@@ -22,7 +22,7 @@ export default function Summary({
   const isDebug = useDebug()
   const { t } = useClientTranslation()
 
-  const { relevantQuestions } = useFormState()
+  const { relevantQuestions } = useFormDebug()
 
   return (
     <div

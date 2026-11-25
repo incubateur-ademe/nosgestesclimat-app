@@ -16,6 +16,9 @@ interface Props {
   className?: string
 }
 
+/** A placeholder hints at the expected value: it only has a meaning while empty. */
+const isEmpty = (value: Props['value']) => value === undefined || value === ''
+
 export default function RawNumberInput({
   unit,
   value,
@@ -30,7 +33,7 @@ export default function RawNumberInput({
       className={cn(`flex items-center justify-start gap-1`, className)}>
       <NumericFormat
         value={value}
-        placeholder={placeholder}
+        placeholder={isEmpty(value) ? placeholder : ''}
         className={cn(
           `max-w-[8rem] rounded-xl border border-solid border-slate-500 bg-white p-4 text-right text-base transition-colors md:max-w-full`,
           'focus:ring-primary-700! placeholder:text-slate-500! focus:ring-2! focus:ring-offset-3! focus:outline-hidden!',

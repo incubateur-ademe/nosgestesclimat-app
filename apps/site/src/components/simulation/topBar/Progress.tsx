@@ -1,16 +1,16 @@
+import { useFormAdvancement } from '@/form-controller'
 import {
   getBackgroundDarkColor,
   getBackgroundLightColor,
 } from '@/helpers/getCategoryColorClass'
 import { useIsClient } from '@/hooks/useIsClient'
-import { useFormState } from '@/publicodes-state'
 import { cn } from 'cn'
 
 export default function Progress() {
-  const { testAdvancement, currentCategory } = useFormState()
+  const { advancement, currentCategory } = useFormAdvancement()
 
   // Calculer le pourcentage pour l'accessibilité
-  const percentage = Math.round(testAdvancement * 100)
+  const percentage = Math.round(advancement * 100)
 
   // Both the advancement and the category come from the engine, which only
   // exists on the client: rendered on the server the bar would keep its default
@@ -45,7 +45,7 @@ export default function Progress() {
           'absolute right-0 bottom-0 left-0 h-1 origin-left transition-transform',
           getBackgroundDarkColor(currentCategory)
         )}
-        style={{ transform: `scaleX(${testAdvancement})` }}
+        style={{ transform: `scaleX(${advancement})` }}
         aria-hidden="true"
       />
     </div>

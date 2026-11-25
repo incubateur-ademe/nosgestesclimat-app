@@ -4,7 +4,6 @@ import type { Evaluation } from 'publicodes'
 import { type ComponentProps } from 'react'
 import type { NumericFormat } from 'react-number-format'
 import RawNumberInput from './numberInput/RawNumberInput'
-import { useNumberInputState } from './numberInput/useNumberInputState'
 
 interface Props {
   unit?: string
@@ -17,24 +16,19 @@ interface Props {
 
 export default function NumberInput({
   unit,
-  value: defaultValue,
+  value,
   placeholder,
   setValue,
   className,
   id,
   ...props
 }: ComponentProps<typeof NumericFormat> & Props) {
-  const { value, onChange } = useNumberInputState({
-    value: defaultValue,
-    setValue,
-  })
-
   return (
     <RawNumberInput
       className={className}
       value={value}
-      placeholder={value === undefined ? placeholder : ''}
-      handleValueChange={onChange}
+      placeholder={placeholder}
+      handleValueChange={(values) => setValue(values.floatValue)}
       id={id}
       unit={unit}
       {...props}

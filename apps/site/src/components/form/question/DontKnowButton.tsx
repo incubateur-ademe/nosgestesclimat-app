@@ -1,84 +1,26 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { captureClickFormNav } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import {
-  useEngine,
-  useOptionalSimulation,
-  useRule,
-  useUser,
-} from '@/publicodes-state'
-import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
-import { trackEvent } from '@/utils/analytics/trackEvent'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useCallback } from 'react'
+import { useOptionalSimulation } from '@/publicodes-state'
 
 interface Props {
-  question: DottedName
+  /** Disabled once the question is answered: skipping would overwrite it. */
+  isMissing: boolean
+  onSkip: () => void
 }
 
-export default function DontKnowButton({ question }: Props) {
+export default function DontKnowButton({ isMissing, onSkip }: Props) {
   const { t } = useClientTranslation()
-  const { goToNextQuestion } = useGotoNextQuestion()
-  const { updateCurrentSimulation } = useUser()
   const maybeSimulation = useOptionalSimulation()
-
-  const simulationMode = getSimulationMode(maybeSimulation)
-  const isSchoolMode = simulationMode === 'scolaire'
-
-  const { questionsOfMosaicFromParent, isMissing } = useRule(question)
-
-  const { getValue } = useEngine()
-
-  // @TODO: refacto this with the logic from https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/ddf31819dfb0628c0e883cec90113cb2f823afe0/apps/site/src/components/form/Navigation.tsx#L240-L311
-  const handleFoldWithDefaultValue = useCallback(() => {
-    if (questionsOfMosaicFromParent.length > 0) {
-      questionsOfMosaicFromParent.forEach((mosaicChild) => {
-        updateCurrentSimulation({
-          foldedStepToAdd: {
-            foldedStep: mosaicChild,
-            value: getValue(mosaicChild),
-            isMosaicChild: true,
-          },
-        })
-      })
-    }
-
-    updateCurrentSimulation({
-      foldedStepToAdd: {
-        foldedStep: question,
-        // Use getValue to read the current engine state (after potential reset)
-        // rather than the stale `value` from the render closure
-        value: getValue(question),
-        isMosaicParent: questionsOfMosaicFromParent.length > 0,
-      },
-    })
-  }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
-
-  const handleClick = () => {
-    trackEvent(
-      captureClickFormNav({
-        actionType: 'passer',
-        question,
-        answer: getValue(question),
-        // Dummy time for AB test
-        timeSpentOnQuestion: 0,
-      })
-    )
-
-    // Fold the step with the default value (skip behavior)
-    handleFoldWithDefaultValue()
-
-    goToNextQuestion()
-  }
+  const isSchoolMode = getSimulationMode(maybeSimulation) === 'scolaire'
 
   return (
     <div className="mt-4 mb-4 flex flex-col items-start gap-4 md:flex-row">
       <Button
-        onClick={handleClick}
+        onClick={onSkip}
         className="dark text-sm!"
         variant="filled"
         disabled={!isMissing}

@@ -1,14 +1,14 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 
 import Trans from '@/components/translation/trans/TransClient'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useFormState } from '@/publicodes-state'
-import type { Categories } from '@incubateur-ademe/nosgestesclimat/types/categories'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 const getCategoryString = (
-  category: Categories,
+  category: DottedName,
   t: (key: string, defaultValue: string) => string
 ) => {
   switch (category) {
@@ -26,11 +26,11 @@ const getCategoryString = (
 export default function TransitionHeaderSection({
   previousCategory,
 }: {
-  previousCategory: Categories | undefined
+  previousCategory: DottedName | undefined
 }) {
   const { t } = useClientTranslation()
 
-  const { remainingCategories } = useFormState()
+  const { remainingCategories } = useFormAdvancement()
   if (remainingCategories === 0) {
     return (
       <Title tag="h1" className="text-primary-600">
@@ -42,11 +42,13 @@ export default function TransitionHeaderSection({
     )
   }
 
+  if (!previousCategory) return null
+
   return (
     <>
       <Title tag="h1" className="text-primary-600 font-medium">
         <Trans
-          values={{ category: getCategoryString(previousCategory!, t) }}
+          values={{ category: getCategoryString(previousCategory, t) }}
           i18nKey="simulator.intercalaire.title.default">
           Section {{ category: previousCategory } as unknown as React.ReactNode}{' '}
           terminée

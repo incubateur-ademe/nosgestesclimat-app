@@ -8,7 +8,7 @@ export function useUpdatePageTitle({
   countCategoryQuestions,
   currentQuestionIndex,
 }: {
-  category: string
+  category: string | undefined
   countCategoryQuestions: number
   currentQuestionIndex: number
 }) {
@@ -34,7 +34,8 @@ export function useUpdatePageTitle({
     if (
       typeof window !== 'undefined' &&
       typeof document !== 'undefined' &&
-      isOnSimulationPath
+      isOnSimulationPath &&
+      category
     ) {
       document.title = t(
         `Calculateur, question ${currentQuestionIndex} sur ${countCategoryQuestions} de la catégorie ${category} - Nos Gestes Climat`

@@ -1,4 +1,3 @@
-import { EMPTY_SITUATION, useOptionalSimulation } from '@/publicodes-state'
 import { checkIfDottedNameShouldNotBeIgnored } from '@/publicodes-state/helpers/checkIfDottedNameShouldNotBeIgnored'
 import type {
   Engine,
@@ -22,13 +21,21 @@ export function useAddToEngineSituation({
   safeEvaluate,
   rawMissingVariables,
 }: Props) {
-  const situation = useOptionalSimulation()?.situation ?? EMPTY_SITUATION
   const addToEngineSituation = useCallback(
     (situationToAdd: Situation): Situation => {
       if (!engine) {
         return {} as Situation
       }
-      engine.setSituation({ ...situation, ...situationToAdd })
+      // Merge over the engine's live situation, not the render snapshot: two
+      // writes in one tick would otherwise start from the same stale base and
+      // the second would erase the first. An `undefined` value removes the rule
+      // from the situation — publicodes rejects it as a value.
+      const merged = { ...engine.getSituation(), ...situationToAdd }
+      engine.setSituation(
+        Object.fromEntries(
+          Object.entries(merged).filter(([, value]) => value !== undefined)
+        )
+      )
 
       // The current engine situation might have been filtered with Publicodes filtering logic.
       const safeSituation = engine.getSituation()
@@ -47,7 +54,7 @@ export function useAddToEngineSituation({
 
       return cleanSituation
     },
-    [engine, rawMissingVariables, safeEvaluate, situation]
+    [engine, rawMissingVariables, safeEvaluate]
   )
 
   return { addToEngineSituation }

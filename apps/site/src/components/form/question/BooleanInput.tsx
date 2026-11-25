@@ -1,12 +1,8 @@
 import ChoiceInput from '@/components/misc/ChoiceInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { requestIdleCallback } from '@/utils/requestIdleCallback'
-import type { NodeValue } from '@incubateur-ademe/nosgestesclimat'
-import { useState } from 'react'
-
 interface Props {
-  value: NodeValue
-  setValue: (value: string | undefined) => void
+  value: boolean | undefined
+  setValue: (value: boolean | undefined) => void
   'data-testid': string
   label: string
   firstInputId?: string
@@ -20,7 +16,6 @@ export default function BooleanInput({
   ...props
 }: Props) {
   const { t } = useClientTranslation()
-  const [currentValue, setCurrentValue] = useState(value)
 
   return (
     <fieldset className="flex flex-col gap-2">
@@ -29,16 +24,8 @@ export default function BooleanInput({
       <ChoiceInput
         label={t('Oui')}
         labelText={t('Oui')}
-        active={currentValue === true}
-        onClick={() => {
-          if (currentValue === true) {
-            setCurrentValue(undefined)
-            requestIdleCallback(() => setValue(undefined))
-          } else {
-            setCurrentValue(true)
-            requestIdleCallback(() => setValue('oui'))
-          }
-        }}
+        active={value === true}
+        onClick={() => setValue(value === true ? undefined : true)}
         {...props}
         data-testid={`${props['data-testid']}-oui`}
         id={firstInputId}
@@ -47,16 +34,8 @@ export default function BooleanInput({
       <ChoiceInput
         label={t('Non')}
         labelText={t('Non')}
-        active={currentValue === false}
-        onClick={() => {
-          if (currentValue === false) {
-            setCurrentValue(undefined)
-            requestIdleCallback(() => setValue(undefined))
-          } else {
-            setCurrentValue(false)
-            requestIdleCallback(() => setValue('non'))
-          }
-        }}
+        active={value === false}
+        onClick={() => setValue(value === false ? undefined : false)}
         {...props}
         data-testid={`${props['data-testid']}-non`}
       />
