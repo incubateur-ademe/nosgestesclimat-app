@@ -77,7 +77,10 @@ describe('getPersonalizedActionDetails', () => {
     it('returns a PersonalizedAction without assessment when the simulation has no computation (old simulation)', async () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
-      await simulationFactory.completed().params({ userId: user.id }).create()
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .params({ userId: user.id })
+        .create()
 
       const result = await getPersonalizedActionDetails(
         action.slug,
@@ -97,7 +100,7 @@ describe('getPersonalizedActionDetails', () => {
 
         const olderSimulation = await simulationFactory
           .params({ userId: user.id, createdAt: new Date('2024-01-01') })
-          .completed()
+          .withStatus('full_result_seen')
           .create()
         await actionAssessmentFactory
           .params({ simulationId: olderSimulation.id, actionId: action.id })
@@ -106,7 +109,7 @@ describe('getPersonalizedActionDetails', () => {
 
         await simulationFactory
           .params({ userId: user.id, createdAt: new Date('2024-06-01') })
-          .completed()
+          .withStatus('full_result_seen')
           .withComputationStatus(status)
           .create()
 
@@ -127,7 +130,7 @@ describe('getPersonalizedActionDetails', () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
 
@@ -156,15 +159,15 @@ describe('getPersonalizedActionDetails', () => {
       const user = await userFactory.create()
       const [older, newer, _justStarted] = await Promise.all([
         simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .params({ userId: user.id, createdAt: new Date('2024-01-01') })
           .create(),
         simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .params({ userId: user.id, createdAt: new Date('2024-06-01') })
           .create(),
         simulationFactory
-          .started()
+          .withStatus('answering_major_questions')
           .params({ userId: user.id, createdAt: new Date('2024-12-01') })
           .create(),
       ])
@@ -202,7 +205,7 @@ describe('getPersonalizedActionDetails', () => {
       const action = await actionFactory.published().pendingDeletion().create()
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
 
@@ -226,9 +229,12 @@ describe('getPersonalizedActionDetails', () => {
     it('returns a PersonalizedAction with the choice', async () => {
       const user = await userFactory.create()
       const action = await actionFactory.published().create()
-      await simulationFactory.completed().withCompletedComputation().create({
-        userId: user.id,
-      })
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .withCompletedComputation()
+        .create({
+          userId: user.id,
+        })
 
       await actionFactory.chosen({
         actionId: action.id,
@@ -305,7 +311,7 @@ describe('getPersonalizedActionDetails', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
       const assessment = await actionAssessmentFactory
@@ -391,7 +397,7 @@ describe('getPersonalizedActionDetails', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
 
@@ -429,7 +435,7 @@ describe('getPersonalizedActionDetails', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
       await actionAssessmentFactory
@@ -456,7 +462,7 @@ describe('getPersonalizedActionDetails', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
       await actionAssessmentFactory
@@ -485,7 +491,7 @@ describe('getPersonalizedActionDetails', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
       await actionAssessmentFactory

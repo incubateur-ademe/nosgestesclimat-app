@@ -370,8 +370,6 @@ model SeoMetadata {
 enum SimulationStatus {
   not_started
   answering_major_questions
-  major_questions_result_seen
-  answering_minor_questions
   full_result_seen
 
   @@schema("ngc")
@@ -380,8 +378,10 @@ enum SimulationStatus {
 model Simulation {
   id                         String                               @id @default(uuid()) @db.Uuid
   date                       DateTime
-  progression                Float                                @db.Real
-  status                     SimulationStatus
+  /// Default kept in sync with the column default: instances still running the
+  /// previous code can insert a simulation during a rolling deploy. New code
+  /// always sets the status explicitly.
+  status                     SimulationStatus                     @default(not_started)
   model                      String                               @default("FR-fr-0.0.0")
   computedResults            Json
   /// @deprecated replaced by the ActionAssessment relation
@@ -401,8 +401,8 @@ model Simulation {
 
   @@index([userId])
   @@index([createdAt])
-  // Created partial (progression = 1) by the migration: Prisma cannot express
-  // the predicate, so a schema edit would rebuild it whole.
+  // Created partial on the completed status by the migration: Prisma cannot
+  // express the predicate, so a schema edit would rebuild it whole.
   @@index([createdAt, id])
   // Read by the PostHog warehouse sync and ordered by the retention sweep.
   @@index([updatedAt])
@@ -545,11 +545,13 @@ model RefreshToken {
 }
 
 view ComputedResultsView {
-  id                  String   @unique @default(uuid()) @db.Uuid
+  id                  String           @unique @default(uuid()) @db.Uuid
   date                DateTime
-  progression         Float    @db.Real
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  /// Derived from the status by the view, kept for existing consumers.
+  progression         Float            @db.Real
+  status              SimulationStatus
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
   bilanCarbone        Float
   transportCarbone    Float
   alimentationCarbone Float

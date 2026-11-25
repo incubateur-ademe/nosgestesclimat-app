@@ -4,7 +4,6 @@ import type { CompletedSimulationStatus } from '../helpers/simulation-guards.ts'
 
 export interface SimulationProgress {
   id: string
-  progression: number
   status: SimulationStatus
   model: ModelString
 }

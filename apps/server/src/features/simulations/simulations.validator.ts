@@ -1,4 +1,5 @@
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import { SimulationStatusSchema } from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
 import {
   FoldedStepsSchema,
   SituationSchema,
@@ -50,7 +51,7 @@ export const SimulationParticipantCreateDto = v.object({
     () => new Date()
   ),
   model: v.optional(v.pipe(v.string(), v.regex(MODEL_REGEX))),
-  progression: v.number(),
+  status: SimulationStatusSchema,
   computedResults: ComputedResultsSchema,
   additionalQuestionsAnswers: v.optional(AdditionalQuestionsAnswersSchema),
   foldedSteps: v.optional(FoldedStepsSchema, []),

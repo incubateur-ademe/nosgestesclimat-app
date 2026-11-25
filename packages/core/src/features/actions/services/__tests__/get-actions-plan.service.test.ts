@@ -21,7 +21,7 @@ describe('getActionsPlan', () => {
     const action = await actionFactory.published().create()
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .withCompletedComputation()
       .create()
@@ -41,7 +41,10 @@ describe('getActionsPlan', () => {
   it('returns an empty plan after the user abandonned their only committed action', async () => {
     const action = await actionFactory.published().deleted().create()
     const user = await userFactory.create()
-    await simulationFactory.completed().params({ userId: user.id }).create()
+    await simulationFactory
+      .withStatus('full_result_seen')
+      .params({ userId: user.id })
+      .create()
     await actionFactory.chosen({ actionId: action.id, userId: user.id })
 
     const result = await getActionsPlan(user.id, 'fr')
@@ -74,7 +77,10 @@ describe('getActionsPlan', () => {
         .create(),
     ])
     const user = await userFactory.create()
-    await simulationFactory.completed().params({ userId: user.id }).create()
+    await simulationFactory
+      .withStatus('full_result_seen')
+      .params({ userId: user.id })
+      .create()
     await actionFactory.chosen({
       actionId: committedAction.id,
       userId: user.id,
@@ -120,7 +126,7 @@ describe('getActionsPlan', () => {
     ])
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .withCompletedComputation()
       .create()
@@ -173,7 +179,7 @@ describe('getActionsPlan', () => {
     ])
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .withCompletedComputation()
       .create()
@@ -221,7 +227,7 @@ describe('getActionsPlan', () => {
     ])
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .withCompletedComputation()
       .create()
@@ -280,7 +286,10 @@ describe('getActionsPlan', () => {
     const user = await userFactory.create()
     // Finished simulation whose model was never computed: choices are read,
     // assessments are not
-    await simulationFactory.completed().params({ userId: user.id }).create()
+    await simulationFactory
+      .withStatus('full_result_seen')
+      .params({ userId: user.id })
+      .create()
     await actionFactory.chosen({ actionId: action.id, userId: user.id })
 
     const result = await getActionsPlan(user.id, 'fr')
@@ -303,7 +312,10 @@ describe('getActionsPlan', () => {
         .params({ theme: toActionTheme(food) })
         .create()
       const user = await userFactory.create()
-      await simulationFactory.completed().params({ userId: user.id }).create()
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .params({ userId: user.id })
+        .create()
       await actionFactory.chosen({ actionId: action.id, userId: user.id })
 
       const result = await getActionsPlan(user.id, 'en')
@@ -325,7 +337,10 @@ describe('getActionsPlan', () => {
         .params({ theme: toActionTheme(food) })
         .create()
       const user = await userFactory.create()
-      await simulationFactory.completed().params({ userId: user.id }).create()
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .params({ userId: user.id })
+        .create()
       await actionFactory.chosen({ actionId: action.id, userId: user.id })
 
       const result = await getActionsPlan(user.id, 'en')

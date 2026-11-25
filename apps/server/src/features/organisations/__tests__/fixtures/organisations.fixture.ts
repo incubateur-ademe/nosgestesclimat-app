@@ -1,7 +1,6 @@
 import type supertest from 'supertest'
 
 import { faker } from '@faker-js/faker'
-import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import * as v from 'valibot'
@@ -186,15 +185,8 @@ export const createOrganisationPollSimulation = async ({
     Omit<SimulationParticipantCreateInputDto, 'additionalQuestionsAnswers'>
   >
 }) => {
-  const {
-    id,
-    date,
-    model,
-    situation,
-    foldedSteps,
-    progression,
-    computedResults,
-  } = v.parse(SimulationParticipantCreateDto, getSimulationPayload(simulation))
+  const { id, date, model, situation, foldedSteps, status, computedResults } =
+    v.parse(SimulationParticipantCreateDto, getSimulationPayload(simulation))
 
   await prisma.user.upsert({
     where: { id: userId },
@@ -209,15 +201,14 @@ export const createOrganisationPollSimulation = async ({
       model,
       situation,
       foldedSteps,
-      progression,
-      status: simulationStatusFromProgression(progression),
+      status,
       computedResults,
       userId,
       polls: { create: { pollId } },
     },
   })
 
-  return { id, progression, computedResults, user: { id: userId } }
+  return { id, status, computedResults, user: { id: userId } }
 }
 
 export const downloadOrganisationPollSimulationsResult = async ({

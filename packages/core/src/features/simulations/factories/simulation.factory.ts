@@ -2,7 +2,10 @@ import { faker } from '@faker-js/faker'
 import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import type { Prisma } from '../../../prisma/generated/client.ts'
+import type {
+  Prisma,
+  SimulationStatus,
+} from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
 import {
   ModelRegionSchema,
@@ -10,7 +13,6 @@ import {
   type ModelLocale,
   type ModelRegion,
 } from '../../models/types/model.ts'
-import { simulationStatusFromProgression } from '../helpers/simulation-status.ts'
 import type { Simulation } from '../types/simulation.ts'
 import {
   computedResultsFactory,
@@ -18,7 +20,6 @@ import {
 } from './computed-results.factory.ts'
 
 interface SimulationTransientParams {
-  progression?: number
   modelVersion?: Model['version']
   modelRegion?: ModelRegion
   modelLocale?: ModelLocale
@@ -29,8 +30,8 @@ class SimulationFactory extends Factory<
   SimulationTransientParams,
   Simulation
 > {
-  withProgression(progression: number) {
-    return this.params({ progression })
+  withStatus(status: SimulationStatus) {
+    return this.params({ status })
   }
   withModelVersion(version: Model['version']) {
     return this.transient({ modelVersion: version })
@@ -57,14 +58,6 @@ class SimulationFactory extends Factory<
       })
       return data
     })
-  }
-
-  started() {
-    return this.params({ progression: 0.1 })
-  }
-
-  completed() {
-    return this.params({ progression: 1 })
   }
 
   withComputationStatus(
@@ -111,20 +104,12 @@ class SimulationFactory extends Factory<
 }
 
 export const simulationFactory = SimulationFactory.define(
-  ({ onCreate, afterBuild, transientParams }) => {
-    const progression = faker.number.float({ min: 0, max: 1 })
-
-    // Keeps `status` consistent with whatever progression the caller sets.
-    afterBuild((data) => {
-      data.status = simulationStatusFromProgression(data.progression)
-    })
-
+  ({ onCreate, transientParams }) => {
     onCreate(async (data) => {
       await prisma.simulation.create({
         data: {
           id: data.id,
           date: data.date,
-          progression: data.progression,
           status: data.status,
           model: serializeModel(data.model),
           computedResults:
@@ -142,8 +127,7 @@ export const simulationFactory = SimulationFactory.define(
     return {
       id: faker.string.uuid(),
       userId: null,
-      progression,
-      status: simulationStatusFromProgression(progression),
+      status: 'not_started' as const,
       date: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),

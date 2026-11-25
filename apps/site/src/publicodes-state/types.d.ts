@@ -6,6 +6,7 @@ import type {
   SuggestionValue,
 } from '@incubateur-ademe/nosgestesclimat'
 import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
+import type { SimulationStatus } from '@nosgestesclimat/core/features/simulations/types/simulation'
 import type PublicodesEngine from 'publicodes'
 import type {
   EvaluatedNode,
@@ -66,7 +67,6 @@ export interface UpdateCurrentSimulationProps {
   defaultAdditionalQuestionsAnswers?: Record<string, string>
   customAdditionalQuestionsAnswers?: Record<string, string>
   computedResults?: ComputedResults
-  progression?: number
   status?: SimulationStatus
 }
 export interface LocalStorage {

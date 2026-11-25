@@ -10,7 +10,6 @@ type SimulationRow = {
   id: string
   date: Date
   model: string
-  progression: number
   status: SimulationStatus
   situation: unknown
   foldedSteps: unknown
@@ -37,7 +36,6 @@ export const mapSimulation = (row: SimulationRow): Simulation | null => {
     id: row.id,
     date: row.date,
     model,
-    progression: row.progression,
     status: row.status,
     situation: row.situation as Situation<DottedName>,
     foldedSteps: row.foldedSteps as DottedName[],

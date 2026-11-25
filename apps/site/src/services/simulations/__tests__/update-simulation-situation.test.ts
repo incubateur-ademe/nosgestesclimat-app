@@ -49,27 +49,19 @@ const aPayload = (
     simulationFactory
       .withModelRegion('FR')
       .withModelVersion({ publishedTag: '1.2.3' })
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .params({ foldedSteps: ['transport . voiture . km'] })
       .build()
   )
   simulation.computedResults.carbone.bilan = 1000
 
-  const {
-    id,
-    model,
-    situation,
-    foldedSteps,
-    progression,
-    status,
-    computedResults,
-  } = simulation
+  const { id, model, situation, foldedSteps, status, computedResults } =
+    simulation
   return {
     id,
     model,
     situation: situation as UpdateSimulationSituationPayload['situation'],
     foldedSteps,
-    progression,
     status,
     computedResults,
     ...overrides,
@@ -102,7 +94,6 @@ describe('updateSimulationSituation', () => {
       simulationId: payload.id,
       situation: payload.situation,
       foldedSteps: payload.foldedSteps,
-      progression: 0.5,
       status: 'answering_major_questions',
       computedResults: payload.computedResults,
       model: 'FR-fr-1.2.3',

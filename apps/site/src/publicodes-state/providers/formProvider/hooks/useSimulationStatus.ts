@@ -2,7 +2,6 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import type { UpdateCurrentSimulationProps } from '@/publicodes-state/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
-import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import { useEffect, useMemo } from 'react'
 
 interface Props {
@@ -11,19 +10,20 @@ interface Props {
   relevantQuestions: DottedName[]
   updateCurrentSimulation: (simulation: UpdateCurrentSimulationProps) => void
   /** Absent when there is no persisted simulation yet. */
-  currentStored: Pick<Simulation, 'progression' | 'status'> | undefined
+  currentStoredStatus: Simulation['status'] | undefined
 }
 
 /**
- * Get progression and remaining questions sorted by category
+ * Derives the lifecycle status from the answered questions and stores it on the
+ * simulation.
  */
-export default function useProgression({
+export default function useSimulationStatus({
   remainingQuestions,
   relevantQuestions,
   updateCurrentSimulation,
-  currentStored,
+  currentStoredStatus,
 }: Props) {
-  const progression = useMemo(
+  const completion = useMemo(
     () =>
       relevantQuestions.length
         ? (relevantQuestions.length - remainingQuestions.length) /
@@ -32,18 +32,22 @@ export default function useProgression({
     [relevantQuestions, remainingQuestions]
   )
 
-  // Updates the progression stored in the user object / hook
   useEffect(() => {
-    const status = simulationStatusFromProgression(progression)
+    const status: Simulation['status'] =
+      completion === 1
+        ? 'full_result_seen'
+        : completion === 0
+          ? 'not_started'
+          : 'answering_major_questions'
 
     // Never retrograde a simulation which is already completed
     if (
-      currentStored &&
-      isSimulationCompleted(currentStored) &&
+      currentStoredStatus !== undefined &&
+      isSimulationCompleted({ status: currentStoredStatus }) &&
       !isSimulationCompleted({ status })
     )
       return
 
-    updateCurrentSimulation({ progression, status })
-  }, [progression, updateCurrentSimulation, currentStored])
+    updateCurrentSimulation({ status })
+  }, [completion, updateCurrentSimulation, currentStoredStatus])
 }

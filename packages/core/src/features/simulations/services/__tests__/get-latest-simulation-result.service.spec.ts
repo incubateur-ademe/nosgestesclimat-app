@@ -36,7 +36,7 @@ describe('getLatestSimulationResult', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -54,13 +54,13 @@ describe('getLatestSimulationResult', () => {
     const [, latest] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({ userId: user.id, date: new Date('2024-01-01') })
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({ userId: user.id, date: new Date('2024-02-01') })
         .create(),
@@ -85,13 +85,13 @@ describe('getLatestSimulationResult', () => {
     await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({ userId: user.id, date: new Date('2024-01-01') })
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({ userId: user.id, date: new Date('2024-02-01') })
         .create(),
@@ -110,7 +110,7 @@ describe('getLatestSimulationResult', () => {
     await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .params({
           userId: user.id,
           date: new Date('2024-01-01'),
@@ -122,7 +122,7 @@ describe('getLatestSimulationResult', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .params({
           userId: user.id,
           date: new Date('2024-02-01'),
@@ -147,7 +147,7 @@ describe('getLatestSimulationResult', () => {
     await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .params({
           userId: user.id,
           date: new Date('2024-01-01'),
@@ -159,7 +159,7 @@ describe('getLatestSimulationResult', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .params({
           userId: user.id,
           date: new Date('2024-02-01'),
@@ -183,7 +183,7 @@ describe('getLatestSimulationResult', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -207,7 +207,7 @@ describe('getLatestSimulationResult', () => {
       userFactory.create(),
     ])
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -228,20 +228,20 @@ describe('getLatestSimulationResult', () => {
     await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({ userId: other.id, date: new Date('2024-01-01') })
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({ userId: other.id, date: new Date('2024-02-01') })
         .create(),
     ])
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date('2024-03-01') })
       .create()
@@ -260,7 +260,7 @@ describe('getLatestSimulationResult', () => {
     const group = await groupFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -284,7 +284,7 @@ describe('getLatestSimulationResult', () => {
     const poll = await pollFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -318,7 +318,7 @@ describe('getLatestSimulationResult', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

@@ -76,7 +76,6 @@ describe('completeSimulation', () => {
       id: simulation.id,
       date: new Date('2024-01-01'),
       model: simulation.model,
-      progression: 1,
       status: 'full_result_seen',
       situation,
       foldedSteps,
@@ -139,7 +138,7 @@ describe('completeSimulation', () => {
     const simulation = await simulationFactory
       .withModelRegion('FR')
       .withModelVersion({ publishedTag: '0.0.0' })
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({ userId: user.id })
       .create()
 
@@ -168,7 +167,7 @@ describe('completeSimulation', () => {
       const user = await userFactory.verified().create()
       const simulation = await simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.2)
+        .withStatus('answering_major_questions')
         .params({ userId: user.id })
         .create()
 
@@ -191,7 +190,7 @@ describe('completeSimulation', () => {
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('ZZ' as ModelRegion)
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({ userId: user.id })
       .create()
 
@@ -215,7 +214,7 @@ describe('completeSimulation', () => {
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .withPendingComputation()
       .params({ userId: user.id, date: new Date('2024-01-01') })
       .create()
@@ -238,7 +237,7 @@ describe('completeSimulation', () => {
 
     expect(updated).toEqual(
       expect.objectContaining({
-        progression: simulation.progression,
+        status: simulation.status,
         situation: simulation.situation,
         foldedSteps: simulation.foldedSteps,
         computedResults: simulation.computedResults,
@@ -269,7 +268,10 @@ describe('completeSimulation', () => {
       userId: user.id,
     })
     expect(updated).toEqual(
-      expect.objectContaining({ progression: 0.2, situation: {} })
+      expect.objectContaining({
+        status: 'answering_major_questions',
+        situation: {},
+      })
     )
     expect(await findSimulationComputation(simulation.id)).toBeNull()
   })
@@ -297,7 +299,10 @@ describe('completeSimulation', () => {
       userId: user.id,
     })
     expect(updated).toEqual(
-      expect.objectContaining({ progression: 0.2, situation: {} })
+      expect.objectContaining({
+        status: 'answering_major_questions',
+        situation: {},
+      })
     )
     expect(await findSimulationComputation(simulation.id)).toBeNull()
   })
@@ -369,7 +374,10 @@ describe('completeSimulation', () => {
       userId: other.id,
     })
     expect(updated).toEqual(
-      expect.objectContaining({ progression: 0.2, situation: {} })
+      expect.objectContaining({
+        status: 'answering_major_questions',
+        situation: {},
+      })
     )
     expect(await findSimulationComputation(simulation.id)).toBeNull()
   })
@@ -379,7 +387,7 @@ describe('completeSimulation', () => {
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .create()
 
@@ -710,7 +718,7 @@ const authenticated = (user: { id: string; email: string }): AppUser => ({
 const startedSimulation = (userId: string) =>
   simulationFactory
     .withModelRegion('FR')
-    .withProgression(0.2)
+    .withStatus('answering_major_questions')
     .params({ userId, date: new Date('2024-01-01') })
     .create()
 
@@ -781,7 +789,6 @@ const payload = {
   model: `FR-fr-${CURRENT_MODEL_VERSION}`,
   situation,
   foldedSteps,
-  progression: 1,
   status: 'full_result_seen',
   computedResults,
   locale: 'fr',

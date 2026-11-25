@@ -50,7 +50,7 @@ base.describe('Given a user that completed a test without an account', () => {
           .withEauBilan(2000000)
           .build()
         const simulation = await simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .params({ userId: user.id, computedResults })
           .create()
         await signIn(context, { id: user.id })
@@ -122,7 +122,7 @@ base.describe(
         async ({ context }, use) => {
           const user = await userFactory.verified().create()
           const simulation = await simulationFactory
-            .completed()
+            .withStatus('full_result_seen')
             .params({
               userId: user.id,
               computedResults: computedResultsFactory

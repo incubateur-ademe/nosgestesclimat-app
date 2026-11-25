@@ -1,10 +1,9 @@
 import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { Simulation } from '../types/simulation.ts'
 
-/** A simulation is completed once its result has been shown to the user, be it
- * the major questions one or the full one. */
+/** A simulation is completed once its full result has been shown to the user.
+ * The intermediate `answering_major_questions` state stays editable. */
 export const COMPLETED_SIMULATION_STATUSES = [
-  'major_questions_result_seen',
   'full_result_seen',
 ] as const satisfies readonly SimulationStatus[]
 
