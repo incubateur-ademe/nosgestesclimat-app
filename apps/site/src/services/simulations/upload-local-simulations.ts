@@ -5,7 +5,6 @@ import logger from '@/logger/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { Logger } from '@nosgestesclimat/core/features/logger/index'
 import { importLegacyLocalSimulations } from '@nosgestesclimat/core/features/simulations/services/import-legacy-local-simulations.service'
-import type { ComputedResults as CoreComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 
 /** Uploads localStorage simulations on first auth. Pre-dates the `model` field,
  * so `ensureSimulationModel` is NOT applied: stamping a current model would
@@ -33,8 +32,7 @@ export const uploadLocalSimulations = logger.withSpan(
       // compatible at runtime.
       simulations: simulations.map((simulation) => ({
         ...simulation,
-        computedResults:
-          simulation.computedResults as unknown as CoreComputedResults,
+        computedResults: simulation.computedResults,
       })),
     })
   }

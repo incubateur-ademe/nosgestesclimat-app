@@ -1,11 +1,12 @@
-import type { ReactNode } from 'react'
+import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { createContext, useState } from 'react'
 
-export const FloatingElementDisplayedContext = createContext({
+export const FloatingElementDisplayedContext = createContext<{
+  floatingElementDisplayed: string
+  setFloatingElementDisplayed: Dispatch<SetStateAction<string>>
+}>({
   floatingElementDisplayed: '',
-  setFloatingElementDisplayed: (() => {}) as React.Dispatch<
-    React.SetStateAction<string>
-  >,
+  setFloatingElementDisplayed: () => {},
 })
 
 export const FloatingElementDisplayedProvider = ({

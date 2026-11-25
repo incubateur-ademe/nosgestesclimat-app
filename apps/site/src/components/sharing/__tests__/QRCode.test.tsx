@@ -142,7 +142,7 @@ describe('QRCode', () => {
       return {
         serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
       }
-    }) as unknown as typeof XMLSerializer
+    })
 
     // Mock getBoundingClientRect
     const mockRect = { width: 100, height: 100 }
@@ -225,7 +225,7 @@ describe('QRCode', () => {
       return {
         serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
       }
-    }) as unknown as typeof XMLSerializer
+    })
 
     const mockRect = { width: 100, height: 100 }
     Element.prototype.getBoundingClientRect = vi.fn(() => mockRect as DOMRect)
@@ -286,7 +286,7 @@ describe('QRCode', () => {
       return {
         serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
       }
-    }) as unknown as typeof XMLSerializer
+    })
 
     render(<QRCode value="https://example.com" />)
 

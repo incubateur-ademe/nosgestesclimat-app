@@ -19,7 +19,6 @@ import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { revalidatePath } from 'next/cache'
 import { redirect, unauthorized } from 'next/navigation'
 import { after } from 'next/server'
-import type { Situation } from 'publicodes'
 import { match, P } from 'ts-pattern'
 import {
   type CompleteSimulationPayload,
@@ -65,7 +64,7 @@ export const completeSimulation = logger.withSpan(
       simulationId: id,
       progression,
       model,
-      situation: situation as Situation<DottedName>,
+      situation: situation,
       foldedSteps: foldedSteps as DottedName[],
       computedResults,
       locale: await getLocaleFromHeaders(),

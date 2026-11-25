@@ -8,7 +8,7 @@ import Trans from '../translation/trans/TransServer'
 import LogoHeader from './headerServer/LogoHeader'
 
 // async is required when using `'use cache'`
-// eslint-disable-next-line @typescript-eslint/require-await
+
 export default async function Route404() {
   'use cache'
   cacheLife('days')

@@ -105,7 +105,7 @@ export function useMosaicState({
     setState(newState)
 
     // Propagate to the actual situation
-    setValuesNow(newState as Record<string, NodeValue>, {
+    setValuesNow(newState, {
       questionDottedName: question,
     })
   }

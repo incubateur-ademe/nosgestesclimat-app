@@ -3,6 +3,6 @@ import { expect, test } from '../local/fixtures'
 test('should display 404 page', async ({ page }) => {
   await page.goto('/definitely-not-a-page-url')
 
-  expect(page.locator('h1')).toBeDefined()
-  expect(page.getByTestId('404')).toBeDefined()
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  await expect(page.getByTestId('404')).toBeVisible()
 })
