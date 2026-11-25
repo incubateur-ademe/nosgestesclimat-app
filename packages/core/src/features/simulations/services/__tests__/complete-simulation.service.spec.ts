@@ -84,6 +84,12 @@ describe('completeSimulation', () => {
       updatedAt: expect.any(Date),
       userId: user.id,
     })
+    expect(
+      await prisma.simulation.findUnique({
+        where: { id: simulation.id },
+        select: { status: true },
+      })
+    ).toEqual({ status: 'full_result_seen' })
     expect(await findSimulationComputation(simulation.id)).not.toBeNull()
   })
 
