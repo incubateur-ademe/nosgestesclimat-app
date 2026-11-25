@@ -33,17 +33,21 @@ export const evaluateModelRule = ({
   /** The metric to evaluate the rule for; none is the default one. */
   metric?: Metric | null
 }): NewRuleEvaluationResult => {
-  let nodeValue: unknown
-  let reported: Record<string, number>
+  let evaluation: {
+    nodeValue: unknown
+    missingVariables: Record<string, number>
+  }
 
   try {
-    ;({ nodeValue, missingVariables: reported } = engine.evaluate({
+    evaluation = engine.evaluate({
       valeur: dottedName,
       contexte: { métrique: `'${modelMetric(metric)}'` },
-    }))
+    })
   } catch (cause) {
     return failure(new RuleEvaluationThrewError({ dottedName, cause, metric }))
   }
+
+  const { nodeValue, missingVariables } = evaluation
 
   const rule = {
     name: dottedName,
@@ -51,7 +55,7 @@ export const evaluateModelRule = ({
     simulationId,
     createdAt,
     // Publicodes lists a `par défaut` rule among its own missing variables.
-    missingVariables: Object.entries(reported)
+    missingVariables: Object.entries(missingVariables)
       .filter(([name]) => name !== dottedName)
       .map(([name, weight]) => ({ name, weight })),
   }

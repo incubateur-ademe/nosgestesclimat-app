@@ -13,8 +13,8 @@ export const ruleIdByKey = (rules: Rule[]): Map<string, number> =>
     ])
   )
 
-/** Throws when no stored rule matches the name and metric. */
-export const ruleIdOf = (
+/** Guard: the stored rule's id for the name and metric, throws when there is none. */
+export const ruleIdOrThrow = (
   ruleIdByKey: Map<string, number>,
   name: string,
   metric?: Metric | null
@@ -34,4 +34,4 @@ export const missingVariableRuleIdOf = (
   name: string,
   metric?: Metric | null
 ): number =>
-  ruleIdByKey.get(ruleKey(name, metric)) ?? ruleIdOf(ruleIdByKey, name)
+  ruleIdByKey.get(ruleKey(name, metric)) ?? ruleIdOrThrow(ruleIdByKey, name)

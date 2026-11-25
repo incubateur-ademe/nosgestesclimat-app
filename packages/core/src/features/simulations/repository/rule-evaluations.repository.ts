@@ -3,7 +3,7 @@ import { prisma } from '../../../prisma/client.ts'
 import {
   missingVariableRuleIdOf,
   ruleIdByKey,
-  ruleIdOf,
+  ruleIdOrThrow,
 } from '../../models/helpers/rule-key.ts'
 import type {
   NewRuleEvaluation,
@@ -55,14 +55,14 @@ export const createRuleEvaluations = async (
   await session.ruleEvaluation.createMany({
     data: evaluations.map((evaluation) =>
       mapNewRuleEvaluationToPrisma(
-        ruleIdOf(idByKey, evaluation.name, evaluation.metric),
+        ruleIdOrThrow(idByKey, evaluation.name, evaluation.metric),
         evaluation
       )
     ),
   })
 
   const missingVariables = evaluations.flatMap((evaluation) => {
-    const ruleId = ruleIdOf(idByKey, evaluation.name, evaluation.metric)
+    const ruleId = ruleIdOrThrow(idByKey, evaluation.name, evaluation.metric)
     return evaluation.missingVariables.map((missingVariable) =>
       mapNewRuleEvaluationMissingVariablesToPrisma(
         ruleId,
