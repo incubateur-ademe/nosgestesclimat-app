@@ -110,7 +110,7 @@ jobs:
           RELEASE_BODY: ${{ env.RELEASE_BODY }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: chore/upgrade-model-v${{ env.NEW_VERSION }}
