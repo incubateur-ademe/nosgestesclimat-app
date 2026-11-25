@@ -16,6 +16,7 @@ const findRules = () =>
     select: {
       id: true,
       name: true,
+      public: true,
       appliesToWaterMetric: true,
       title: true,
       description: true,
@@ -66,6 +67,7 @@ describe('resolvePublicRules', () => {
       {
         id: expect.any(Number),
         name: 'footprint . bare',
+        public: true,
         appliesToWaterMetric: false,
         title: null,
         description: null,
@@ -73,6 +75,7 @@ describe('resolvePublicRules', () => {
       {
         id: expect.any(Number),
         name: 'footprint . described',
+        public: true,
         appliesToWaterMetric: false,
         title: 'Transport',
         description: 'Les trajets du quotidien',
@@ -80,6 +83,7 @@ describe('resolvePublicRules', () => {
       {
         id: expect.any(Number),
         name: 'footprint . water',
+        public: true,
         appliesToWaterMetric: false,
         title: 'Bilan eau',
         description: null,
@@ -87,6 +91,7 @@ describe('resolvePublicRules', () => {
       {
         id: expect.any(Number),
         name: 'footprint . water',
+        public: true,
         appliesToWaterMetric: true,
         title: 'Bilan eau',
         description: null,
@@ -95,9 +100,10 @@ describe('resolvePublicRules', () => {
     expect(rules).toHaveLength(stored.length)
     expect(rules).toEqual(
       expect.arrayContaining(
-        stored.map(({ id, name, appliesToWaterMetric }) => ({
+        stored.map(({ id, name, public: isPublic, appliesToWaterMetric }) => ({
           id,
           name,
+          public: isPublic,
           appliesToWaterMetric,
         }))
       )

@@ -3,8 +3,9 @@ import type { ModelRule } from '../types/rule.ts'
 
 /**
  * A rule of the model as the row(s) to store for it, with its French `titre`
- * and `description`, null when the model gives none: the default metric's row
- * always, the water metric's too when the model marks it `empreinte eau: oui`.
+ * and `description`, null when the model gives none, and its `public: oui`
+ * mark: the default metric's row always, the water metric's too when the
+ * model marks it `empreinte eau: oui`.
  */
 export const getModelRule = (
   engine: Engine,
@@ -14,6 +15,7 @@ export const getModelRule = (
   const rawNode = engine.getParsedRules()[dottedName]?.rawNode
   const rule: ModelRule = {
     name: dottedName,
+    public: rawNode?.public === 'oui',
     title: rawNode?.titre ?? null,
     description: rawNode?.description ?? null,
     appliesToWaterMetric: false,

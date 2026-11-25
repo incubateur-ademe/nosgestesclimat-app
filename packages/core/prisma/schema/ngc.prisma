@@ -321,10 +321,14 @@ model QuizzAnswer {
 /// gets its own evaluations. The name is the identity across model versions: a
 /// stored rule is never renamed. Today the water version shares the name;
 /// future models will name water rules differently, and the second row will
-/// disappear with the mark.
+/// disappear with the mark. The `public` column carries the model's
+/// `public: oui` mark.
 model Rule {
   id                   Int                             @id @default(autoincrement())
   name                 String
+  /// The model's `public: oui` mark: the rule is part of the model's output
+  /// contract.
+  public               Boolean                         @default(false)
   /// The model's `empreinte eau: oui` mark.
   appliesToWaterMetric Boolean                         @default(false)
   /// In French, as the model's `titre` — persisted for readability in 3rd

@@ -14,6 +14,8 @@ export type Metric = 'water'
 export interface ModelRule {
   /** Dotted name, a plain string: it may be a rule of any model version. */
   name: string
+  /** The model's `public: oui` mark: the rule is part of the model's output contract. */
+  public: boolean
   title: string | null
   description: string | null
   appliesToWaterMetric: boolean
@@ -28,6 +30,8 @@ export interface ModelRule {
 export interface Rule {
   id: number
   name: string
+  /** The model's `public: oui` mark, persisted with the row. */
+  public: boolean
   appliesToWaterMetric: boolean
   // No `title`/`description`: the wording is persisted only for 3rd party
   // tools syncing with the db, it is not part of the entity.

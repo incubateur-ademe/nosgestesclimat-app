@@ -479,7 +479,9 @@ describe('evaluateSimulation', () => {
       expect(result).toEqual(success())
 
       const km = await findStoredRule('transport . km')
-      // The missing variable has a rule row, but no evaluation of its own.
+      // The missing variable has a rule row, but no evaluation of its own,
+      // and is not marked `public: oui` in the model.
+      expect(km.public).toBe(false)
       expect(await findEvaluations()).toEqual([
         evaluation(total, { applicable: undefined }, [
           { name: 'transport . km', weight: 1 },

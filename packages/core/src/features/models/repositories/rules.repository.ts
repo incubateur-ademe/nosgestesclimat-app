@@ -18,15 +18,15 @@ export const findRule = async (
         appliesToWaterMetric: metric === 'water',
       },
     },
-    select: { id: true, name: true, appliesToWaterMetric: true },
+    select: { id: true, name: true, public: true, appliesToWaterMetric: true },
   })
   return row ? mapRule(row) : null
 }
 
 /**
  * Stores each rule as its row, each identified by its name and water mark: a
- * stored rule is never renamed, so those are the conflict key; the wording is
- * refreshed on conflict.
+ * stored rule is never renamed, so those are the conflict key; the wording
+ * and the `public` mark are refreshed on conflict.
  *
  * Safe to run concurrently with itself: rows are locked in a fixed name and
  * water mark order, so two callers cannot deadlock, and the conflict clause
@@ -60,18 +60,20 @@ export const upsertRules = async (
   // `VALUES` list, so it stays a single prepared statement whatever the
   // number of rules.
   const stored = await session.$queryRaw<RuleRow[]>`
-    INSERT INTO "ngc"."Rule" (name, "appliesToWaterMetric", title, description)
-    SELECT name, "appliesToWaterMetric", title, description
+    INSERT INTO "ngc"."Rule" (name, "public", "appliesToWaterMetric", title, description)
+    SELECT name, "public", "appliesToWaterMetric", title, description
     FROM unnest(
       ${sorted.map((rule) => rule.name)}::text[],
+      ${sorted.map((rule) => rule.public)}::boolean[],
       ${sorted.map((rule) => rule.appliesToWaterMetric)}::boolean[],
       ${sorted.map((rule) => rule.title)}::text[],
       ${sorted.map((rule) => rule.description)}::text[]
-    ) AS input(name, "appliesToWaterMetric", title, description)
+    ) AS input(name, "public", "appliesToWaterMetric", title, description)
     ON CONFLICT (name, "appliesToWaterMetric") DO UPDATE
-      SET title = EXCLUDED.title,
+      SET "public" = EXCLUDED."public",
+          title = EXCLUDED.title,
           description = EXCLUDED.description
-    RETURNING id, name, "appliesToWaterMetric"
+    RETURNING id, name, "public", "appliesToWaterMetric"
   `
 
   return stored.map(mapRule)

@@ -242,6 +242,7 @@ describe('processNextPendingComputation', () => {
         {
           id: 1,
           name: 'footprint . transport',
+          public: true,
           appliesToWaterMetric: false,
         },
       ]
@@ -278,6 +279,7 @@ describe('processNextPendingComputation', () => {
         resolvedRules ??= await upsertRules([
           {
             name: 'footprint . transport',
+            public: true,
             title: null,
             description: null,
             appliesToWaterMetric: false,
