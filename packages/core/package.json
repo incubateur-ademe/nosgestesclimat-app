@@ -69,7 +69,7 @@
     "schema-dts": "^2.1.0",
     "ts-pattern": "^5.9.0",
     "valibot": "^1.4.0",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.11"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.16",
