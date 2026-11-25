@@ -6,19 +6,15 @@ import type { Metric } from './rule.ts'
 export type RuleValue = number | boolean | string
 
 /**
- * A rule's applicability, in Publicodes' terms: `applicable: undefined` means
- * the rule is not defined for the situation. A `false` value is an applicable
- * rule saying "no", never a not applicable one.
+ * `undefined`: not defined for the situation. A `false` value is an applicable
+ * rule saying "no" — never a non-applicable one.
  */
 export type Applicability =
   | { applicable: true; value: RuleValue }
   | { applicable: false }
   | { applicable: undefined }
 
-/**
- * A rule of the model evaluated for a given metric and simulation, as read
- * back: without its missing variables, so reads need no join on them.
- */
+/** Read-side evaluation: missing variables live on links, so reads need no join. */
 export type RuleEvaluation = {
   name: string
   metric: Metric | null
@@ -26,12 +22,9 @@ export type RuleEvaluation = {
   createdAt: Date
 } & Applicability
 
-/**
- * A rule evaluation to write, with the missing variables it reported. Only
- * the write side carries them: they are stored as links, not on the evaluation.
- */
+/** Write-side evaluation, carrying the reported missing variables (stored as links). */
 export type NewRuleEvaluation = RuleEvaluation & {
-  /** The rules the situation does not answer and that an evaluation needed */
+  /** Rules the situation does not answer and the evaluation needed */
   missingVariables: {
     name: string
     /** How many times this rule was needed */

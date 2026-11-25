@@ -73,16 +73,14 @@ const computeActionAssessments = (
     const evaluation = evaluateAction({
       engine,
       ruleName,
-      // The simulation the assessments are seeded into: the evaluation
-      // reports its missing variables against it.
+      // The evaluation reports its missing variables against this simulation.
       simulationId,
       createdAt,
     })
 
     const applicability: ActionEvaluation = evaluation.success
       ? evaluation.data
-      : // A failed evaluation is left unassessed rather than mis-assessed:
-        // "applicability unknown" is the shape that says so.
+      : // A failed evaluation is left unassessed: "applicability unknown".
         { applicable: undefined, impact: undefined }
 
     return { ruleId, applicability }
@@ -127,9 +125,8 @@ export const getPersonaActionAssessments = (
 ): PersonaActionAssessment[] => {
   const cached = assessmentCache.get(name)
 
-  // An assessment describes the persona's situation, not the simulation it was
-  // first computed for, so simulations drawn from the same persona share it:
-  // `simulationId` only binds the evaluations of that first computation.
+  // Assessments describe the persona's situation, not the simulation they were
+  // first computed for.
   if (cached) return cached
 
   const assessments = computeActionAssessments(

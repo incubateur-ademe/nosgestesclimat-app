@@ -8,7 +8,7 @@ import {
 import { RuleEvaluationThrewError } from '../../errors.ts'
 import { evaluateModelRules as evaluateBase } from '../evaluate-model-rules.ts'
 
-/** An engine with the given rules, next to the metric they are evaluated for. */
+/** The given rules, plus METRIC_RULE so they can be evaluated per metric. */
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
 
@@ -17,12 +17,10 @@ const base = {
   createdAt: new Date('2026-11-23T00:00:00.000Z'),
 }
 
-/** The helper bound to a fixed simulation, so expectations can name its binding. */
 const evaluateRules = (
   args: Omit<Parameters<typeof evaluateBase>[0], keyof typeof base>
 ) => evaluateBase({ ...args, ...base })
 
-/** A rule to evaluate, identified by name and water mark like a stored row. */
 const rule = (name: string, appliesToWaterMetric = false) => ({
   name,
   appliesToWaterMetric,

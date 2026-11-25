@@ -2,10 +2,8 @@ import type Engine from 'publicodes'
 import type { NewRule } from '../types/rule.ts'
 
 /**
- * A rule of the model as the row(s) to store for it, with its French `titre`
- * and `description`, null when the model gives none, and its `public: oui`
- * mark: the default metric's row always, the water metric's too when the
- * model marks it `empreinte eau: oui`.
+ * The row(s) to store for a model rule: the default one always, plus the water
+ * one when `empreinte eau: oui`.
  */
 export const getModelRule = (engine: Engine, ruleName: string): NewRule[] => {
   // Not `rule.title`: publicodes derives it from the name when the model gives no `titre`.

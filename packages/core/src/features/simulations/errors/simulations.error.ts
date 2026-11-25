@@ -40,10 +40,7 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
   }
 }
 
-/**
- * A stored rule evaluation breaking its invariant: exactly one value when
- * applicable, none otherwise. Corrupt data is never reinterpreted.
- */
+/** A stored evaluation breaking the invariant: exactly one value when applicable, none otherwise. */
 export class CorruptRuleEvaluationError extends DomainError<'corrupt_rule_evaluation'> {
   public readonly simulationId: string
   public readonly name: string
@@ -66,10 +63,7 @@ export class CorruptRuleEvaluationError extends DomainError<'corrupt_rule_evalua
   }
 }
 
-/**
- * Each failed rule is logged where it failed: this only counts them, one per
- * rule and metric.
- */
+/** Each failed rule is logged where it failed; this only counts them. */
 export class PublicRulesEvaluationError extends DomainError<'public_rules_evaluation_failed'> {
   public readonly failedCount: number
 

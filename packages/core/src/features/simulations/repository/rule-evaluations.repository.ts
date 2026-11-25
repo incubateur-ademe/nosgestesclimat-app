@@ -16,11 +16,7 @@ import {
   mapRuleEvaluation,
 } from './rule-evaluation.mapper.ts'
 
-/**
- * Finds a simulation's rule evaluations, each with its rule's name and water
- * mark (its metric). The missing variables are not read: they are stored as
- * links, and reading them would need a join on every evaluation.
- */
+/** Missing variables are not read: they are links, and reading them would join every evaluation. */
 export const findRuleEvaluationsBySimulation = async (
   simulationId: string
 ): Promise<RuleEvaluation[]> => {
@@ -34,16 +30,10 @@ export const findRuleEvaluationsBySimulation = async (
 }
 
 /**
- * Writes the evaluations and the links to their missing variables. Each
- * evaluation references the rule row of its metric, and each link the missing
- * variable's row of the reporting evaluation's metric when there is one, else
- * its default row. Missing variables are not evaluated: each link points to
- * the missing variable's rule, which must be stored among `rules`, like each
- * evaluated rule.
- *
- * `rules` comes as a param, already stored, instead of being resolved here by
- * name: that lookup would cost an extra db roundtrip on the hotpath of every
- * simulation computation.
+ * Each evaluation references its metric's rule row; each link the missing
+ * variable's row of the reporting metric when stored, else its default row.
+ * `rules` is passed already stored: resolving by name here would add a db
+ * roundtrip to every simulation computation.
  */
 export const createRuleEvaluations = async (
   evaluations: NewRuleEvaluation[],

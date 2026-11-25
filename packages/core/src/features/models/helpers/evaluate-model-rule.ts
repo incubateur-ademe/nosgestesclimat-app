@@ -7,18 +7,7 @@ import {
 import type { NewRuleEvaluationResult } from '../types/rule-evaluation.ts'
 import type { Metric } from '../types/rule.ts'
 
-/**
- * Evaluates a rule of the model for `metric`, as the model computes the
- * footprint of that metric.
- *
- * A non-finite number (NaN, ±Infinity) is an error, not a value: it is an
- * issue with the model, not with the situation.
- *
- * Publicodes evaluates a date to its text (e.g. `'01/03/2023'`), so a date is
- * read as a string: nothing but the engine's internals tells them apart.
- *
- * A rule is never reported as its own missing variable.
- */
+/** Evaluates `ruleName` for `metric` in the engine's current situation. */
 export const evaluateModelRule = ({
   engine,
   ruleName,
@@ -62,6 +51,7 @@ export const evaluateModelRule = ({
 
   if (typeof nodeValue === 'number') {
     if (!Number.isFinite(nodeValue)) {
+      // NaN/±Infinity is a modelling error, not a value.
       return failure(
         new UnexpectedNodeValueError({
           ruleName,
@@ -75,6 +65,7 @@ export const evaluateModelRule = ({
     return success({ ...rule, applicable: true, value: nodeValue })
   }
 
+  // A date evaluates to its text (e.g. '01/03/2023'), read as a string.
   if (typeof nodeValue === 'boolean' || typeof nodeValue === 'string') {
     return success({ ...rule, applicable: true, value: nodeValue })
   }
@@ -96,9 +87,6 @@ export const evaluateModelRule = ({
   )
 }
 
-/**
- * The value the model's `métrique` rule takes for a metric: `null` is the
- * default one, which the model names `carbone`.
- */
+/** The model's `métrique` value: 'eau' for the water metric, 'carbone' (the default) otherwise. */
 const modelMetric = (metric: Metric | null) =>
   metric === 'water' ? 'eau' : 'carbone'

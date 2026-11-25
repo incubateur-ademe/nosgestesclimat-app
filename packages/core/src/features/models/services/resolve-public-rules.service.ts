@@ -6,18 +6,9 @@ import type { Model } from '../types/model.ts'
 import type { Rule } from '../types/rule.ts'
 
 /**
- * Resolves the stored `Rule` rows of each public rule of a model: the default
- * metric's row always, plus the water row when the model marks the rule
- * `empreinte eau: oui` (`appliesToWaterMetric`) — each row is evaluated with
- * its own metric's context at evaluation time.
- *
- * Cached per model: rule rows are never deleted, so a cached id never goes
- * stale. The rules are written outside any caller's transaction, whose
- * rollback would leave the cache holding ids of rows that no longer exist.
- *
- * The cache lives apart from the engine registry, so evicting an engine keeps
- * its rule ids. Like engines, it ignores the model's locale: the rules of every
- * locale are the fr rules, only translated.
+ * The model's public rule rows, cached per model: rows are never deleted, so
+ * cached ids stay valid, and writes go through no caller transaction (a rollback
+ * would orphan cached ids). fr rules serve every locale.
  */
 export function createResolvePublicRules() {
   const rulesByModel = new Map<ModelString, Rule[]>()

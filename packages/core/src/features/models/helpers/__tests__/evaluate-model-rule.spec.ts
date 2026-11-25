@@ -12,7 +12,7 @@ import {
 } from '../../errors.ts'
 import { evaluateModelRule as evaluateModelRuleBase } from '../evaluate-model-rule.ts'
 
-/** An engine with the given rules, next to the metric they are evaluated for. */
+/** The given rules, plus METRIC_RULE so they can be evaluated per metric. */
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
 
@@ -21,15 +21,11 @@ const base = {
   createdAt: new Date('2026-11-23T00:00:00.000Z'),
 }
 
-/** `evaluateModelRule` bound to a fixed simulation, so expectations can name its binding. */
 const evaluate = (
   args: Omit<Parameters<typeof evaluateModelRuleBase>[0], keyof typeof base>
 ) => evaluateModelRuleBase({ ...args, ...base })
 
-/**
- * An engine whose evaluations all come back with `nodeValue`: no publicodes
- * formula evaluates to a non-finite number or to an object.
- */
+/** Every evaluation mocked to return `nodeValue`: no formula yields a non-finite number or an object. */
 const engineWithNodeValue = (nodeValue: unknown): Engine => {
   const engine = engineWith({
     'footprint . rule': { public: 'oui', valeur: 1 },

@@ -24,14 +24,11 @@ import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
 const logger = createTestLogger()
 const evaluateSimulation = createEvaluateSimulation({ logger })
 
-/** An engine with the given rules, next to the metric they are evaluated for. */
+/** The given rules, plus METRIC_RULE so they can be evaluated per metric. */
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
 
-/**
- * The rule evaluation errors reported for a failed evaluation, which counts
- * them.
- */
+/** The errors a failed evaluation logged; the returned error only counts them. */
 const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   if (result.success) {
     throw new Error('Expected evaluateSimulation to fail')
@@ -42,10 +39,7 @@ const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   return reported
 }
 
-/**
- * Stores each rule's rows in the order of `names`: the default metric's row
- * always, plus the water metric's row when `appliesToWaterMetric`.
- */
+/** Stores each name's rows: the default one always, plus the water row when `appliesToWaterMetric`. */
 const storeRules = (
   names: string[],
   appliesToWaterMetric = false
@@ -62,20 +56,13 @@ const storeRules = (
 describe('evaluateSimulation', () => {
   let simulation: Simulation
 
-  /**
-   * PGlite has a single connection, so a write that bypasses the session
-   * would hang the test.
-   */
+  /** PGlite has one connection: writes must go through the session. */
   const evaluate = (engine: Engine, publicRules: Rule[]) =>
     transaction((session) =>
       evaluateSimulation(engine, simulation.id, publicRules, { session })
     )
 
-  /**
-   * The simulation's evaluations in the order of `rules`, by name then metric,
-   * whatever order they are stored in. A rule without a metric is the default
-   * one's evaluation.
-   */
+  /** The simulation's evaluations sorted like `rules` (by name, then metric). */
   const findRuleEvaluations = async (
     rules: { name: string; metric?: Metric | null }[]
   ) => {
@@ -87,7 +74,7 @@ describe('evaluateSimulation', () => {
     )
   }
 
-  /** A stored rule evaluation of the simulation, read back by its rule. */
+  /** Expected evaluation of a rule, as read back. */
   const evaluation = (
     { name, metric = null }: { name: string; metric?: Metric | null },
     applicability: Applicability
@@ -227,10 +214,8 @@ describe('evaluateSimulation', () => {
     ])
   })
 
-  // A rule stored with `appliesToWaterMetric` — the model's
-  // `empreinte eau: oui` — has two rows sharing its name, and each row gets
-  // its own evaluation: the default row with the default metric's context,
-  // the water row with the water metric's.
+  // A water-marked rule (`empreinte eau: oui`) has two rows sharing its name,
+  // each evaluated under its own metric.
   describe('water metric context', () => {
     it('evaluates each row of a water-applicable rule with its own metric', async () => {
       const [waterDependent, waterDependentWater] = await storeRules(
@@ -501,8 +486,7 @@ describe('evaluateSimulation', () => {
       expect(result).toEqual(success())
 
       const km = await findStoredRule('transport . km')
-      // The missing variable has a rule row, but no evaluation of its own,
-      // and is not marked `public: oui` in the model.
+      // The missing variable gets a rule row but no evaluation, and is not public.
       expect(km.public).toBe(false)
       expect(await findEvaluations()).toEqual([
         evaluation(total, { applicable: undefined }),
@@ -517,8 +501,7 @@ describe('evaluateSimulation', () => {
       ])
     })
 
-    // The engine wraps a `par défaut` in a `variable manquante`: the public
-    // rule gets its default value, and the missing variable is still linked.
+    // A `par défaut` still reports a missing variable; the rule gets its default value.
     it('links a missing variable with a default, still without evaluating it', async () => {
       const rules = await storeRules(['footprint . total'])
       const [total] = rules
@@ -538,7 +521,6 @@ describe('evaluateSimulation', () => {
       expect(result).toEqual(success())
 
       await findStoredRule('transport . km')
-      // The public rule still outputs a value: the default's.
       expect(await findEvaluations()).toEqual([
         evaluation(total, { applicable: true, value: 200 }),
       ])
@@ -637,8 +619,7 @@ describe('evaluateSimulation', () => {
         'water . question',
         'water'
       )
-      // One row per name for the rule without the water mark, two for the one
-      // with it.
+      // One row without the water mark, two with it.
       expect(
         await prisma.rule.count({ where: { name: 'carbon . question' } })
       ).toBe(1)
@@ -682,8 +663,7 @@ describe('evaluateSimulation', () => {
       )
 
       expect(result).toEqual(success())
-      // Both rows of the water-marked missing variable are stored, though it
-      // is never evaluated.
+      // Both rows stored, though the missing variable is never evaluated.
       expect(
         await prisma.rule.count({ where: { name: 'transport . km' } })
       ).toBe(2)

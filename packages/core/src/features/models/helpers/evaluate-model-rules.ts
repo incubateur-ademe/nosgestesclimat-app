@@ -4,13 +4,8 @@ import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
 import { evaluateModelRule } from './evaluate-model-rule.ts'
 
 /**
- * Evaluates `rules`, each under its own metric: the water one when the rule is
- * marked `appliesToWaterMetric`, the default one otherwise. The missing
- * variables each evaluation reports are left on it, not evaluated: only the
- * given rules get an evaluation.
- *
- * A rule that fails does not stop the others: every error is returned, and the
- * missing variables of a failed rule are not known.
+ * Each rule under its own metric (water when `appliesToWaterMetric`); a failed
+ * rule is collected in `errors` without stopping the others.
  */
 export const evaluateModelRules = ({
   engine,

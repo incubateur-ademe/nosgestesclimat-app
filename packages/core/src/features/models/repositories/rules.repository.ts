@@ -24,13 +24,8 @@ export const findRule = async (
 }
 
 /**
- * Stores each rule as its row, each identified by its name and water mark: a
- * stored rule is never renamed, so those are the conflict key; the wording
- * and the `public` mark are refreshed on conflict.
- *
- * Safe to run concurrently with itself: rows are locked in a fixed name and
- * water mark order, so two callers cannot deadlock, and the conflict clause
- * makes the second one update the rows the first one inserted.
+ * Upserts each rule by (name, appliesToWaterMetric) — a stored rule is never
+ * renamed — refreshing wording and `public` on conflict.
  */
 export const upsertRules = async (
   rules: NewRule[],
@@ -40,25 +35,18 @@ export const upsertRules = async (
 
   const rows = rules
 
-  // A lock-acquisition order, not a display order: every caller feeds the rows
-  // to the statement in the same fixed order.
+  // Fixed lock-acquisition order: concurrent callers feed the rows to the
+  // statement in the same order, so they cannot deadlock.
   const sorted = rows.toSorted((a, b) =>
     a.name === b.name
       ? Number(a.appliesToWaterMetric) - Number(b.appliesToWaterMetric)
       : codeUnitCompare(a.name, b.name)
   )
 
-  // A raw query because Prisma's typed API has no batch upsert that returns
-  // ids: `upsert` is one row per statement, and `createMany` /
-  // `createManyAndReturn({ skipDuplicates: true })` compiles to
-  // `ON CONFLICT DO NOTHING`, which neither refreshes existing rows nor
-  // returns their ids. Only `INSERT … ON CONFLICT DO UPDATE … RETURNING` does
-  // all three in one round trip, which the caller needs to cache the id of
-  // every rule row of a model version.
-  //
-  // The batch travels as one array per column through `unnest` instead of a
-  // `VALUES` list, so it stays a single prepared statement whatever the
-  // number of rules.
+  // Raw query: Prisma has no batch upsert returning ids (`createMany` compiles to
+  // ON CONFLICT DO NOTHING); INSERT … ON CONFLICT DO UPDATE … RETURNING does both
+  // in one round trip. One array per column via `unnest` keeps a single prepared
+  // statement whatever the number of rules.
   const stored = await session.$queryRaw<RuleRow[]>`
     INSERT INTO "ngc"."Rule" (name, "public", "appliesToWaterMetric", title, description)
     SELECT name, "public", "appliesToWaterMetric", title, description
@@ -79,6 +67,5 @@ export const upsertRules = async (
   return stored.map(mapRule)
 }
 
-// Not `localeCompare`, which depends on the process locale: every process must
-// lock the rows in the same order.
+// Not `localeCompare` (locale-dependent): every process must lock rows in the same order.
 const codeUnitCompare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)

@@ -14,23 +14,10 @@ interface EvaluateSimulationDeps {
 }
 
 /**
- * Evaluates the given public rules of the simulation's model and persists the
- * evaluations. `publicRules` holds the stored rule rows: one per rule for the
- * default metric, plus the water row of each rule stored with
- * `appliesToWaterMetric` (the model's `empreinte eau: oui`) — each row is
- * evaluated with its own metric's context and gets its own evaluation.
- *
- * The missing variables each evaluation reports are not evaluated and get no
- * evaluation row: only their rule row and the link carrying their weight are
- * stored.
- *
- * The engine's situation must already be set to the simulation's. Writes go
- * through `session`, for the caller to commit them with its own; the rule rows
- * written here are resolved in the same transaction, so a rollback leaves no
- * orphan behind.
- *
- * A simulation's evaluations are stored whole or not at all. Each rule that
- * fails is logged here: the returned failure only counts them.
+ * Evaluates each given rule row under its own metric and persists the evaluations
+ * through `session` — all-or-nothing: failed rules are logged, the returned error
+ * only counts them. The engine's situation must already be the simulation's.
+ * Missing variables get a rule row and a weighted link, never an evaluation.
  */
 export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
   return async function evaluateSimulation(
@@ -58,10 +45,8 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
       return failure(new PublicRulesEvaluationError(errors.length))
     }
 
-    // The rule rows to store next to the public ones: those of each missing
-    // variable reported, whatever the metric of the evaluation that reported
-    // it — a missing variable is not evaluated, and most rules are not
-    // specific to a metric.
+    // Also store the reported missing variables' rule rows, whatever the
+    // reporting metric: a missing variable is not evaluated.
     const seen = new Set(publicRules.map((rule) => rule.name))
     const newRules: NewRule[] = []
     for (const evaluation of evaluations) {

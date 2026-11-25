@@ -1,38 +1,29 @@
-/**
- * A metric beyond the default one, which the model names `carbone`. The model
- * names `water` `eau`. Evaluations of the default metric have `metric: null`.
- */
+/** The non-default metric: the model names it 'eau', the default 'carbone' (stored as null). */
 export type Metric = 'water'
 
-/**
- * A rule of the model as the row(s) to store for it. `title` and `description`
- * are the model's French `titre` and `description`, persisted for readability
- * in 3rd party tools. `appliesToWaterMetric` is the model's `empreinte eau:
- * oui` mark: the rule also has an evaluation with the water metric context —
- * today under the same name, in future models under its own name.
- */
+/** A model rule as the row(s) to store: one per metric. */
 export interface NewRule {
-  /** Dotted name, a plain string: it may be a rule of any model version. */
+  /** Dotted name, a plain string: may be a rule of any model version. */
   name: string
-  /** The model's `public: oui` mark: the rule is part of the model's output contract. */
+  /** The model's `public: oui` mark: part of the model's output contract. */
   public: boolean
+  /** The model's French `titre` and `description`, persisted for 3rd party tools. */
   title: string | null
   description: string | null
+  /** The model's `empreinte eau: oui` mark: the rule also gets a water-metric evaluation. */
   appliesToWaterMetric: boolean
 }
 
 /**
- * A stored model rule, identified by its name and water mark: a rule marked
- * `empreinte eau: oui` in the model is stored as two rows sharing the name,
- * and each row gets its own evaluations. The name is the identity across model
- * versions: a stored rule is never renamed.
+ * A stored rule, identified by (name, water mark) and never renamed across model
+ * versions: an `empreinte eau: oui` rule is two rows sharing the name, each with
+ * its own evaluations.
  */
 export interface Rule {
   id: number
   name: string
-  /** The model's `public: oui` mark, persisted with the row. */
+  /** The persisted `public: oui` mark. */
   public: boolean
   appliesToWaterMetric: boolean
-  // No `title`/`description`: the wording is persisted only for 3rd party
-  // tools syncing with the db, it is not part of the entity.
+  // No `title`/`description`: the wording is for 3rd party db syncs, not the entity.
 }

@@ -29,9 +29,8 @@ export const mapNewRuleEvaluationToPrisma = (
 })
 
 /**
- * Maps the link from an evaluation to one of its missing variables, the rule
- * ids resolved by the caller. The missing variable is not evaluated: the link
- * points to its rule row only.
+ * An evaluation→missing-variable link, rule ids resolved by the caller. The
+ * missing variable is not evaluated: the link points to its rule row only.
  */
 export const mapNewRuleEvaluationMissingVariablesToPrisma = (
   ruleId: number,

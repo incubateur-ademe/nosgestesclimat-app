@@ -4,7 +4,7 @@ import type { Metric, Rule } from '../types/rule.ts'
 export const ruleKey = (name: string, metric?: Metric | null) =>
   metric == null ? name : `${name} :: ${metric}`
 
-/** The stored rules' ids by evaluation key: a water-marked rule has two rows sharing its name. */
+/** Rule ids by evaluation key (a water-marked rule has two rows). */
 export const ruleIdByKey = (rules: Rule[]): Map<string, number> =>
   new Map(
     rules.map(({ id, name, appliesToWaterMetric }) => [
@@ -13,7 +13,7 @@ export const ruleIdByKey = (rules: Rule[]): Map<string, number> =>
     ])
   )
 
-/** Guard: the stored rule's id for the name and metric, throws when there is none. */
+/** The rule id for name+metric; throws when there is none. */
 export const ruleIdOrThrow = (
   ruleIdByKey: Map<string, number>,
   name: string,
@@ -28,7 +28,7 @@ export const ruleIdOrThrow = (
   return id
 }
 
-/** The id of a missing variable's rule row: its metric's row when stored, else the default one. */
+/** A missing variable's rule id: its metric's row when stored, else the default. */
 export const missingVariableRuleIdOf = (
   ruleIdByKey: Map<string, number>,
   name: string,

@@ -11,7 +11,7 @@ const modelOf = (
   locale: Model['locale'] = 'fr'
 ): Model => ({ locale, region: 'FR', version: { publishedTag } })
 
-// Raw rows, wording included: `Rule` deliberately drops `title`/`description`.
+/** Raw rows incl. wording: `Rule` drops `title`/`description`. */
 const findRules = () =>
   prisma.rule.findMany({
     select: {
@@ -193,8 +193,7 @@ describe('resolvePublicRules', () => {
       modelOf('1.1.0')
     )
 
-    // The default row's id is kept and its wording refreshed; the water mark
-    // adds the water row.
+    // The default row's id is kept, its wording refreshed; the water mark adds the water row.
     expect(first).toHaveLength(1)
     expect(second).toEqual([
       expect.objectContaining({ id: first[0].id, appliesToWaterMetric: false }),
@@ -260,9 +259,8 @@ describe('resolvePublicRules', () => {
     expect(await prisma.rule.count()).toBe(2)
   })
 
-  // PGlite has a single connection, so the two resolutions interleave rather
-  // than truly race: this proves the upsert is idempotent across separate
-  // resolver caches, not that concurrent transactions are safe.
+  // PGlite has one connection, so the resolutions interleave rather than race:
+  // this proves idempotence across caches, not concurrent-transaction safety.
   it('resolves the same Rule rows from two resolvers with separate caches', async () => {
     const engine = engineTitled('Transport')
 
@@ -276,8 +274,7 @@ describe('resolvePublicRules', () => {
     expect(second).toEqual(first)
   })
 
-  // Same caveat as above: the two rows sharing the rule's name are written in
-  // the same order by both resolvers.
+  // Same PGlite caveat as above.
   it('resolves the same rows of a water-marked rule from two resolvers with separate caches', async () => {
     const engine = createTestEngine({
       'footprint . water': { public: 'oui', 'empreinte eau': 'oui', valeur: 1 },

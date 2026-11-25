@@ -57,12 +57,7 @@ export const toNewActionAssessment = (
   return { simulationId, actionId, applicable: undefined, impact: undefined }
 }
 
-/**
- * Evaluates the rule of the action named `ruleName`.
- *
- * An action's impact is a number, 0 meaning no impact: any other value,
- * `false` included, is a modelling mistake.
- */
+/** An action's impact is a number: 0 means no impact, any other value — `false` included — is a modelling mistake. */
 export const evaluateAction = ({
   engine,
   ruleName,
