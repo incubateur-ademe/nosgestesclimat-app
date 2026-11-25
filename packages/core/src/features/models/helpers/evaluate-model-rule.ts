@@ -21,13 +21,13 @@ import type { Metric } from '../types/rule.ts'
  */
 export const evaluateModelRule = ({
   engine,
-  dottedName,
+  ruleName,
   simulationId,
   createdAt,
   metric = null,
 }: {
   engine: Engine
-  dottedName: string
+  ruleName: string
   simulationId: string
   createdAt: Date
   /** The metric to evaluate the rule for; none is the default one. */
@@ -40,23 +40,23 @@ export const evaluateModelRule = ({
 
   try {
     evaluation = engine.evaluate({
-      valeur: dottedName,
+      valeur: ruleName,
       contexte: { métrique: `'${modelMetric(metric)}'` },
     })
   } catch (cause) {
-    return failure(new RuleEvaluationThrewError({ dottedName, cause, metric }))
+    return failure(new RuleEvaluationThrewError({ ruleName, cause, metric }))
   }
 
   const { nodeValue, missingVariables } = evaluation
 
   const rule = {
-    name: dottedName,
+    name: ruleName,
     metric,
     simulationId,
     createdAt,
     // Publicodes lists a `par défaut` rule among its own missing variables.
     missingVariables: Object.entries(missingVariables)
-      .filter(([name]) => name !== dottedName)
+      .filter(([name]) => name !== ruleName)
       .map(([name, weight]) => ({ name, weight })),
   }
 
@@ -64,7 +64,7 @@ export const evaluateModelRule = ({
     if (!Number.isFinite(nodeValue)) {
       return failure(
         new UnexpectedNodeValueError({
-          dottedName,
+          ruleName,
           metric,
           // Named by its value: its type, a number, says nothing.
           nodeValue: String(nodeValue),
@@ -89,7 +89,7 @@ export const evaluateModelRule = ({
 
   return failure(
     new UnexpectedNodeValueError({
-      dottedName,
+      ruleName,
       nodeValue: typeof nodeValue,
       metric,
     })

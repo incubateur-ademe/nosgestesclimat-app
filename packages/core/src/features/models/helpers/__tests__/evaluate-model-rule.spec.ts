@@ -56,7 +56,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . zero',
+        ruleName: 'footprint . zero',
       })
     ).toEqual({
       success: true,
@@ -72,7 +72,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . number',
+        ruleName: 'footprint . number',
         metric: 'water',
       })
     ).toEqual({
@@ -97,7 +97,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . yes',
+        ruleName: 'footprint . yes',
       })
     ).toEqual({
       success: true,
@@ -113,7 +113,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . no',
+        ruleName: 'footprint . no',
       })
     ).toEqual({
       success: true,
@@ -137,7 +137,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . text',
+        ruleName: 'footprint . text',
       })
     ).toEqual({
       success: true,
@@ -153,7 +153,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . empty',
+        ruleName: 'footprint . empty',
       })
     ).toEqual({
       success: true,
@@ -182,15 +182,15 @@ describe('evaluateModelRule', () => {
       },
     })
 
-    for (const dottedName of [
+    for (const ruleName of [
       'footprint . non applicable',
       'footprint . applicable si non',
     ]) {
-      expect(evaluate({ engine, dottedName })).toEqual({
+      expect(evaluate({ engine, ruleName })).toEqual({
         success: true,
         data: {
           ...base,
-          name: dottedName,
+          name: ruleName,
           metric: null,
           missingVariables: [],
           applicable: false,
@@ -209,15 +209,15 @@ describe('evaluateModelRule', () => {
       'footprint . no formula': { public: 'oui' },
     })
 
-    for (const dottedName of [
+    for (const ruleName of [
       'footprint . unanswered',
       'footprint . no formula',
     ]) {
-      expect(evaluate({ engine, dottedName, metric: 'water' })).toEqual({
+      expect(evaluate({ engine, ruleName, metric: 'water' })).toEqual({
         success: true,
         data: {
           ...base,
-          name: dottedName,
+          name: ruleName,
           metric: 'water',
           missingVariables: [],
           applicable: undefined,
@@ -239,7 +239,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . dependent',
+        ruleName: 'footprint . dependent',
       })
     ).toEqual({
       success: true,
@@ -255,7 +255,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . dependent',
+        ruleName: 'footprint . dependent',
         metric: 'water',
       })
     ).toEqual({
@@ -283,7 +283,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . total',
+        ruleName: 'footprint . total',
       })
     ).toEqual({
       success: true,
@@ -305,7 +305,7 @@ describe('evaluateModelRule', () => {
     expect(
       evaluate({
         engine,
-        dottedName: 'footprint . default',
+        ruleName: 'footprint . default',
       })
     ).toEqual({
       success: true,
@@ -326,22 +326,19 @@ describe('evaluateModelRule', () => {
         'footprint . division': { public: 'oui', valeur: '1 / 0' },
       })
 
-      for (const dottedName of [
-        'footprint . missing',
-        'footprint . division',
-      ]) {
+      for (const ruleName of ['footprint . missing', 'footprint . division']) {
         const result = evaluate({
           engine,
-          dottedName,
+          ruleName,
           metric: 'water',
         })
         if (result.success) {
-          throw new Error(`Expected ${dottedName} to fail`)
+          throw new Error(`Expected ${ruleName} to fail`)
         }
         expect(result.error).toBeInstanceOf(RuleEvaluationThrewError)
         expect(result.error).toMatchObject({
           code: 'rule_evaluation_threw',
-          dottedName,
+          ruleName,
           metric: 'water',
         })
         expect(result.error.cause).toBeInstanceOf(Error)
@@ -357,7 +354,7 @@ describe('evaluateModelRule', () => {
       ] as const) {
         const result = evaluate({
           engine: engineWithNodeValue(nodeValue),
-          dottedName: 'footprint . rule',
+          ruleName: 'footprint . rule',
         })
         if (result.success) {
           throw new Error(`Expected ${label} to fail`)
@@ -365,7 +362,7 @@ describe('evaluateModelRule', () => {
         expect(result.error).toBeInstanceOf(UnexpectedNodeValueError)
         expect(result.error).toMatchObject({
           code: 'unexpected_node_value',
-          dottedName: 'footprint . rule',
+          ruleName: 'footprint . rule',
           metric: null,
           nodeValue: label,
         })
@@ -375,7 +372,7 @@ describe('evaluateModelRule', () => {
     it('when the node value has an unexpected type, named by its type', () => {
       const result = evaluate({
         engine: engineWithNodeValue({ formule: 'impossible' }),
-        dottedName: 'footprint . rule',
+        ruleName: 'footprint . rule',
       })
       if (result.success) {
         throw new Error('Expected an object node value to fail')
@@ -383,7 +380,7 @@ describe('evaluateModelRule', () => {
       expect(result.error).toBeInstanceOf(UnexpectedNodeValueError)
       expect(result.error).toMatchObject({
         code: 'unexpected_node_value',
-        dottedName: 'footprint . rule',
+        ruleName: 'footprint . rule',
         metric: null,
         nodeValue: 'object',
       })

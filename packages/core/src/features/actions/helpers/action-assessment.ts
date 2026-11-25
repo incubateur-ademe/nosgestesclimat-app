@@ -18,14 +18,12 @@ export const buildRuleIdToDottedName = (
 ): Map<string, DottedName> => {
   const map = new Map<string, DottedName>()
 
-  for (const [dottedName, ruleNode] of Object.entries(
-    engine.getParsedRules()
-  )) {
+  for (const [ruleName, ruleNode] of Object.entries(engine.getParsedRules())) {
     const ruleId = (ruleNode as { rawNode?: { meta?: { id?: string } } })
       .rawNode?.meta?.id
 
     if (ruleId) {
-      map.set(ruleId, dottedName as DottedName)
+      map.set(ruleId, ruleName as DottedName)
     }
   }
 
@@ -60,25 +58,25 @@ export const toNewActionAssessment = (
 }
 
 /**
- * Evaluates the rule of the action named `dottedName`.
+ * Evaluates the rule of the action named `ruleName`.
  *
  * An action's impact is a number, 0 meaning no impact: any other value,
  * `false` included, is a modelling mistake.
  */
 export const evaluateAction = ({
   engine,
-  dottedName,
+  ruleName,
   simulationId,
   createdAt,
 }: {
   engine: Engine
-  dottedName: DottedName
+  ruleName: DottedName
   simulationId: string
   createdAt: Date
 }): Result<ActionEvaluation, RuleEvaluationError> => {
   const evaluation = evaluateModelRule({
     engine,
-    dottedName,
+    ruleName,
     simulationId,
     createdAt,
   })
@@ -94,7 +92,7 @@ export const evaluateAction = ({
 
     if (typeof value !== 'number') {
       return failure(
-        new UnexpectedNodeValueError({ dottedName, nodeValue: typeof value })
+        new UnexpectedNodeValueError({ ruleName, nodeValue: typeof value })
       )
     }
 

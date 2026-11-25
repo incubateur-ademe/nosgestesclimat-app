@@ -69,10 +69,10 @@ const computeActionAssessments = (
   const ruleIdToDottedName = buildRuleIdToDottedName(engine)
   const createdAt = new Date()
 
-  return [...ruleIdToDottedName.entries()].map(([ruleId, dottedName]) => {
+  return [...ruleIdToDottedName.entries()].map(([ruleId, ruleName]) => {
     const evaluation = evaluateAction({
       engine,
-      dottedName,
+      ruleName,
       // The simulation the assessments are seeded into: the evaluation
       // reports its missing variables against it.
       simulationId,

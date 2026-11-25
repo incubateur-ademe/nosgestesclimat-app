@@ -379,10 +379,10 @@ describe('evaluateSimulation', () => {
       const result = await evaluate(nonFiniteEngine, rules)
 
       expect(failedRules(result)).toEqual(
-        Object.entries(nonFiniteValues).map(([dottedName, nodeValue]) =>
+        Object.entries(nonFiniteValues).map(([ruleName, nodeValue]) =>
           expect.objectContaining({
             code: 'unexpected_node_value',
-            dottedName,
+            ruleName,
             metric: null,
             nodeValue: String(nodeValue),
           })
@@ -409,13 +409,13 @@ describe('evaluateSimulation', () => {
       expect(failedRules(result)).toEqual([
         expect.objectContaining({
           code: 'rule_evaluation_threw',
-          dottedName: 'footprint . throwing',
+          ruleName: 'footprint . throwing',
           metric: null,
           cause: expect.any(Error),
         }),
         expect.objectContaining({
           code: 'rule_evaluation_threw',
-          dottedName: 'footprint . throwing',
+          ruleName: 'footprint . throwing',
           metric: 'water',
           cause: expect.any(Error),
         }),
@@ -437,7 +437,7 @@ describe('evaluateSimulation', () => {
       expect(failedRules(result)).toEqual([
         expect.objectContaining({
           code: 'rule_evaluation_threw',
-          dottedName: 'footprint . missing',
+          ruleName: 'footprint . missing',
           metric: null,
           cause: expect.any(Error),
         }),

@@ -29,7 +29,7 @@ export const evaluateModelRules = ({
   for (const { name, appliesToWaterMetric = false } of rules) {
     const evaluation = evaluateModelRule({
       engine,
-      dottedName: name,
+      ruleName: name,
       simulationId,
       createdAt,
       metric: appliesToWaterMetric ? 'water' : null,

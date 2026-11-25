@@ -193,7 +193,7 @@ describe('assessActions', () => {
       {
         actionId: expect.any(String),
         ruleId: APPLICABLE_RULE_ID,
-        dottedName: 'test . applicable',
+        ruleName: 'test . applicable',
       }
     )
   })

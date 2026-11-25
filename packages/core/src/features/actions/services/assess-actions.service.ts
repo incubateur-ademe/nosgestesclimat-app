@@ -67,21 +67,21 @@ export function createAssessActions(deps: AssessActionsDeps) {
     const createdAt = new Date()
     const assessments: NewActionAssessment[] = actions.flatMap(
       ({ id, ruleId }) => {
-        const dottedName = ruleIdToDottedName.get(ruleId)
-        if (!dottedName) {
+        const ruleName = ruleIdToDottedName.get(ruleId)
+        if (!ruleName) {
           logger.warn('No rule found with this id', { actionId: id, ruleId })
           return []
         }
 
         const evaluation = evaluateAction({
           engine,
-          dottedName,
+          ruleName,
           simulationId,
           createdAt,
         })
 
         if (!evaluation.success) {
-          logger.error(evaluation.error, { actionId: id, ruleId, dottedName })
+          logger.error(evaluation.error, { actionId: id, ruleId, ruleName })
           return []
         }
 

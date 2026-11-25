@@ -7,11 +7,11 @@ import type { NewRule } from '../types/rule.ts'
  * mark: the default metric's row always, the water metric's too when the
  * model marks it `empreinte eau: oui`.
  */
-export const getModelRule = (engine: Engine, dottedName: string): NewRule[] => {
+export const getModelRule = (engine: Engine, ruleName: string): NewRule[] => {
   // Not `rule.title`: publicodes derives it from the name when the model gives no `titre`.
-  const rawNode = engine.getParsedRules()[dottedName]?.rawNode
+  const rawNode = engine.getParsedRules()[ruleName]?.rawNode
   const rule: NewRule = {
-    name: dottedName,
+    name: ruleName,
     public: rawNode?.public === 'oui',
     title: rawNode?.titre ?? null,
     description: rawNode?.description ?? null,

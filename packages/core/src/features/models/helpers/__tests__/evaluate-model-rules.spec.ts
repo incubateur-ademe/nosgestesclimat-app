@@ -133,7 +133,7 @@ describe('evaluateModelRules', () => {
     expect(errors[0]).toBeInstanceOf(RuleEvaluationThrewError)
     expect(errors[0]).toMatchObject({
       code: 'rule_evaluation_threw',
-      dottedName: 'footprint . division',
+      ruleName: 'footprint . division',
       metric: null,
     })
     expect(errors[0]?.cause).toBeInstanceOf(Error)
@@ -165,7 +165,7 @@ describe('evaluateModelRules', () => {
     expect(errors).toHaveLength(1)
     expect(errors[0]).toMatchObject({
       code: 'rule_evaluation_threw',
-      dottedName: 'footprint . throwing',
+      ruleName: 'footprint . throwing',
     })
     // `ghost . variable` is only reported by `footprint . ok`, never evaluated.
     expect(evaluations).toEqual([
