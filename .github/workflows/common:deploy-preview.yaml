@@ -55,7 +55,7 @@ jobs:
     environment: Preview app
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Ensure server review app exists
         env:
@@ -82,7 +82,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
@@ -102,7 +102,7 @@ jobs:
       url: ${{ needs.resolve-pr.outputs.site_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo

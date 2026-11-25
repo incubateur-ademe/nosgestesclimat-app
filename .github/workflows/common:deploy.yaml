@@ -12,7 +12,7 @@ jobs:
     environment: Preprod
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
@@ -29,7 +29,7 @@ jobs:
     environment: Preprod
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
@@ -61,7 +61,7 @@ jobs:
     env:
       NEXT_PUBLIC_SITE_URL: 'https://preprod.nosgestesclimat.fr'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Playwright and App
         uses: ./.github/actions/setup-playwright
@@ -95,7 +95,7 @@ jobs:
     env:
       NEXT_PUBLIC_SITE_URL: 'https://preprod.nosgestesclimat.fr'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Download blob reports
         uses: actions/download-artifact@v6
@@ -121,7 +121,7 @@ jobs:
     environment: Prod
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
@@ -138,7 +138,7 @@ jobs:
     environment: Prod
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo

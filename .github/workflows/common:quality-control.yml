@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Fetch target branch to detect changed workspaces
         run: git fetch origin main:refs/remotes/origin/main

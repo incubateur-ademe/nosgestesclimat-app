@@ -33,7 +33,7 @@ jobs:
       # git config, which clashes with the GitHub App token used by
       # create-pull-request to push the branch.
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: main
           persist-credentials: false
