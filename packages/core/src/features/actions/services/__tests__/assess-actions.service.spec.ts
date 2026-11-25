@@ -28,6 +28,8 @@ const FALSE_RULE_ID = faker.string.uuid()
 const STRING_RULE_ID = faker.string.uuid()
 const ZERO_RULE_ID = faker.string.uuid()
 const UNANSWERED_RULE_ID = faker.string.uuid()
+const NEGATIVE_RULE_ID = faker.string.uuid()
+const METRIC_DEPENDENT_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
   ...METRIC_RULE,
@@ -70,6 +72,19 @@ const testRules: RawPublicodes<string> = {
     unité: 'kgCO2e',
     titre: 'Test unanswered',
     meta: { id: UNANSWERED_RULE_ID },
+  },
+  'test . negative': {
+    valeur: -3.5,
+    unité: 'kgCO2e',
+    titre: 'Test negative',
+    meta: { id: NEGATIVE_RULE_ID },
+  },
+  'test . metric dependent': {
+    valeur: {
+      variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+    },
+    titre: 'Test metric dependent',
+    meta: { id: METRIC_DEPENDENT_RULE_ID },
   },
 }
 
@@ -139,6 +154,40 @@ describe('assessActions', () => {
         actionId: action.id,
         applicable: true,
         impact: undefined,
+      }),
+    ])
+  })
+
+  it('stores an action with a negative value as applicable with that impact', async () => {
+    const action = await actionFactory
+      .params({ ruleId: NEGATIVE_RULE_ID })
+      .published()
+      .create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toEqual([
+      expect.objectContaining({
+        actionId: action.id,
+        applicable: true,
+        impact: -3.5,
+      }),
+    ])
+  })
+
+  it('assesses an action with the default metric, carbon', async () => {
+    const action = await actionFactory
+      .params({ ruleId: METRIC_DEPENDENT_RULE_ID })
+      .published()
+      .create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toEqual([
+      expect.objectContaining({
+        actionId: action.id,
+        applicable: true,
+        impact: 10,
       }),
     ])
   })

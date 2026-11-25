@@ -292,6 +292,30 @@ describe('evaluateSimulation', () => {
     })
   })
 
+  // The evaluations are timestamped when evaluated, not by the database.
+  it('stores every evaluation of the simulation with the same time of evaluation', async () => {
+    const evaluatedAt = new Date('2026-01-15T10:00:00.000Z')
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(evaluatedAt)
+    const rules = await storeRules(['footprint . first', 'footprint . second'])
+
+    try {
+      await evaluate(
+        engineWith({
+          'footprint . first': { public: 'oui', valeur: 1 },
+          'footprint . second': { public: 'oui', valeur: 2 },
+        }),
+        rules
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+
+    expect(
+      (await findRuleEvaluations(rules)).map(({ createdAt }) => createdAt)
+    ).toEqual([evaluatedAt, evaluatedAt])
+  })
+
   it('evaluates only the public rules it is given', async () => {
     const [given] = await storeRules(['footprint . given'])
 
@@ -675,6 +699,112 @@ describe('evaluateSimulation', () => {
           weight: 1,
         },
       ])
+    })
+
+    it('links a water evaluation’s missing variable without a water row to its default row', async () => {
+      const [total, totalWaterRow] = await storeRules(
+        ['footprint . total'],
+        true
+      )
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': {
+            public: 'oui',
+            'empreinte eau': 'oui',
+            valeur: 'transport . km * 2',
+          },
+          'transport . km': { question: 'Combien de km ?', unité: 'km' },
+        }),
+        [total, totalWaterRow]
+      )
+
+      expect(result).toEqual(success())
+
+      const km = await findStoredRule('transport . km')
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(1)
+      // Both metrics' evaluations link to the one row of the missing variable.
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: totalWaterRow.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('links a missing variable that is a given public rule to its row, without storing it again', async () => {
+      const [total, question] = await storeRules([
+        'footprint . total',
+        'footprint . question',
+      ])
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': {
+            public: 'oui',
+            valeur: 'footprint . question * 2',
+          },
+          'footprint . question': {
+            public: 'oui',
+            question: 'Combien ?',
+            unité: 'kgCO2e',
+          },
+        }),
+        [total, question]
+      )
+
+      expect(result).toEqual(success())
+      expect(
+        await prisma.rule.count({ where: { name: 'footprint . question' } })
+      ).toBe(1)
+      expect(await findStoredRule('footprint . question')).toEqual(question)
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: question.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('leaves no missing variable rule behind when the caller’s transaction rolls back', async () => {
+      const rules = await storeRules(['footprint . total'])
+      const rolledBack = new Error('Rolled back after the evaluation')
+
+      await expect(
+        transaction(async (session) => {
+          expect(
+            await evaluateSimulation(
+              engineWith({
+                'footprint . total': {
+                  public: 'oui',
+                  valeur: 'transport . km * 2',
+                },
+                'transport . km': { question: 'Combien de km ?', unité: 'km' },
+              }),
+              simulation.id,
+              rules,
+              { session }
+            )
+          ).toEqual(success())
+          throw rolledBack
+        })
+      ).rejects.toBe(rolledBack)
+
+      expect(await findRule('transport . km')).toBeNull()
+      expect(await findEvaluations()).toEqual([])
+      expect(await findLinks()).toEqual([])
     })
 
     it('stores nothing, not even the missing variables, when a rule fails', async () => {

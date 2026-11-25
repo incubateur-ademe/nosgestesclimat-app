@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { ruleFactory } from '../../factories/rule.factory.ts'
 import type { Model } from '../../types/model.ts'
 import { createResolvePublicRules } from '../resolve-public-rules.service.ts'
 
@@ -213,6 +214,52 @@ describe('resolvePublicRules', () => {
     ])
   })
 
+  it('marks public a rule first stored as a missing variable, keeping its id', async () => {
+    // As stored when a public rule reported it as a missing variable.
+    const missingVariable = await ruleFactory.create({
+      name: 'footprint . described',
+      public: false,
+    })
+
+    const rules = await resolvePublicRules(
+      engineTitled('Transport'),
+      modelOf('1.0.0')
+    )
+
+    expect(rules).toEqual([{ ...missingVariable, public: true }])
+    expect(await findRules()).toEqual([
+      expect.objectContaining({
+        id: missingVariable.id,
+        public: true,
+        title: 'Transport',
+      }),
+    ])
+  })
+
+  it('resolves only the default row of a rule a new model no longer marks for water, keeping the water row stored', async () => {
+    const first = await resolvePublicRules(
+      createTestEngine({
+        'footprint . water': {
+          public: 'oui',
+          'empreinte eau': 'oui',
+          valeur: 1,
+        },
+      }),
+      modelOf('1.0.0')
+    )
+    const second = await resolvePublicRules(
+      createTestEngine({ 'footprint . water': { public: 'oui', valeur: 1 } }),
+      modelOf('1.1.0')
+    )
+
+    const [defaultRow] = first
+    expect(first).toHaveLength(2)
+    expect(defaultRow).toMatchObject({ appliesToWaterMetric: false })
+    expect(second).toEqual([defaultRow])
+    // Rule rows are never deleted: past evaluations still reference them.
+    expect(await prisma.rule.count()).toBe(2)
+  })
+
   // PGlite has a single connection, so the two resolutions interleave rather
   // than truly race: this proves the upsert is idempotent across separate
   // resolver caches, not that concurrent transactions are safe.
@@ -226,6 +273,26 @@ describe('resolvePublicRules', () => {
     ])
 
     expect(await prisma.rule.count()).toBe(1)
+    expect(second).toEqual(first)
+  })
+
+  // Same caveat as above: the two rows sharing the rule's name are written in
+  // the same order by both resolvers.
+  it('resolves the same rows of a water-marked rule from two resolvers with separate caches', async () => {
+    const engine = createTestEngine({
+      'footprint . water': { public: 'oui', 'empreinte eau': 'oui', valeur: 1 },
+    })
+
+    const [first, second] = await Promise.all([
+      createResolvePublicRules()(engine, modelOf('1.0.0')),
+      createResolvePublicRules()(engine, modelOf('1.0.0')),
+    ])
+
+    expect(await prisma.rule.count()).toBe(2)
+    expect(first).toEqual([
+      expect.objectContaining({ appliesToWaterMetric: false }),
+      expect.objectContaining({ appliesToWaterMetric: true }),
+    ])
     expect(second).toEqual(first)
   })
 })

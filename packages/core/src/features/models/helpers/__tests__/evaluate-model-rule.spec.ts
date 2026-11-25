@@ -168,6 +168,24 @@ describe('evaluateModelRule', () => {
     })
   })
 
+  it('evaluates a date value as applicable, read as its text', () => {
+    const engine = engineWith({
+      'footprint . date': { public: 'oui', valeur: '01/03/2023' },
+    })
+
+    expect(evaluate({ engine, ruleName: 'footprint . date' })).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . date',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: '01/03/2023',
+      },
+    })
+  })
+
   it('evaluates a null value as not applicable, whatever the rule type', () => {
     const engine = engineWith({
       'footprint . non applicable': {
