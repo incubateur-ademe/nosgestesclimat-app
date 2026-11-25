@@ -4,10 +4,11 @@ import {
 } from '@/helpers/getCategoryColorClass'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
+import { LAST_QUESTIONS } from '@/publicodes-state/constants/questions'
 import { cn } from 'cn'
 
 export default function Progress() {
-  const { testAdvancement, currentCategory } = useFormState()
+  const { testAdvancement, currentCategory, currentQuestion } = useFormState()
 
   // Calculer le pourcentage pour l'accessibilité
   const percentage = Math.round(testAdvancement * 100)
@@ -18,7 +19,10 @@ export default function Progress() {
   // hydrating a question URL opened directly.
   const isClient = useIsClient()
 
-  if (!isClient) {
+  const isLastQuestion =
+    currentQuestion !== null && LAST_QUESTIONS.includes(currentQuestion)
+
+  if (!isClient || isLastQuestion) {
     return null
   }
 

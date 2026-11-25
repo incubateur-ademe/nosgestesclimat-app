@@ -17,35 +17,61 @@ export const MUST_NOT_ASK_QUESTIONS = new Set<DottedName>([
   'futureco-data . transport . ferry . voiture',
 ])
 
+/**
+ * Major question roots. A question is major when its name is a root or one of
+ * its descendants (`root . ...`). Descendants are kept so a root like
+ * `logement . chauffage` covers the whole branch in a single entry.
+ *
+ * We use the DottedName type from nosgestesclimat to make sure the build will
+ * break when using rules that are not in the model.
+ */
+export const MAJOR_QUESTIONS: readonly DottedName[] = [
+  'logement . type',
+  'logement . surface',
+  'logement . habitants',
+  'logement . âge',
+  'logement . chauffage',
+  'logement . électricité',
+  'logement . climatisation',
+  'logement . lieu de vie',
+  'alimentation . plats',
+  'alimentation . petit déjeuner',
+  'transport . voiture',
+  'transport . avion',
+  'transport . deux roues',
+  'divers . numérique . appareils',
+  'divers . ameublement . préservation',
+  'divers . textile . volume',
+  'divers . textile . qualité',
+  'profil . âge',
+]
+
+export const isMajorQuestion = (dottedName: DottedName): boolean =>
+  MAJOR_QUESTIONS.some(
+    (root) => dottedName === root || dottedName.startsWith(`${root} . `)
+  )
+
+/**
+ * The two questions that must always be asked last, in this order.
+ */
+export const LAST_QUESTIONS: readonly DottedName[] = [
+  'logement . lieu de vie',
+  'profil . âge',
+]
+
 // We use the DottedName type from nosgestesclimat to make sure the build will break when using rules that are not in the model.
-const PRIORITY_QUESTIONS_BASE_MODE = new Set<DottedName>([
+export const PRIORITY_QUESTIONS = new Set<DottedName>([
   'alimentation . plats',
   'logement . type',
-  'logement . propriétaire',
   'logement . lieu de vie',
   'logement . chauffage . bois . système',
-  'logement . électricité . réseau . consommation',
   'transport . voiture . km',
   'transport . voiture . voyageurs',
-  'divers . numérique . internet . durée journalière',
 ])
-
-const PRIORITY_QUESTIONS_ED_MODE = new Set<string>([
-  'transport . voiture . km . hebdo . possibilités',
-  'transport . voiture . km . annuel . possibilités',
-])
-
-export const PRIORITY_QUESTIONS = new Set([
-  ...PRIORITY_QUESTIONS_BASE_MODE,
-  ...PRIORITY_QUESTIONS_ED_MODE,
-]) as Set<DottedName>
 
 export const NON_PRIORITY_QUESTIONS = new Set<DottedName>([
-  'logement . électricité . réseau . consommation',
   'transport . voiture . thermique . consommation aux 100',
-  'logement . chauffage . saisie précision consommation',
   'logement . chauffage . précision consommation . ressenti',
-  'logement . chauffage . précision consommation . DPE',
 ])
 
 // This constant allow to display questions even if it's not missing variable. We keep the logic for now even if it's empty.
