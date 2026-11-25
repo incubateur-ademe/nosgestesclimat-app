@@ -1,7 +1,5 @@
-import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import type { Locale } from '@/i18nConfig'
 import { cn } from 'cn'
 import { Target, TrendingDown } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
@@ -11,8 +9,7 @@ import FootprintInfoPopover from '../FootprintInfoPopover'
 import { THIRD_OBJECTIVE } from '../objective/_constants/objectives'
 import {
   AVERAGE_FOOTPRINT_KG,
-  getComparisonBarPercents,
-  getFootprintComparison,
+  getFootprintComparisonChartData,
   type FootprintComparisonLevel,
 } from './footprintComparison'
 
@@ -66,9 +63,6 @@ const barGrowClassName = '[animation-fill-mode:both] motion-reduce:animate-none'
 const revealClassName =
   'animate-fade-in [animation-delay:1400ms] [animation-duration:400ms] [animation-fill-mode:both] motion-reduce:animate-none'
 
-// Height of a value label, in percent of the vertical chart
-const VALUE_LABEL_HEIGHT_PERCENT = 18
-
 function targetStyle(percent: number, delayMs: number) {
   return {
     '--target-value': `${percent}%`,
@@ -85,21 +79,18 @@ export default async function FootprintComparisonChart({
   const locale = await getLocale()
   const { t } = await getServerTranslation()
 
-  const { level, deltaKg } = getFootprintComparison(value)
-  const percents = getComparisonBarPercents(value)
+  const {
+    percents,
+    level,
+    deltaKg,
+    deltaLabel,
+    ariaLabel,
+    isFootprintValueOnAverageLine,
+    lowPercent,
+    highPercent,
+    formatTons,
+  } = getFootprintComparisonChartData({ value, locale, t })
   const colors = levelClassNames[level]
-
-  const deltaLabel = `${deltaKg > 0 ? '+' : '\u2212'}${formatTons(Math.abs(deltaKg), locale, t)}`
-
-  const ariaLabel = t(
-    'results.footprintBlock.carbone.chart.label',
-    'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.',
-    {
-      footprint: formatTons(value, locale, t, false),
-      average: formatTons(AVERAGE_FOOTPRINT_KG, locale, t, false),
-      objective: formatTons(THIRD_OBJECTIVE.value, locale, t, false),
-    }
-  )
 
   const isAside = variant === 'aside'
   const objectiveInfoButtonId = `footprint-chart-${variant}-objective-info`
@@ -108,12 +99,6 @@ export default async function FootprintComparisonChart({
     'results.footprintBlock.carbone.objective.info.title',
     'Pourquoi viser 2 tonnes ?'
   )
-
-  // Just under the average, the footprint value would sit on the dashed line:
-  // it goes above it instead, level with the average value
-  const isFootprintValueOnAverageLine =
-    percents.footprint < percents.average &&
-    percents.average - percents.footprint < VALUE_LABEL_HEIGHT_PERCENT
 
   const bars: Bar[] = [
     {
@@ -126,7 +111,7 @@ export default async function FootprintComparisonChart({
       valuePercent: isFootprintValueOnAverageLine
         ? percents.average
         : undefined,
-      value: formatTons(value, locale, t),
+      value: formatTons(value),
       valueClassName: colors.text,
       barClassName: colors.bar,
       delayMs: 500,
@@ -140,7 +125,7 @@ export default async function FootprintComparisonChart({
       ),
       nameClassName: 'text-slate-600',
       percent: percents.average,
-      value: formatTons(AVERAGE_FOOTPRINT_KG, locale, t),
+      value: formatTons(AVERAGE_FOOTPRINT_KG),
       valueClassName: 'text-primary-800',
       barClassName: 'bg-primary-200',
       delayMs: 650,
@@ -209,7 +194,7 @@ export default async function FootprintComparisonChart({
       ),
       opensInfoId: objectiveInfoButtonId,
       percent: percents.objective,
-      value: formatTons(THIRD_OBJECTIVE.value, locale, t),
+      value: formatTons(THIRD_OBJECTIVE.value),
       valueClassName: 'text-primary-800',
       // A target rather than emissions: outlined, not filled
       barClassName:
@@ -217,9 +202,6 @@ export default async function FootprintComparisonChart({
       delayMs: 800,
     },
   ]
-
-  const lowPercent = Math.min(percents.footprint, percents.average)
-  const highPercent = Math.max(percents.footprint, percents.average)
 
   return (
     <div
@@ -315,22 +297,4 @@ export default async function FootprintComparisonChart({
       </div>
     </div>
   )
-}
-
-// Abbreviated units keep the labels as narrow as the bars, the accessible
-// label spells them out
-function formatTons(
-  kg: number,
-  locale: Locale,
-  t: (key: string) => string,
-  shouldUseAbbreviation = true
-) {
-  const { formattedValue, unit } = formatFootprint(kg, {
-    locale,
-    t,
-    metric: 'carbone',
-    unit: 't',
-    shouldUseAbbreviation,
-  })
-  return `${formattedValue} ${unit}`
 }
