@@ -61,6 +61,7 @@ describe('getCurrentSimulation', () => {
         version: { publishedTag: expect.any(String) },
       },
       progression: 0.5,
+      status: 'answering_major_questions',
       situation: {},
       foldedSteps: [],
       computedResults: computedResultsFactory.valid().build(),

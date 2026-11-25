@@ -1,6 +1,9 @@
 import { ModelStringSchema } from '@nosgestesclimat/core/features/models/types/model'
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import { ProgressionSchema } from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
+import {
+  ProgressionSchema,
+  SimulationStatusSchema,
+} from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
 import {
   FoldedStepsSchema,
   SituationSchema,
@@ -13,6 +16,7 @@ export const UpdateSimulationSituationPayloadSchema = v.strictObject({
   situation: SituationSchema,
   foldedSteps: FoldedStepsSchema,
   progression: ProgressionSchema,
+  status: SimulationStatusSchema,
   computedResults: ComputedResultsSchema,
 })
 

@@ -35,5 +35,6 @@ export const simulationFactory = SimulationFactory.define(() => ({
     eau: emptyFootprint(),
   },
   progression: 0,
+  status: 'not_started' as const,
   model: 'FR-fr-1.2.3' as ModelString,
 }))

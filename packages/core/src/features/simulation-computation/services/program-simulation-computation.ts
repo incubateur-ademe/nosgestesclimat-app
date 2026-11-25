@@ -1,4 +1,5 @@
 import type { Logger } from '../../logger/index.ts'
+import { isSimulationCompleted } from '../../simulations/helpers/simulation-guards.ts'
 import { SimulationNotFinishedError } from '../errors/simulation-computation.error.ts'
 import { isModelSupported } from '../model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../repositories/simulation-computations.repository.ts'
@@ -20,7 +21,7 @@ export function createProgramSimulationComputation(
     })
     const simulation = await getSimulationById(simulationId)
 
-    if (simulation.progression !== 1) {
+    if (!isSimulationCompleted(simulation)) {
       throw new SimulationNotFinishedError({
         simulationId: simulation.id,
         progression: simulation.progression,
