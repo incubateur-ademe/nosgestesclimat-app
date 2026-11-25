@@ -174,13 +174,6 @@ model MatomoStats {
   @@schema("ngc")
 }
 
-enum Metric {
-  carbon
-  water
-
-  @@schema("ngc")
-}
-
 enum NorthstarRatingType {
   learned
   actions
@@ -320,24 +313,35 @@ model QuizzAnswer {
   @@schema("ngc")
 }
 
-/// A stored model rule for one metric: a public rule, or a rule reported as a
-/// missing variable of a public rule evaluation. Its name is its identity
-/// across model versions: a stored rule is never renamed.
+/// A stored model rule: a public rule, or a rule reported as a missing
+/// variable of a public rule evaluation. A rule is identified by its name and
+/// its water mark: a rule marked `empreinte eau: oui` in the model is stored
+/// as two rows sharing the name — one with `appliesToWaterMetric = false` for
+/// the default metric, one with `true` for the water metric — and each row
+/// gets its own evaluations. The name is the identity across model versions: a
+/// stored rule is never renamed. Today the water version shares the name;
+/// future models will name water rules differently, and the second row will
+/// disappear with the mark.
 model Rule {
-  id          Int              @id @default(autoincrement())
-  name        String
-  metric      Metric
-  /// In French, as the model's `titre`.
-  title       String?
-  /// In French, as the model's `description`.
-  description String?
-  evaluations RuleEvaluation[]
+  id                   Int                             @id @default(autoincrement())
+  name                 String
+  /// The model's `empreinte eau: oui` mark.
+  appliesToWaterMetric Boolean                         @default(false)
+  /// In French, as the model's `titre` — persisted for readability in 3rd
+  /// party tools syncing with this db, not carried by the app's `Rule` entity.
+  title                String?
+  /// In French, as the model's `description` — same purpose as `title`.
+  description          String?
+  evaluations          RuleEvaluation[]
+  missingVariableOf    RuleEvaluationMissingVariable[]
 
-  @@unique([name, metric])
+  @@unique([name, appliesToWaterMetric])
   @@schema("ngc")
 }
 
-/// The value of one Rule for one simulation, a number, a boolean or a string:
+/// The value of one Rule for one simulation, a number, a boolean or a string.
+/// The metric the value is for is the rule row's: an evaluation of the water
+/// variant (`appliesToWaterMetric = true`) is a water-metric evaluation.
 /// - applicable: `applicable = true`, exactly one of `valueNumber`,
 ///   `valueBoolean` and `valueString` set (0, `false` and `''` included)
 /// - not applicable: `applicable = false`, no value set
@@ -354,9 +358,7 @@ model RuleEvaluation {
   createdAt    DateTime   @default(now()) @db.Timestamptz(3)
 
   /// The missing variables this evaluation reported.
-  missingVariables  RuleEvaluationMissingVariable[] @relation("RuleEvaluation")
-  /// The evaluations that reported this one as a missing variable.
-  missingVariableOf RuleEvaluationMissingVariable[] @relation("MissingVariable")
+  missingVariables RuleEvaluationMissingVariable[] @relation("RuleEvaluation")
 
   @@id([simulationId, ruleId])
   @@index([ruleId, createdAt])
@@ -365,14 +367,13 @@ model RuleEvaluation {
 
 /// A missing variable of one rule evaluation: the engine listed the rule in
 /// the evaluation's `missingVariables`, `weight` counting how many times it
-/// needed it. The missing variable has its own RuleEvaluation row for the
-/// simulation, stored like any rule's.
+/// needed it.
 model RuleEvaluationMissingVariable {
-  simulationId    String           @db.Uuid
+  simulationId    String         @db.Uuid
   ruleId          Int
-  evaluation      RuleEvaluation   @relation("RuleEvaluation", fields: [simulationId, ruleId], references: [simulationId, ruleId], onDelete: Cascade)
+  evaluation      RuleEvaluation @relation("RuleEvaluation", fields: [simulationId, ruleId], references: [simulationId, ruleId], onDelete: Cascade)
   missingRuleId   Int
-  missingVariable RuleEvaluation   @relation("MissingVariable", fields: [simulationId, missingRuleId], references: [simulationId, ruleId], onDelete: Cascade)
+  missingVariable Rule           @relation(fields: [missingRuleId], references: [id], onDelete: Restrict)
   weight          Int
 
   @@id([simulationId, ruleId, missingRuleId])

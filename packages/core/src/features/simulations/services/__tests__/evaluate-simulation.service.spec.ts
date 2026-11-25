@@ -8,13 +8,9 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
 import { ruleKey } from '../../../models/helpers/rule-key.ts'
-import { findRuleByNameAndMetric } from '../../../models/repositories/rules.repository.ts'
+import { findRule } from '../../../models/repositories/rules.repository.ts'
 import type { Applicability } from '../../../models/types/model-rule-evaluation.ts'
-import {
-  PUBLIC_RULE_METRICS,
-  type Metric,
-  type Rule,
-} from '../../../models/types/rule.ts'
+import type { Metric, Rule } from '../../../models/types/rule.ts'
 import {
   createTestEngine,
   METRIC_RULE,
@@ -46,12 +42,21 @@ const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   return reported
 }
 
-/** Stores each rule for each metric, in the order of `names`, carbon before water. */
-const storeRules = (names: string[]): Promise<Rule[]> =>
+/**
+ * Stores each rule's rows in the order of `names`: the default metric's row
+ * always, plus the water metric's row when `appliesToWaterMetric`.
+ */
+const storeRules = (
+  names: string[],
+  appliesToWaterMetric = false
+): Promise<Rule[]> =>
   Promise.all(
-    names.flatMap((name) =>
-      PUBLIC_RULE_METRICS.map((metric) => ruleFactory.create({ name, metric }))
-    )
+    names.flatMap((name) => [
+      ruleFactory.create({ name, appliesToWaterMetric: false }),
+      ...(appliesToWaterMetric
+        ? [ruleFactory.create({ name, appliesToWaterMetric: true })]
+        : []),
+    ])
   )
 
 describe('evaluateSimulation', () => {
@@ -68,20 +73,23 @@ describe('evaluateSimulation', () => {
 
   /**
    * The simulation's evaluations in the order of `rules`, by name then metric,
-   * whatever order they are stored in.
+   * whatever order they are stored in. A rule without a metric is the default
+   * one's evaluation.
    */
-  const findRuleEvaluations = async (rules: Rule[]) => {
-    const keys = rules.map(({ name, metric }) => ruleKey(metric, name))
+  const findRuleEvaluations = async (
+    rules: { name: string; metric?: Metric | null }[]
+  ) => {
+    const keys = rules.map(({ name, metric }) => ruleKey(name, metric))
     return (await findRuleEvaluationsBySimulation(simulation.id)).toSorted(
       (a, b) =>
-        keys.indexOf(ruleKey(a.metric, a.name)) -
-        keys.indexOf(ruleKey(b.metric, b.name))
+        keys.indexOf(ruleKey(a.name, a.metric)) -
+        keys.indexOf(ruleKey(b.name, b.metric))
     )
   }
 
   /** A stored rule evaluation of the simulation, read back by its rule. */
   const evaluation = (
-    { name, metric }: Rule,
+    { name, metric = null }: { name: string; metric?: Metric | null },
     applicability: Applicability,
     missingVariables: { name: string; weight: number }[] = []
   ) => ({
@@ -108,7 +116,7 @@ describe('evaluateSimulation', () => {
       'footprint . transport',
       'footprint . food',
     ])
-    const [transportCarbon, transportWater, foodCarbon, foodWater] = rules
+    const [transport, food] = rules
 
     await evaluate(
       engineWith({
@@ -119,16 +127,14 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(transportCarbon, { applicable: true, value: 12.5 }),
-      evaluation(transportWater, { applicable: true, value: 12.5 }),
-      evaluation(foodCarbon, { applicable: true, value: 0 }),
-      evaluation(foodWater, { applicable: true, value: 0 }),
+      evaluation(transport, { applicable: true, value: 12.5 }),
+      evaluation(food, { applicable: true, value: 0 }),
     ])
   })
 
   it('stores each public rule with a boolean value as applicable, false included', async () => {
     const rules = await storeRules(['footprint . yes', 'footprint . no'])
-    const [yesCarbon, yesWater, noCarbon, noWater] = rules
+    const [yes, no] = rules
 
     await evaluate(
       engineWith({
@@ -139,16 +145,14 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(yesCarbon, { applicable: true, value: true }),
-      evaluation(yesWater, { applicable: true, value: true }),
-      evaluation(noCarbon, { applicable: true, value: false }),
-      evaluation(noWater, { applicable: true, value: false }),
+      evaluation(yes, { applicable: true, value: true }),
+      evaluation(no, { applicable: true, value: false }),
     ])
   })
 
   it('stores each public rule with a string value as applicable, the empty string included', async () => {
     const rules = await storeRules(['footprint . text', 'footprint . empty'])
-    const [textCarbon, textWater, emptyCarbon, emptyWater] = rules
+    const [text, empty] = rules
 
     await evaluate(
       engineWith({
@@ -159,10 +163,8 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(textCarbon, { applicable: true, value: 'texte' }),
-      evaluation(textWater, { applicable: true, value: 'texte' }),
-      evaluation(emptyCarbon, { applicable: true, value: '' }),
-      evaluation(emptyWater, { applicable: true, value: '' }),
+      evaluation(text, { applicable: true, value: 'texte' }),
+      evaluation(empty, { applicable: true, value: '' }),
     ])
   })
 
@@ -172,14 +174,7 @@ describe('evaluateSimulation', () => {
       'footprint . boolean',
       'footprint . string',
     ])
-    const [
-      numberCarbon,
-      numberWater,
-      booleanCarbon,
-      booleanWater,
-      stringCarbon,
-      stringWater,
-    ] = rules
+    const [number, boolean, string] = rules
 
     await evaluate(
       engineWith({
@@ -203,12 +198,9 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(numberCarbon, { applicable: false }),
-      evaluation(numberWater, { applicable: false }),
-      evaluation(booleanCarbon, { applicable: false }),
-      evaluation(booleanWater, { applicable: false }),
-      evaluation(stringCarbon, { applicable: false }),
-      evaluation(stringWater, { applicable: false }),
+      evaluation(number, { applicable: false }),
+      evaluation(boolean, { applicable: false }),
+      evaluation(string, { applicable: false }),
     ])
   })
 
@@ -217,8 +209,7 @@ describe('evaluateSimulation', () => {
       'footprint . unanswered',
       'footprint . no formula',
     ])
-    const [unansweredCarbon, unansweredWater, noFormulaCarbon, noFormulaWater] =
-      rules
+    const [unanswered, noFormula] = rules
 
     await evaluate(
       engineWith({
@@ -233,66 +224,105 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(unansweredCarbon, { applicable: undefined }),
-      evaluation(unansweredWater, { applicable: undefined }),
-      evaluation(noFormulaCarbon, { applicable: undefined }),
-      evaluation(noFormulaWater, { applicable: undefined }),
+      evaluation(unanswered, { applicable: undefined }),
+      evaluation(noFormula, { applicable: undefined }),
     ])
   })
 
-  it('evaluates each public rule for its metric', async () => {
-    const rules = await storeRules(['footprint . water dependent'])
-    const [carbonRule, waterRule] = rules
+  // A rule stored with `appliesToWaterMetric` — the model's
+  // `empreinte eau: oui` — has two rows sharing its name, and each row gets
+  // its own evaluation: the default row with the default metric's context,
+  // the water row with the water metric's.
+  describe('water metric context', () => {
+    it('evaluates each row of a water-applicable rule with its own metric', async () => {
+      const [waterDependent, waterDependentWater] = await storeRules(
+        ['footprint . water dependent'],
+        true
+      )
+      const [carbonOnly] = await storeRules(['footprint . carbon only'])
+      const value = {
+        variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+      }
 
-    await evaluate(
-      engineWith({
-        'footprint . water dependent': {
-          public: 'oui',
-          valeur: {
-            variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+      await evaluate(
+        engineWith({
+          'footprint . water dependent': {
+            public: 'oui',
+            'empreinte eau': 'oui',
+            valeur: value,
           },
-        },
-      }),
-      rules
-    )
+          'footprint . carbon only': { public: 'oui', valeur: value },
+        }),
+        [waterDependent, waterDependentWater, carbonOnly]
+      )
 
-    expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(carbonRule, { applicable: true, value: 10 }),
-      evaluation(waterRule, { applicable: true, value: 5 }),
-    ])
+      expect(
+        await findRuleEvaluations([
+          waterDependent,
+          { ...waterDependent, metric: 'water' as const },
+          carbonOnly,
+        ])
+      ).toEqual([
+        evaluation(waterDependent, { applicable: true, value: 10 }),
+        evaluation(
+          { ...waterDependent, metric: 'water' as const },
+          { applicable: true, value: 5 }
+        ),
+        evaluation(carbonOnly, { applicable: true, value: 10 }),
+      ])
+
+      // Each evaluation references its own rule row.
+      const storedEvaluations = await prisma.ruleEvaluation.findMany({
+        orderBy: { ruleId: 'asc' },
+        select: { ruleId: true },
+      })
+      expect(storedEvaluations.map(({ ruleId }) => ruleId)).toEqual([
+        waterDependent.id,
+        waterDependentWater.id,
+        carbonOnly.id,
+      ])
+
+      // Two rule rows for the water-applicable rule, one for the other.
+      expect(
+        await prisma.rule.count({
+          where: { name: 'footprint . water dependent' },
+        })
+      ).toBe(2)
+      expect(
+        await prisma.rule.count({ where: { name: 'footprint . carbon only' } })
+      ).toBe(1)
+    })
   })
 
   it('evaluates only the public rules it is given', async () => {
-    const [carbonRule] = await storeRules(['footprint . given'])
+    const [given] = await storeRules(['footprint . given'])
 
     await evaluate(
       engineWith({
         'footprint . given': { public: 'oui', valeur: 1 },
         'footprint . not given': { public: 'oui', valeur: 2 },
       }),
-      [carbonRule]
+      [given]
     )
 
-    expect(await findRuleEvaluations([carbonRule])).toEqual([
-      evaluation(carbonRule, { applicable: true, value: 1 }),
+    expect(await findRuleEvaluations([given])).toEqual([
+      evaluation(given, { applicable: true, value: 1 }),
     ])
   })
 
   // The rules given are trusted to be public: the model's `public` mark is not
   // checked again.
   it('stores a given rule the model does not mark public like a public one', async () => {
-    const rules = await storeRules(['footprint . private'])
-    const [carbonRule, waterRule] = rules
+    const [privateRule] = await storeRules(['footprint . private'])
 
     const result = await evaluate(
       engineWith({ 'footprint . private': { valeur: 3 } }),
-      rules
+      [privateRule]
     )
 
     expect(result).toEqual(success())
-    expect(await findRuleEvaluations(rules)).toEqual([
-      evaluation(carbonRule, { applicable: true, value: 3 }),
-      evaluation(waterRule, { applicable: true, value: 3 }),
+    expect(await findRuleEvaluations([privateRule])).toEqual([
+      evaluation(privateRule, { applicable: true, value: 3 }),
     ])
   })
 
@@ -305,7 +335,7 @@ describe('evaluateSimulation', () => {
       scope: 'core.service.evaluateSimulation',
       simulationId: simulation.id,
     })
-    expect(logger.error).toHaveBeenCalledTimes(PUBLIC_RULE_METRICS.length)
+    expect(logger.error).toHaveBeenCalledTimes(1)
   })
 
   it('stores nothing when given no public rules', async () => {
@@ -351,45 +381,48 @@ describe('evaluateSimulation', () => {
       const result = await evaluate(nonFiniteEngine, rules)
 
       expect(failedRules(result)).toEqual(
-        Object.entries(nonFiniteValues).flatMap(([dottedName, nodeValue]) =>
-          PUBLIC_RULE_METRICS.map((metric) =>
-            expect.objectContaining({
-              code: 'unexpected_node_value',
-              dottedName,
-              metric,
-              nodeValue: String(nodeValue),
-            })
-          )
+        Object.entries(nonFiniteValues).map(([dottedName, nodeValue]) =>
+          expect.objectContaining({
+            code: 'unexpected_node_value',
+            dottedName,
+            metric: null,
+            nodeValue: String(nodeValue),
+          })
         )
       )
       expect(await findRuleEvaluations(rules)).toEqual([])
     })
 
-    it('when its evaluation throws', async () => {
-      const rules = await storeRules([
-        'footprint . number',
-        'footprint . throwing',
-      ])
+    it('when its evaluation throws, once per metric it is evaluated for', async () => {
+      const rules = await storeRules(['footprint . number'])
+      const [throwing, throwingWater] = await storeRules(
+        ['footprint . throwing'],
+        true
+      )
 
       const result = await evaluate(
         engineWith({
           'footprint . number': { public: 'oui', valeur: 1 },
           'footprint . throwing': { public: 'oui', valeur: '1 / 0' },
         }),
-        rules
+        [...rules, throwing, throwingWater]
       )
 
-      expect(failedRules(result)).toEqual(
-        PUBLIC_RULE_METRICS.map((metric) =>
-          expect.objectContaining({
-            code: 'rule_evaluation_threw',
-            dottedName: 'footprint . throwing',
-            metric,
-            cause: expect.any(Error),
-          })
-        )
-      )
-      expect(await findRuleEvaluations(rules)).toEqual([])
+      expect(failedRules(result)).toEqual([
+        expect.objectContaining({
+          code: 'rule_evaluation_threw',
+          dottedName: 'footprint . throwing',
+          metric: null,
+          cause: expect.any(Error),
+        }),
+        expect.objectContaining({
+          code: 'rule_evaluation_threw',
+          dottedName: 'footprint . throwing',
+          metric: 'water',
+          cause: expect.any(Error),
+        }),
+      ])
+      expect(await findRuleEvaluations([...rules, throwing])).toEqual([])
     })
 
     it('when missing from the model', async () => {
@@ -403,34 +436,37 @@ describe('evaluateSimulation', () => {
         rules
       )
 
-      expect(failedRules(result)).toEqual(
-        PUBLIC_RULE_METRICS.map((metric) =>
-          expect.objectContaining({
-            code: 'rule_evaluation_threw',
-            dottedName: 'footprint . missing',
-            metric,
-            cause: expect.any(Error),
-          })
-        )
-      )
+      expect(failedRules(result)).toEqual([
+        expect.objectContaining({
+          code: 'rule_evaluation_threw',
+          dottedName: 'footprint . missing',
+          metric: null,
+          cause: expect.any(Error),
+        }),
+      ])
       expect(await findRuleEvaluations(rules)).toEqual([])
     })
   })
 
   describe('missing variables', () => {
-    const findRule = async (name: string, metric: Metric) => {
-      const rule = await findRuleByNameAndMetric({ name, metric })
+    const findStoredRule = async (name: string, metric?: Metric | null) => {
+      const rule = await findRule(name, { metric })
       if (!rule) {
-        throw new Error(`Rule ${name} (${metric}) was not stored`)
+        throw new Error(`Rule ${name} was not stored`)
       }
       return rule
     }
 
     const findEvaluations = () => findRuleEvaluationsBySimulation(simulation.id)
 
-    it('stores each missing variable as an evaluation of its own, linked to the evaluations that reported it with its weight', async () => {
+    const findLinks = () =>
+      prisma.ruleEvaluationMissingVariable.findMany({
+        orderBy: [{ ruleId: 'asc' }, { missingRuleId: 'asc' }],
+      })
+
+    it('stores each missing variable as a rule linked with its weight, without evaluating it', async () => {
       const rules = await storeRules(['footprint . total'])
-      const [totalCarbon, totalWater] = rules
+      const [total] = rules
 
       const result = await evaluate(
         engineWith({
@@ -442,33 +478,28 @@ describe('evaluateSimulation', () => {
 
       expect(result).toEqual(success())
 
-      const kmCarbon = await findRule('transport . km', 'carbon')
-      const kmWater = await findRule('transport . km', 'water')
-      const unanswered = { applicable: undefined }
-
-      // The missing variable is evaluated like any rule: unanswered, it is
-      // not defined.
-      const evaluations = await findEvaluations()
-      expect(evaluations).toHaveLength(4)
-      expect(evaluations).toEqual(
-        expect.arrayContaining([
-          evaluation(totalCarbon, unanswered, [
-            { name: 'transport . km', weight: 1 },
-          ]),
-          evaluation(totalWater, unanswered, [
-            { name: 'transport . km', weight: 1 },
-          ]),
-          evaluation(kmCarbon, unanswered),
-          evaluation(kmWater, unanswered),
-        ])
-      )
+      const km = await findStoredRule('transport . km')
+      // The missing variable has a rule row, but no evaluation of its own.
+      expect(await findEvaluations()).toEqual([
+        evaluation(total, { applicable: undefined }, [
+          { name: 'transport . km', weight: 1 },
+        ]),
+      ])
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+      ])
     })
 
-    // The engine wraps a `par défaut` in a `variable manquante`: the rule has
-    // its default value and is still reported as missing.
-    it('stores a missing variable with a default as applicable with its default value, still linked as missing', async () => {
+    // The engine wraps a `par défaut` in a `variable manquante`: the public
+    // rule gets its default value, and the missing variable is still linked.
+    it('links a missing variable with a default, still without evaluating it', async () => {
       const rules = await storeRules(['footprint . total'])
-      const [totalCarbon, totalWater] = rules
+      const [total] = rules
 
       const result = await evaluate(
         engineWith({
@@ -484,30 +515,17 @@ describe('evaluateSimulation', () => {
 
       expect(result).toEqual(success())
 
-      const kmCarbon = await findRule('transport . km', 'carbon')
-      const kmWater = await findRule('transport . km', 'water')
-      const byDefault = { applicable: true, value: 100 } as const
-
-      const evaluations = await findEvaluations()
-      expect(evaluations).toHaveLength(4)
-      expect(evaluations).toEqual(
-        expect.arrayContaining([
-          // The public rule still outputs a value: the default's.
-          evaluation(totalCarbon, { applicable: true, value: 200 }, [
-            { name: 'transport . km', weight: 1 },
-          ]),
-          evaluation(totalWater, { applicable: true, value: 200 }, [
-            { name: 'transport . km', weight: 1 },
-          ]),
-          // The missing variable's own evaluation is its default.
-          evaluation(kmCarbon, byDefault),
-          evaluation(kmWater, byDefault),
-        ])
-      )
+      await findStoredRule('transport . km')
+      // The public rule still outputs a value: the default's.
+      expect(await findEvaluations()).toEqual([
+        evaluation(total, { applicable: true, value: 200 }, [
+          { name: 'transport . km', weight: 1 },
+        ]),
+      ])
     })
 
-    it('evaluates a missing variable reported by several evaluations once, linked to each', async () => {
-      const [doubleCarbon, , halfCarbon] = await storeRules([
+    it('stores a missing variable reported by several evaluations once as a rule, linked to each', async () => {
+      const [double, half] = await storeRules([
         'footprint . double',
         'footprint . half',
       ])
@@ -518,55 +536,70 @@ describe('evaluateSimulation', () => {
           'footprint . half': { public: 'oui', valeur: 'transport . km / 2' },
           'transport . km': { question: 'Combien de km ?', 'par défaut': 10 },
         }),
-        [doubleCarbon, halfCarbon]
+        [double, half]
       )
 
       expect(result).toEqual(success())
 
-      const kmCarbon = await findRule('transport . km', 'carbon')
+      const km = await findStoredRule('transport . km')
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(1)
 
-      const evaluations = await findEvaluations()
-      expect(evaluations).toHaveLength(3)
-      expect(evaluations).toEqual(
+      expect(await findEvaluations()).toEqual(
         expect.arrayContaining([
-          evaluation(doubleCarbon, { applicable: true, value: 20 }, [
+          evaluation(double, { applicable: true, value: 20 }, [
             { name: 'transport . km', weight: 1 },
           ]),
-          evaluation(halfCarbon, { applicable: true, value: 5 }, [
+          evaluation(half, { applicable: true, value: 5 }, [
             { name: 'transport . km', weight: 1 },
           ]),
-          evaluation(kmCarbon, { applicable: true, value: 10 }),
         ])
       )
+      // No evaluation for the missing variable itself.
+      expect(await findEvaluations()).toHaveLength(2)
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: double.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: half.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+      ])
     })
 
     it('never links a rule to itself', async () => {
-      const rules = await storeRules(['footprint . self'])
-      const [selfCarbon, selfWater] = rules
+      const [self] = await storeRules(['footprint . self'])
 
       const result = await evaluate(
         engineWith({ 'footprint . self': { public: 'oui', 'par défaut': 5 } }),
-        rules
+        [self]
       )
 
       expect(result).toEqual(success())
-      expect(await findEvaluations()).toEqual(
-        expect.arrayContaining([
-          evaluation(selfCarbon, { applicable: true, value: 5 }),
-          evaluation(selfWater, { applicable: true, value: 5 }),
-        ])
-      )
-      expect(await findEvaluations()).toHaveLength(2)
+      expect(await findEvaluations()).toEqual([
+        evaluation(self, { applicable: true, value: 5 }),
+      ])
+      expect(await findLinks()).toEqual([])
     })
 
-    it('stores the missing variables of each metric under that metric', async () => {
-      const rules = await storeRules(['footprint . dependent'])
-      const [dependentCarbon, dependentWater] = rules
+    it('links each metric’s missing variables from that metric’s evaluation row, to the missing variable’s row of that metric when there is one', async () => {
+      const [dependent, dependentWaterRow] = await storeRules(
+        ['footprint . dependent'],
+        true
+      )
 
       const result = await evaluate(
         engineWith({
           'footprint . dependent': {
             public: 'oui',
+            'empreinte eau': 'oui',
             valeur: {
               variations: [
                 { si: "métrique = 'eau'", alors: 'water . question' },
@@ -575,34 +608,86 @@ describe('evaluateSimulation', () => {
             },
           },
           'carbon . question': { question: 'Carbone ?' },
-          'water . question': { question: 'Eau ?' },
+          'water . question': { question: 'Eau ?', 'empreinte eau': 'oui' },
         }),
-        rules
+        [dependent, dependentWaterRow]
       )
 
       expect(result).toEqual(success())
 
-      const carbonQuestion = await findRule('carbon . question', 'carbon')
-      const waterQuestion = await findRule('water . question', 'water')
-      // Each metric's missing variable got its own rule row.
+      const dependentWater = { ...dependent, metric: 'water' as const }
+      const carbonQuestion = await findStoredRule('carbon . question')
+      const waterQuestion = await findStoredRule('water . question')
+      const waterQuestionWater = await findStoredRule(
+        'water . question',
+        'water'
+      )
+      // One row per name for the rule without the water mark, two for the one
+      // with it.
       expect(
         await prisma.rule.count({ where: { name: 'carbon . question' } })
       ).toBe(1)
       expect(
         await prisma.rule.count({ where: { name: 'water . question' } })
-      ).toBe(1)
+      ).toBe(2)
 
-      const unanswered = { applicable: undefined }
-      expect(await findEvaluations()).toEqual(
-        expect.arrayContaining([
-          evaluation(dependentCarbon, unanswered, [
-            { name: carbonQuestion.name, weight: 1 },
-          ]),
-          evaluation(dependentWater, unanswered, [
-            { name: waterQuestion.name, weight: 1 },
-          ]),
-        ])
+      expect(await findRuleEvaluations([dependent, dependentWater])).toEqual([
+        evaluation(dependent, { applicable: undefined }, [
+          { name: carbonQuestion.name, weight: 1 },
+        ]),
+        evaluation(dependentWater, { applicable: undefined }, [
+          { name: waterQuestion.name, weight: 1 },
+        ]),
+      ])
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: dependent.id,
+          missingRuleId: carbonQuestion.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: dependentWaterRow.id,
+          missingRuleId: waterQuestionWater.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it("stores the model's `empreinte eau` mark on a missing variable's rule rows", async () => {
+      const [total] = await storeRules(['footprint . total'])
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': { public: 'oui', valeur: 'transport . km * 2' },
+          'transport . km': {
+            question: 'Combien de km ?',
+            unité: 'km',
+            'empreinte eau': 'oui',
+          },
+        }),
+        [total]
       )
+
+      expect(result).toEqual(success())
+      // Both rows of the water-marked missing variable are stored, though it
+      // is never evaluated.
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(2)
+      expect(
+        (await findStoredRule('transport . km', 'water')).appliesToWaterMetric
+      ).toBe(true)
+      // The link from the default metric's evaluation points to the default row.
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: (await findStoredRule('transport . km')).id,
+          weight: 1,
+        },
+      ])
     })
 
     it('stores nothing, not even the missing variables, when a rule fails', async () => {
@@ -617,7 +702,7 @@ describe('evaluateSimulation', () => {
         rules
       )
 
-      expect(failedRules(result)).toHaveLength(PUBLIC_RULE_METRICS.length)
+      expect(failedRules(result)).toHaveLength(1)
       expect(await findEvaluations()).toEqual([])
       expect(
         await prisma.rule.findMany({ where: { name: 'missing . var' } })
@@ -639,16 +724,16 @@ describe('evaluateSimulation', () => {
       )
       expect(result).toEqual(success())
 
-      // One rule row per metric, shared by both simulations.
+      // One rule row, shared by both simulations.
       expect(
         await prisma.rule.count({ where: { name: 'transport . km' } })
-      ).toBe(PUBLIC_RULE_METRICS.length)
+      ).toBe(1)
       const otherEvaluations = await findRuleEvaluationsBySimulation(
         otherSimulation.id
       )
       expect(
         otherEvaluations.flatMap(({ missingVariables }) => missingVariables)
-      ).toHaveLength(PUBLIC_RULE_METRICS.length)
+      ).toHaveLength(1)
     })
   })
 })

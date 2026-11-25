@@ -1,39 +1,51 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { Metric, NewRule, Rule } from '../types/rule.ts'
+import type { Metric, ModelRule, Rule } from '../types/rule.ts'
 import { mapRule, type RuleRow } from './rule.mapper.ts'
 
-/**
- * Finds a stored rule by its identity, its name and metric being unique
- * together.
- */
-export const findRuleByNameAndMetric = async (
-  { name, metric }: { name: string; metric: Metric },
-  { session = prisma }: { session?: Transaction } = {}
+/** Finds a unique rule by its name and metric, the default one when none. */
+export const findRule = async (
+  name: string,
+  {
+    metric = null,
+    session = prisma,
+  }: { metric?: Metric | null; session?: Transaction } = {}
 ): Promise<Rule | null> => {
   const row = await session.rule.findUnique({
-    where: { name_metric: { name, metric } },
-    select: { id: true, name: true, metric: true },
+    where: {
+      name_appliesToWaterMetric: {
+        name,
+        appliesToWaterMetric: metric === 'water',
+      },
+    },
+    select: { id: true, name: true, appliesToWaterMetric: true },
   })
   return row ? mapRule(row) : null
 }
 
 /**
- * Safe to run concurrently with itself: rows are locked in a fixed
- * (name, metric) order, so two callers cannot deadlock, and the conflict
- * clause makes the second one update the rows the first one inserted.
+ * Stores each rule as its row, each identified by its name and water mark: a
+ * stored rule is never renamed, so those are the conflict key; the wording is
+ * refreshed on conflict.
+ *
+ * Safe to run concurrently with itself: rows are locked in a fixed name and
+ * water mark order, so two callers cannot deadlock, and the conflict clause
+ * makes the second one update the rows the first one inserted.
  */
 export const upsertRules = async (
-  rules: NewRule[],
+  rules: ModelRule[],
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<Rule[]> => {
   if (rules.length === 0) return []
 
+  const rows = rules
+
   // A lock-acquisition order, not a display order: every caller feeds the rows
-  // to the statement in the same fixed (name, metric) order.
-  const sorted = rules.toSorted(
-    (a, b) =>
-      codeUnitCompare(a.name, b.name) || codeUnitCompare(a.metric, b.metric)
+  // to the statement in the same fixed order.
+  const sorted = rows.toSorted((a, b) =>
+    a.name === b.name
+      ? Number(a.appliesToWaterMetric) - Number(b.appliesToWaterMetric)
+      : codeUnitCompare(a.name, b.name)
   )
 
   // A raw query because Prisma's typed API has no batch upsert that returns
@@ -42,29 +54,27 @@ export const upsertRules = async (
   // `ON CONFLICT DO NOTHING`, which neither refreshes existing rows nor
   // returns their ids. Only `INSERT … ON CONFLICT DO UPDATE … RETURNING` does
   // all three in one round trip, which the caller needs to cache the id of
-  // every rule of a model version.
+  // every rule row of a model version.
   //
   // The batch travels as one array per column through `unnest` instead of a
   // `VALUES` list, so it stays a single prepared statement whatever the
-  // number of rules. The arrays are cast via `text[]` because PGlite (the
-  // test database) rejects an enum array parameter, so the metric travels as
-  // text and is cast to "ngc"."Metric" in SQL. The same statement runs
-  // unchanged on the real Postgres adapter in production.
-  const rows = await session.$queryRaw<RuleRow[]>`
-    INSERT INTO "ngc"."Rule" (name, metric, title, description)
-    SELECT name, metric::"ngc"."Metric", title, description
+  // number of rules.
+  const stored = await session.$queryRaw<RuleRow[]>`
+    INSERT INTO "ngc"."Rule" (name, "appliesToWaterMetric", title, description)
+    SELECT name, "appliesToWaterMetric", title, description
     FROM unnest(
       ${sorted.map((rule) => rule.name)}::text[],
-      ${sorted.map((rule) => rule.metric)}::text[],
+      ${sorted.map((rule) => rule.appliesToWaterMetric)}::boolean[],
       ${sorted.map((rule) => rule.title)}::text[],
       ${sorted.map((rule) => rule.description)}::text[]
-    ) AS input(name, metric, title, description)
-    ON CONFLICT (name, metric) DO UPDATE
-      SET title = EXCLUDED.title, description = EXCLUDED.description
-    RETURNING id, name, metric
+    ) AS input(name, "appliesToWaterMetric", title, description)
+    ON CONFLICT (name, "appliesToWaterMetric") DO UPDATE
+      SET title = EXCLUDED.title,
+          description = EXCLUDED.description
+    RETURNING id, name, "appliesToWaterMetric"
   `
 
-  return rows.map(mapRule)
+  return stored.map(mapRule)
 }
 
 // Not `localeCompare`, which depends on the process locale: every process must

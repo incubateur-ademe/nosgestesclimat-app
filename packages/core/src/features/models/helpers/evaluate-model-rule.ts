@@ -7,12 +7,6 @@ import {
 import type { ModelRuleEvaluationResult } from '../types/model-rule-evaluation.ts'
 import type { Metric } from '../types/rule.ts'
 
-/** The value the model's `métrique` rule takes for each metric. */
-const MODEL_METRIC = {
-  carbon: 'carbone',
-  water: 'eau',
-} as const satisfies Record<Metric, string>
-
 /**
  * Evaluates a rule of the model for `metric`, as the model computes the
  * footprint of that metric.
@@ -28,15 +22,16 @@ const MODEL_METRIC = {
 export const evaluateModelRule = ({
   engine,
   dottedName,
-  metric,
   simulationId,
   createdAt,
+  metric = null,
 }: {
   engine: Engine
   dottedName: string
-  metric: Metric
   simulationId: string
   createdAt: Date
+  /** The metric to evaluate the rule for; none is the default one. */
+  metric?: Metric | null
 }): ModelRuleEvaluationResult => {
   let nodeValue: unknown
   let reported: Record<string, number>
@@ -44,10 +39,10 @@ export const evaluateModelRule = ({
   try {
     ;({ nodeValue, missingVariables: reported } = engine.evaluate({
       valeur: dottedName,
-      contexte: { métrique: `'${MODEL_METRIC[metric]}'` },
+      contexte: { métrique: `'${modelMetric(metric)}'` },
     }))
   } catch (cause) {
-    return failure(new RuleEvaluationThrewError({ dottedName, metric, cause }))
+    return failure(new RuleEvaluationThrewError({ dottedName, cause, metric }))
   }
 
   const rule = {
@@ -91,8 +86,15 @@ export const evaluateModelRule = ({
   return failure(
     new UnexpectedNodeValueError({
       dottedName,
-      metric,
       nodeValue: typeof nodeValue,
+      metric,
     })
   )
 }
+
+/**
+ * The value the model's `métrique` rule takes for a metric: `null` is the
+ * default one, which the model names `carbone`.
+ */
+const modelMetric = (metric: Metric | null) =>
+  metric === 'water' ? 'eau' : 'carbone'

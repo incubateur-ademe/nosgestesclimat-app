@@ -5,7 +5,6 @@ import type {
   ModelRuleEvaluation,
   ModelRuleValue,
 } from '../../models/types/model-rule-evaluation.ts'
-import type { Metric } from '../../models/types/rule.ts'
 import { CorruptRuleEvaluationError } from '../errors/simulations.error.ts'
 
 /** Each value is stored in the column of its type, the others left null. */
@@ -30,15 +29,16 @@ export const mapModelRuleEvaluationToPrisma = (
 
 /**
  * Maps the link from an evaluation to one of its missing variables, the rule
- * ids resolved by the caller.
+ * ids resolved by the caller. The missing variable is not evaluated: the link
+ * points to its rule row only.
  */
 export const mapModelRuleEvaluationMissingVariablesToPrisma = (
   ruleId: number,
   missingRuleId: number,
-  { simulationId }: ModelRuleEvaluation,
+  evaluation: ModelRuleEvaluation,
   missingVariable: ModelRuleEvaluation['missingVariables'][number]
 ): Prisma.RuleEvaluationMissingVariableCreateManyInput => ({
-  simulationId,
+  simulationId: evaluation.simulationId,
   ruleId,
   missingRuleId,
   weight: missingVariable.weight,
@@ -46,10 +46,10 @@ export const mapModelRuleEvaluationMissingVariablesToPrisma = (
 
 /** A rule evaluation row joined with its rule and its missing variables' rules. */
 type RuleEvaluationRow = RuleEvaluationModel & {
-  rule: { name: string; metric: Metric }
+  rule: { name: string; appliesToWaterMetric: boolean }
   missingVariables: {
     weight: number
-    missingVariable: { rule: { name: string } }
+    missingVariable: { name: string }
   }[]
 }
 
@@ -62,8 +62,8 @@ const applicabilityOf = (db: RuleEvaluationRow): Applicability => {
     throw new CorruptRuleEvaluationError({
       simulationId: db.simulationId,
       name: db.rule.name,
-      metric: db.rule.metric,
       reason,
+      metric: db.rule.appliesToWaterMetric ? 'water' : null,
     })
   }
 
@@ -87,9 +87,9 @@ export const mapModelRuleEvaluation = (
   simulationId: db.simulationId,
   createdAt: db.createdAt,
   name: db.rule.name,
-  metric: db.rule.metric,
+  metric: db.rule.appliesToWaterMetric ? 'water' : null,
   missingVariables: db.missingVariables.map(({ weight, missingVariable }) => ({
-    name: missingVariable.rule.name,
+    name: missingVariable.name,
     weight,
   })),
   ...applicabilityOf(db),

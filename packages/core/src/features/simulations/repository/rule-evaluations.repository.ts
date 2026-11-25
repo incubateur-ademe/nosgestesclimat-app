@@ -1,9 +1,9 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import {
-  ruleIdByRuleKey,
+  missingVariableRuleIdOf,
+  ruleIdByKey,
   ruleIdOf,
-  ruleKey,
 } from '../../models/helpers/rule-key.ts'
 import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 import type { Rule } from '../../models/types/rule.ts'
@@ -14,8 +14,9 @@ import {
 } from './rule-evaluation.mapper.ts'
 
 /**
- * Finds a simulation's rule evaluations, each with its rule's name and metric
- * and the missing variables it reported, resolved to their rule names.
+ * Finds a simulation's rule evaluations, each with its rule's name and water
+ * mark (its metric) and the missing variables it reported, resolved to their
+ * rule names.
  */
 export const findRuleEvaluationsBySimulation = async (
   simulationId: string
@@ -23,11 +24,11 @@ export const findRuleEvaluationsBySimulation = async (
   const rows = await prisma.ruleEvaluation.findMany({
     where: { simulationId },
     include: {
-      rule: { select: { name: true, metric: true } },
+      rule: { select: { name: true, appliesToWaterMetric: true } },
       missingVariables: {
         select: {
           weight: true,
-          missingVariable: { select: { rule: { select: { name: true } } } },
+          missingVariable: { select: { name: true } },
         },
       },
     },
@@ -36,49 +37,47 @@ export const findRuleEvaluationsBySimulation = async (
 }
 
 /**
- * Writes the evaluations and the links to their missing variables; each
- * linked rule must be one of `evaluations`, and each rule must be stored
- * among `rules`.
+ * Writes the evaluations and the links to their missing variables. Each
+ * evaluation references the rule row of its metric, and each link the missing
+ * variable's row of the reporting evaluation's metric when there is one, else
+ * its default row. Missing variables are not evaluated: each link points to
+ * the missing variable's rule, which must be stored among `rules`, like each
+ * evaluated rule.
  *
- * `rules` comes as a param, already stored, instead of being resolved here
- * by name and metric: that lookup would cost an extra db roundtrip on the
- * hotpath of every simulation computation.
+ * `rules` comes as a param, already stored, instead of being resolved here by
+ * name: that lookup would cost an extra db roundtrip on the hotpath of every
+ * simulation computation.
  */
 export const createRuleEvaluations = async (
   evaluations: ModelRuleEvaluation[],
   rules: Rule[],
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<void> => {
-  const ruleIdByKey = ruleIdByRuleKey(rules)
-  const evaluated = new Set(
-    evaluations.map(({ name, metric }) => ruleKey(metric, name))
-  )
+  const idByKey = ruleIdByKey(rules)
 
   await session.ruleEvaluation.createMany({
     data: evaluations.map((evaluation) =>
       mapModelRuleEvaluationToPrisma(
-        ruleIdOf(ruleIdByKey, evaluation.metric, evaluation.name),
+        ruleIdOf(idByKey, evaluation.name, evaluation.metric),
         evaluation
       )
     ),
   })
 
   const missingVariables = evaluations.flatMap((evaluation) => {
-    const ruleId = ruleIdOf(ruleIdByKey, evaluation.metric, evaluation.name)
-    return evaluation.missingVariables.map((missingVariable) => {
-      const key = ruleKey(evaluation.metric, missingVariable.name)
-      if (!evaluated.has(key)) {
-        throw new Error(
-          `Invariant: no evaluation found for missing variable "${key}"`
-        )
-      }
-      return mapModelRuleEvaluationMissingVariablesToPrisma(
+    const ruleId = ruleIdOf(idByKey, evaluation.name, evaluation.metric)
+    return evaluation.missingVariables.map((missingVariable) =>
+      mapModelRuleEvaluationMissingVariablesToPrisma(
         ruleId,
-        ruleIdOf(ruleIdByKey, evaluation.metric, missingVariable.name),
+        missingVariableRuleIdOf(
+          idByKey,
+          missingVariable.name,
+          evaluation.metric
+        ),
         evaluation,
         missingVariable
       )
-    })
+    )
   })
   if (missingVariables.length > 0) {
     await session.ruleEvaluationMissingVariable.createMany({

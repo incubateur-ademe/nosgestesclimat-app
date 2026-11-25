@@ -57,14 +57,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . zero',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . zero',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: 0,
@@ -99,14 +98,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . yes',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . yes',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: true,
@@ -116,14 +114,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . no',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . no',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: false,
@@ -141,14 +138,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . text',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . text',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: 'texte',
@@ -158,14 +154,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . empty',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . empty',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: '',
@@ -191,12 +186,12 @@ describe('evaluateModelRule', () => {
       'footprint . non applicable',
       'footprint . applicable si non',
     ]) {
-      expect(evaluate({ engine, dottedName, metric: 'carbon' })).toEqual({
+      expect(evaluate({ engine, dottedName })).toEqual({
         success: true,
         data: {
           ...base,
           name: dottedName,
-          metric: 'carbon',
+          metric: null,
           missingVariables: [],
           applicable: false,
         },
@@ -245,14 +240,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . dependent',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . dependent',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: 10,
@@ -290,14 +284,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . total',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . total',
-        metric: 'carbon',
+        metric: null,
         applicable: undefined,
         missingVariables: [{ name: 'transport . km', weight: 2 }],
       },
@@ -313,14 +306,13 @@ describe('evaluateModelRule', () => {
       evaluate({
         engine,
         dottedName: 'footprint . default',
-        metric: 'carbon',
       })
     ).toEqual({
       success: true,
       data: {
         ...base,
         name: 'footprint . default',
-        metric: 'carbon',
+        metric: null,
         missingVariables: [],
         applicable: true,
         value: 5,
@@ -366,7 +358,6 @@ describe('evaluateModelRule', () => {
         const result = evaluate({
           engine: engineWithNodeValue(nodeValue),
           dottedName: 'footprint . rule',
-          metric: 'carbon',
         })
         if (result.success) {
           throw new Error(`Expected ${label} to fail`)
@@ -375,7 +366,7 @@ describe('evaluateModelRule', () => {
         expect(result.error).toMatchObject({
           code: 'unexpected_node_value',
           dottedName: 'footprint . rule',
-          metric: 'carbon',
+          metric: null,
           nodeValue: label,
         })
       }
@@ -385,7 +376,6 @@ describe('evaluateModelRule', () => {
       const result = evaluate({
         engine: engineWithNodeValue({ formule: 'impossible' }),
         dottedName: 'footprint . rule',
-        metric: 'carbon',
       })
       if (result.success) {
         throw new Error('Expected an object node value to fail')
@@ -394,7 +384,7 @@ describe('evaluateModelRule', () => {
       expect(result.error).toMatchObject({
         code: 'unexpected_node_value',
         dottedName: 'footprint . rule',
-        metric: 'carbon',
+        metric: null,
         nodeValue: 'object',
       })
     })

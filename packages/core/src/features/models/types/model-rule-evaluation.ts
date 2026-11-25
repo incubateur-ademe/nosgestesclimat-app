@@ -20,7 +20,7 @@ export type Applicability =
  */
 export type ModelRuleEvaluation = {
   name: string
-  metric: Metric
+  metric: Metric | null
   /** The rules the situation does not answer and that an evaluation needed */
   missingVariables: {
     name: string

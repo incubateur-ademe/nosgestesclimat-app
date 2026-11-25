@@ -3,10 +3,13 @@ import { getModelRule } from '../helpers/model-rules.ts'
 import { serializeModel, type ModelString } from '../helpers/model-versions.ts'
 import { upsertRules } from '../repositories/rules.repository.ts'
 import type { Model } from '../types/model.ts'
-import { PUBLIC_RULE_METRICS, type Rule } from '../types/rule.ts'
+import type { Rule } from '../types/rule.ts'
 
 /**
- * Resolves the stored `Rule` of each public rule of a model, for each metric.
+ * Resolves the stored `Rule` rows of each public rule of a model: the default
+ * metric's row always, plus the water row when the model marks the rule
+ * `empreinte eau: oui` (`appliesToWaterMetric`) — each row is evaluated with
+ * its own metric's context at evaluation time.
  *
  * Cached per model: rule rows are never deleted, so a cached id never goes
  * stale. The rules are written outside any caller's transaction, whose
@@ -29,12 +32,8 @@ export function createResolvePublicRules() {
 
     const publicRules = Object.entries(engine.getParsedRules())
       .filter(([, rule]) => rule.rawNode.public === 'oui')
-      .map(([name]) => getModelRule(engine, name))
-    const rules = await upsertRules(
-      PUBLIC_RULE_METRICS.flatMap((metric) =>
-        publicRules.map((rule) => ({ ...rule, metric }))
-      )
-    )
+      .flatMap(([name]) => getModelRule(engine, name))
+    const rules = await upsertRules(publicRules)
 
     rulesByModel.set(key, rules)
     return rules

@@ -47,18 +47,18 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
 export class CorruptRuleEvaluationError extends DomainError<'corrupt_rule_evaluation'> {
   public readonly simulationId: string
   public readonly name: string
-  public readonly metric: Metric
+  public readonly metric: Metric | null
 
   constructor(params: {
     simulationId: string
     name: string
-    metric: Metric
     reason: string
+    metric?: Metric | null
   }) {
-    const { simulationId, name, metric, reason } = params
+    const { simulationId, name, reason, metric = null } = params
     super(
       'corrupt_rule_evaluation',
-      `Rule evaluation of rule ${name} (${metric}) for simulation ${simulationId} ${reason}`
+      `Rule evaluation of rule ${name} (${metric ?? 'carbon'}) for simulation ${simulationId} ${reason}`
     )
     this.simulationId = simulationId
     this.name = name

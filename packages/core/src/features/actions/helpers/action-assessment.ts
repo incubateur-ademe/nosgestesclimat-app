@@ -79,7 +79,6 @@ export const evaluateAction = ({
   const evaluation = evaluateModelRule({
     engine,
     dottedName,
-    metric: 'carbon',
     simulationId,
     createdAt,
   })
