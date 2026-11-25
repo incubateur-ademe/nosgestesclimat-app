@@ -1,7 +1,6 @@
 import _logger from '@/logger/logger.browser'
 import type {
   DottedName,
-  NGCRule,
   NGCRuleNode,
   NGCRulesNodes,
 } from '@incubateur-ademe/nosgestesclimat'
@@ -39,7 +38,7 @@ export function getSubcategories({
         return accumulator
       }
 
-      const sum = getSomme(rule.rawNode as NGCRule)
+      const sum = getSomme(rule.rawNode)
       if (!sum) {
         logger.warn('No [somme] found for the category', {
           dottedName: currentValue,

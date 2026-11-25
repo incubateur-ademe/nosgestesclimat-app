@@ -123,15 +123,7 @@ export default function Ranking({
                   participantsLength -
                   MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
               }}>
-              Afficher les{' '}
-              {
-                {
-                  croppedParticipantsLength:
-                    participantsLength -
-                    MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
-                } as unknown as React.ReactNode
-              }{' '}
-              autres participants
+              Afficher les {'{{croppedParticipantsLength}}'} autres participants
             </Trans>
           )}
         </button>

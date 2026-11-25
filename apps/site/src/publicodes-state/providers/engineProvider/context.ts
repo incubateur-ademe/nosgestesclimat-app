@@ -45,5 +45,5 @@ export const EngineContext = createContext<EngineContextType>({
   rawMissingVariables: {} as MissingVariables,
   categories: [],
   subcategories: [],
-  addToEngineSituation: () => ({}) as Situation,
+  addToEngineSituation: () => ({}),
 })

@@ -9,8 +9,8 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import type { ReactNode } from 'react'
 import { cn } from 'cn'
+import type { ReactNode } from 'react'
 
 interface Props {
   carbonFootprint: number
@@ -110,14 +110,12 @@ const getObjectiveData = ({
             <Trans
               i18nKey="results.objective.under4.description.title"
               values={{ secondObjectiveNumber }}>
-              Vous êtes déjà sous les{' '}
-              {{ secondObjectiveNumber } as unknown as ReactNode} tonnes, bravo
-              !
+              Vous êtes déjà sous les {'{{secondObjectiveNumber}}'} tonnes,
+              bravo !
             </Trans>
           </strong>
           <span className="block w-lg max-w-full">
-            <Trans
-              i18nKey="results.objective.under4.description.body">
+            <Trans i18nKey="results.objective.under4.description.body">
               Avec le travail de l’État et toute la société dans les années à
               venir, votre empreinte devrait naturellement diminuer pour se
               rapprocher des 2 tonnes.
@@ -166,14 +164,11 @@ export default async function ObjectiveWithRhythm({
       : {}
 
   return (
-    <div
-      className={cn('rounded-lg border border-slate-300 p-6', className)}>
+    <div className={cn('rounded-lg border border-slate-300 p-6', className)}>
       {shouldDisplayBadge && (
         <div className="mb-2">
           <Badge className="border-none text-base" color="secondary">
-            <Trans i18nKey="common.vous">
-              Vous
-            </Trans>
+            <Trans i18nKey="common.vous">Vous</Trans>
           </Badge>
         </div>
       )}
@@ -182,9 +177,7 @@ export default async function ObjectiveWithRhythm({
         <div className={cn('flex-1 rounded-lg px-6 py-4', bgClassName)}>
           <h3 className={cn('mb-2 text-2xl font-bold', titleClassName)}>
             {displayValue} {unit}{' '}
-            <Trans i18nKey="common.co2eAn">
-              CO₂e / an
-            </Trans>
+            <Trans i18nKey="common.co2eAn">CO₂e / an</Trans>
           </h3>
 
           <p className="mb-0">{description}</p>
@@ -199,9 +192,7 @@ export default async function ObjectiveWithRhythm({
 
               <p className="text-2xl font-bold">
                 {reductionDisplayValue} {reductionUnit}{' '}
-                <Trans i18nKey="common.parAn">
-                  par an
-                </Trans>
+                <Trans i18nKey="common.parAn">par an</Trans>
               </p>
             </div>
           </>

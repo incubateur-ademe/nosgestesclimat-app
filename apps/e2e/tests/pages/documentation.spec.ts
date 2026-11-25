@@ -6,9 +6,9 @@ export const DOCUMENTATION_LAUNCH_BUTTON = 'documentation-launch-button'
 test('/documentation', async ({ page }) => {
   await page.goto('/documentation')
 
-  expect(
+  await expect(
     page.getByRole('heading', { level: 1, name: 'Documentation' })
-  ).toBeDefined()
+  ).toBeVisible()
 })
 
 test.describe('/documentation/bilan', () => {
@@ -17,7 +17,7 @@ test.describe('/documentation/bilan', () => {
   }) => {
     await page.goto('/documentation/bilan')
 
-    expect(page.getByTestId(DOCUMENTATION_TITLE)).toBeDefined()
+    await expect(page.getByTestId(DOCUMENTATION_TITLE)).toBeVisible()
   })
 
   test('should render the client side documentation upon click on the launch button', async ({
@@ -27,6 +27,8 @@ test.describe('/documentation/bilan', () => {
 
     await page.getByTestId(DOCUMENTATION_LAUNCH_BUTTON).click()
 
-    expect(page.locator('div[id="documentation-rule-root"]')).toBeDefined()
+    await expect(
+      page.locator('div[id="documentation-rule-root"]')
+    ).toBeVisible()
   })
 })

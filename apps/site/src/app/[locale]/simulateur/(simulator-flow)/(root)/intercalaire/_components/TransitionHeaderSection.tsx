@@ -48,8 +48,7 @@ export default function TransitionHeaderSection({
         <Trans
           values={{ category: getCategoryString(previousCategory!, t) }}
           i18nKey="simulator.intercalaire.title.default">
-          Section {{ category: previousCategory } as unknown as React.ReactNode}{' '}
-          terminée
+          Section {'{{category}}'} terminée
         </Trans>{' '}
         <Emoji>✅</Emoji>
       </Title>
@@ -63,7 +62,7 @@ export default function TransitionHeaderSection({
           <Trans
             values={{ remainingCategories: String(remainingCategories) }}
             i18nKey="simulator.intercalaire.subtitle.remaining.all">
-            Plus que {{ remainingCategories } as unknown as string} !
+            Plus que {'{{remainingCategories}}'} !
           </Trans>
         )}
       </p>

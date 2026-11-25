@@ -78,7 +78,7 @@ export default function useSetValue({
                   dottedName: mosaicChildDottedName,
                 }),
               }),
-            } as Situation
+            }
           },
           {} as Situation
         )

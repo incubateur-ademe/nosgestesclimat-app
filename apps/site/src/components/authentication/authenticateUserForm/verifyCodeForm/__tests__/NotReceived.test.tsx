@@ -17,9 +17,9 @@ vi.mock('@/components/authentication/_hooks/useSecondsLeft', () => ({
 
 const defaultAuth: AuthContextValue = {
   state: { phase: 'idle', emailError: null },
-  sendEmail: vi.fn() as unknown as AuthContextValue['sendEmail'],
+  sendEmail: vi.fn(),
   submitCode: vi.fn(),
-  resendCode: vi.fn() as unknown as AuthContextValue['resendCode'],
+  resendCode: vi.fn(),
   goBack: vi.fn(),
   reset: vi.fn(),
   clearCodeError: vi.fn(),
@@ -41,7 +41,7 @@ describe('NotReceived', () => {
         codeError: null,
         resendError: null,
       },
-    } as AuthContextValue)
+    })
   })
 
   it('renders the title and instructions', () => {
@@ -68,7 +68,7 @@ describe('NotReceived', () => {
         codeError: null,
         resendError: new UnknownCodeError(),
       },
-    } as AuthContextValue)
+    })
 
     render(<NotReceived />)
     expect(screen.queryByText('Renvoyer le code')).not.toBeInTheDocument()
