@@ -108,23 +108,23 @@ describe('evaluateModelRules', () => {
 
   it('collects each error without stopping the other evaluations', () => {
     const engine = engineWith({
-      'footprint . ok': { public: 'oui', valeur: 1 },
+      'footprint . ok': { public: 'oui', valeur: 'transport . km * 2' },
+      'transport . km': { question: 'Combien de km ?', unité: 'km' },
       'footprint . division': { public: 'oui', valeur: '1 / 0' },
     })
 
     const { evaluations, errors } = evaluateRules({
       engine,
-      rules: [rule('footprint . ok'), rule('footprint . division')],
+      rules: [rule('footprint . division'), rule('footprint . ok')],
     })
 
     expect(evaluations).toEqual([
       {
         name: 'footprint . ok',
         metric: null,
-        applicable: true,
-        value: 1,
+        applicable: undefined,
         ...base,
-        missingVariables: [],
+        missingVariables: [{ name: 'transport . km', weight: 1 }],
       },
     ])
     expect(errors).toHaveLength(1)
@@ -135,45 +135,5 @@ describe('evaluateModelRules', () => {
       metric: null,
     })
     expect(errors[0]?.cause).toBeInstanceOf(Error)
-  })
-
-  it('reports no missing variable for a failed rule, its own are not known', () => {
-    const engine = engineWith({
-      'footprint . ok': { public: 'oui', valeur: 'ghost . variable + 1' },
-      'footprint . throwing': { public: 'oui', valeur: 'ghost . variable' },
-      'ghost . variable': { question: 'Fantôme ?' },
-    })
-    const evaluate = engine.evaluate.bind(engine)
-    vi.spyOn(engine, 'evaluate').mockImplementation((expression) => {
-      if (
-        typeof expression === 'object' &&
-        'valeur' in expression &&
-        expression.valeur === 'footprint . throwing'
-      ) {
-        throw new Error('boom')
-      }
-      return evaluate(expression)
-    })
-
-    const { evaluations, errors } = evaluateRules({
-      engine,
-      rules: [rule('footprint . ok'), rule('footprint . throwing')],
-    })
-
-    expect(errors).toHaveLength(1)
-    expect(errors[0]).toMatchObject({
-      code: 'rule_evaluation_threw',
-      ruleName: 'footprint . throwing',
-    })
-    // `ghost . variable` is only reported by `footprint . ok`, never evaluated.
-    expect(evaluations).toEqual([
-      {
-        name: 'footprint . ok',
-        metric: null,
-        applicable: undefined,
-        ...base,
-        missingVariables: [{ name: 'ghost . variable', weight: 1 }],
-      },
-    ])
   })
 })

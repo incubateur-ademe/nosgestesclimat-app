@@ -457,7 +457,7 @@ describe('evaluateSimulation', () => {
 
   describe('missing variables', () => {
     const findStoredRule = async (name: string, metric?: Metric | null) => {
-      const rule = await findRule(name, { metric })
+      const rule = await findRule({ name, metric })
       if (!rule) {
         throw new Error(`Rule ${name} was not stored`)
       }
@@ -782,7 +782,7 @@ describe('evaluateSimulation', () => {
         })
       ).rejects.toBe(rolledBack)
 
-      expect(await findRule('transport . km')).toBeNull()
+      expect(await findRule({ name: 'transport . km' })).toBeNull()
       expect(await findEvaluations()).toEqual([])
       expect(await findLinks()).toEqual([])
     })

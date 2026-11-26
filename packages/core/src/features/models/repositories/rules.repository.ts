@@ -5,11 +5,8 @@ import { mapRule, type RuleRow } from './rule.mapper.ts'
 
 /** Finds a unique rule by its name and metric, the default one when none. */
 export const findRule = async (
-  name: string,
-  {
-    metric = null,
-    session = prisma,
-  }: { metric?: Metric | null; session?: Transaction } = {}
+  { name, metric = null }: { name: string; metric?: Metric | null },
+  { session = prisma }: { session?: Transaction } = {}
 ): Promise<Rule | null> => {
   const row = await session.rule.findUnique({
     where: {
