@@ -136,7 +136,7 @@
     "@types/react-modal": "^3.16.3",
     "@types/webpack": "^5.28.5",
     "@vitejs/plugin-react": "^5.2.0",
-    "@vitest/browser": "^4.1.2",
+    "@vitest/browser": "^4.1.10",
     "@vitest/coverage-v8": "^4.1.2",
     "@vitest/ui": "^4.1.2",
     "ansi-colors": "^4.1.3",
