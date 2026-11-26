@@ -9,10 +9,10 @@ import SelectInput from '@/design-system/inputs/SelectInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Journey } from '@/types/journey'
+import { cn } from 'cn'
 import type { Dispatch, SetStateAction } from 'react'
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
-import { cn } from 'cn'
 
 interface Props {
   setJourneys: Dispatch<SetStateAction<Journey[]>>
@@ -53,7 +53,7 @@ export default function AddJourneyDesktop({ setJourneys, className }: Props) {
             name="distance"
             type="number"
             value={distance}
-            onChange={(e) => setDistance((e.target as HTMLInputElement).value)}
+            onChange={(e) => setDistance(e.target.value)}
           />{' '}
           km
         </span>
@@ -66,9 +66,7 @@ export default function AddJourneyDesktop({ setJourneys, className }: Props) {
             aria-labelledby="label-frequency"
             type="number"
             value={reccurrence}
-            onChange={(e) =>
-              setReccurrence(Number((e.target as HTMLInputElement).value))
-            }
+            onChange={(e) => setReccurrence(Number(e.target.value))}
           />{' '}
           x
         </span>

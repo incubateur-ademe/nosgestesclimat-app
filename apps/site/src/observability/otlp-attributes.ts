@@ -29,7 +29,7 @@ export function toLogAttributes(meta: LogMeta): LogAttributes {
  * `toAttributeValue`, so the cast cannot smuggle one OTLP would reject.
  */
 export function toSpanAttributes(meta: LogMeta): Attributes {
-  return toLogAttributes(meta) as Attributes
+  return toLogAttributes(meta)
 }
 
 function toAttributeValue(value: unknown): AnyValue {

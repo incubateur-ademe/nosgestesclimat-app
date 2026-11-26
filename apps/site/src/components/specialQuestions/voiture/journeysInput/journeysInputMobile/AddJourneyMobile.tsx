@@ -10,10 +10,10 @@ import SelectInput from '@/design-system/inputs/SelectInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Journey } from '@/types/journey'
+import { cn } from 'cn'
 import type { Dispatch, SetStateAction } from 'react'
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
-import { cn } from 'cn'
 
 interface Props {
   setJourneys: Dispatch<SetStateAction<Journey[]>>
@@ -56,7 +56,7 @@ export default function AddJourneyMobile({ setJourneys, className }: Props) {
             type="number"
             label={t('Distance')}
             value={distance}
-            onChange={(e) => setDistance((e.target as HTMLInputElement).value)}
+            onChange={(e) => setDistance(e.target.value)}
           />{' '}
           <span className="mb-4 inline-block">km</span>
         </span>
@@ -70,9 +70,7 @@ export default function AddJourneyMobile({ setJourneys, className }: Props) {
             type="number"
             label={t('Fréquence')}
             value={reccurrence}
-            onChange={(e) =>
-              setReccurrence(Number((e.target as HTMLInputElement).value))
-            }
+            onChange={(e) => setReccurrence(Number(e.target.value))}
           />
           <div className="mb-4 inline-block">
             <CloseIcon className="w-4" />
