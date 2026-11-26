@@ -16,6 +16,7 @@ updates:
       interval: "weekly"
     # A grouped PR counts as one, majors get their own slots.
     open-pull-requests-limit: 10
+    rebase-strategy: auto
     ignore:
       # From 1.10.2 the package ships .mjs only but still exports .js paths:
       # TypeScript and Node cannot resolve `@publicodes/tools/migration`.
@@ -44,6 +45,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    rebase-strategy: auto
     groups:
       github-actions:
         patterns:
