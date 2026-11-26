@@ -30,7 +30,11 @@ describe('authReducer', () => {
         pending,
         cooldownUntil: cooldown,
       } satisfies AuthPhase,
-      { phase: 'authenticated', email: 'a@b.com', userId: 'u1' } as AuthPhase,
+      {
+        phase: 'authenticated',
+        email: 'a@b.com',
+        userId: 'u1',
+      } satisfies AuthPhase,
     ])('returns idle from any state when RESET is dispatched', (state) => {
       expect(authReducer(state, { type: 'RESET' })).toEqual({
         phase: 'idle',

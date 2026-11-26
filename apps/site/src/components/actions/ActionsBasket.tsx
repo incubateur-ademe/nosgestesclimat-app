@@ -3,7 +3,7 @@ import type {
   ActionPlan,
   MaybePersonalizedAction,
 } from '@nosgestesclimat/core/features/actions/types/action'
-import { useId, type ReactNode } from 'react'
+import { useId } from 'react'
 import Trans from '../translation/trans/TransServer'
 import ChosenActionsList from './actionsBasket/ChosenActionsList'
 import DesktopSaveSelectionButtonSection from './actionsBasket/DesktopSaveSelectionButtonSection'
@@ -56,12 +56,7 @@ export default function ActionsBasket({
               values={{
                 numberOfCommittedActions,
               }}>
-              {
-                {
-                  numberOfCommittedActions,
-                } as unknown as ReactNode
-              }{' '}
-              actions dans votre sélection
+              {'{{numberOfCommittedActions}}'} actions dans votre sélection
             </Trans>
           ) : (
             <Trans i18nKey="actions.basket.subtitle.empty">

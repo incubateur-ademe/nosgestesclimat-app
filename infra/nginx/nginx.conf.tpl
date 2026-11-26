@@ -180,6 +180,28 @@ server {
 }
 
 # ----------------------------------------------------------------------------
+# Redirection jagis.beta.gouv.fr
+# ----------------------------------------------------------------------------
+
+# Ancien domaine du service J'agis : aucun de ses chemins n'existe ici, donc
+# tout part vers l'accueil, chemin et query compris.
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name jagis.beta.gouv.fr www.jagis.beta.gouv.fr;
+
+    # Lineage distinct de `${DOMAIN}` : un échec de validation sur jagis ne doit
+    # pas faire échouer le renouvellement du certificat principal.
+    ssl_certificate     /etc/letsencrypt/live/jagis.beta.gouv.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/jagis.beta.gouv.fr/privkey.pem;
+
+    return 301 https://${DOMAIN};
+}
+
+# ----------------------------------------------------------------------------
 # Server principal (HTTPS + cache + locations)
 # ----------------------------------------------------------------------------
 

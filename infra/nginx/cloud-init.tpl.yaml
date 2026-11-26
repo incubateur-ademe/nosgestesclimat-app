@@ -75,10 +75,23 @@ runcmd:
     ufw allow 443/tcp
     ufw --force enable
 
+  # ── Certificat jagis (preprod uniquement) ───────────────────────────────
+  # Le vhost jagis est commun aux deux instances : preprod doit charger un
+  # certificat pour que `nginx -t` passe, et n'en aura jamais de vrai. Sur prod,
+  # certbot crée ce même chemin et refuse d'écraser une lineage qu'il ignore.
+  - |
+    set -euo pipefail
+    d=/etc/letsencrypt/live/jagis.beta.gouv.fr
+    if [ "__ENVIRONMENT__" != "production" ] && [ ! -f "$d/fullchain.pem" ]; then
+      mkdir -p "$d"
+      openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
+        -subj "/CN=jagis.beta.gouv.fr" \
+        -keyout "$d/privkey.pem" -out "$d/fullchain.pem"
+    fi
+
   # ── Module OTel d'nginx (traces) ────────────────────────────────────────
   # Le paquet installe le `.so`, mais l'activation se fait une seule fois : un
   # second `load_module` du même fichier ferait échouer nginx au démarrage.
-  # Sans le module, le glob inclus reste vide et nginx demeure valide.
   - |
     set -euo pipefail
     mod=/etc/nginx/modules/ngx_otel_module.so
@@ -87,10 +100,6 @@ runcmd:
     # celui d'Ubuntu : `load_module` va donc dans le contexte principal.
     grep -qs ngx_otel_module /etc/nginx/nginx.conf || \
       sed -i '1i load_module modules/ngx_otel_module.so;' /etc/nginx/nginx.conf
-    mkdir -p /etc/nginx/otel-enabled
-    curl -fsSL \
-      "https://raw.githubusercontent.com/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx/otel.conf" \
-      -o /etc/nginx/otel-enabled/otel.conf
 
   # ── OpenTelemetry Collector (nginx → PostHog Logs) ──────────────────────
   # install-otelcol.sh est idempotent : cloud-init l'utilise au first boot,

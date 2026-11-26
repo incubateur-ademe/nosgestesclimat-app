@@ -1339,7 +1339,7 @@ entries:
   event.podium.empty.type.public-services: collectivité
   results.footprintBlock.actionsBlock.link: Découvrir mes actions
   results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
-  common.co2eAn.title: CO₂e / an
+  common.co2eAn.title: CO₂e / an
   iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
   iframe.safari.errorTitle: Version de Safari incompatible
@@ -1526,3 +1526,7 @@ entries:
   results.footprintBlock.carbone.objective.info.neutrality: Pour limiter le changement climatique sous 2 °C, il faut rétablir un équilibre entre la quantité de gaz émis et la capacité de la planète à les absorber. C’est ce qu’on appelle la <2>neutralité carbone</2>. L’objectif est d’atteindre cet équilibre en 2050.
   results.footprintBlock.carbone.objective.info.target: Atteindre la neutralité carbone, c’est possible si nous émettons <2>moins de 2 tonnes de CO₂e par personne et par an</2>.
   results.footprintBlock.carbone.legend: '* Moyenne de nos utilisateurs (plus de 600 000 simulations par an).'
+  stats.description: Cette section est générée via Posthog.
+  stats.impact_matrix.description: Consultez notre <2>matrice d'impact</2> afin de prendre connaissance de <5>nos indicateurs d’usage et d’impact</5>.
+  stats.impact_matrix.title: Matrice d'impact
+  stats.title: Statistiques

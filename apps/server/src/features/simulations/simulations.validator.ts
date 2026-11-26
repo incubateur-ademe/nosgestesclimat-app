@@ -81,7 +81,7 @@ const SimulationCreateNewsletterList = v.pipe(
   )
 )
 
-const SimulationCreateQuery = v.strictObject({
+export const SimulationCreateQuery = v.strictObject({
   newsletters: v.optional(SimulationCreateNewsletterList, []),
   sendEmail: v.optional(v.pipe(v.string(), v.parseBoolean()), 'false'),
   ...LocaleQuery.entries,

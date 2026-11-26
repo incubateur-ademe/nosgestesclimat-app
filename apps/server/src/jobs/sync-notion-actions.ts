@@ -28,7 +28,14 @@ import type { BaseIssue, InferOutput } from 'valibot'
 import * as v from 'valibot'
 import { config } from '../config.ts'
 import logger from '../logger.ts'
-import { convertNotionRichTextToMd } from './helpers/convert-notion-rich-text-to-md.ts'
+import {
+  convertNotionRichTextToMd,
+  convertNotionRichTextToPlainText,
+} from './helpers/convert-notion-rich-text-to-md.ts'
+
+// JSON values must not be Markdown-encoded: a URL stored as a Notion link would
+// otherwise become `[url](url)`, which is invalid JSON-LD.
+const JSON_PROPERTY_KEYS = new Set(['seo_json_ld', 'seo_json_ld_en'])
 
 const trimmedString = v.pipe(v.string(), v.trim())
 const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
@@ -339,7 +346,9 @@ const createFetchAllPages = (client: Client): FetchAllPages =>
       const row: NotionRawRow = {}
 
       for (const [key, property] of Object.entries(properties)) {
-        const value = getPropertyValue(property)
+        const value = getPropertyValue(property, {
+          asPlainText: JSON_PROPERTY_KEYS.has(key),
+        })
         row[key as keyof NotionRawRow] = value
       }
 
@@ -363,13 +372,16 @@ type PageObjectResponse = Extract<
 >
 type NotionProperty = PageObjectResponse['properties'][string]
 
-function getPropertyValue(
-  property: NotionProperty
+export function getPropertyValue(
+  property: NotionProperty,
+  { asPlainText = false }: { asPlainText?: boolean } = {}
 ): string | boolean | number | undefined | null {
   const propertyType = property.type
   switch (propertyType) {
     case 'rich_text':
-      return convertNotionRichTextToMd(property.rich_text)
+      return asPlainText
+        ? convertNotionRichTextToPlainText(property.rich_text)
+        : convertNotionRichTextToMd(property.rich_text)
     case 'title':
       return convertNotionRichTextToMd(property.title)
     case 'url':

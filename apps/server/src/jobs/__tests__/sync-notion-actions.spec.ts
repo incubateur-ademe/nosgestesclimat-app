@@ -7,7 +7,11 @@ import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import logger from '../../logger.ts'
-import { syncNotionActions, type NotionRawRow } from '../sync-notion-actions.ts'
+import {
+  getPropertyValue,
+  syncNotionActions,
+  type NotionRawRow,
+} from '../sync-notion-actions.ts'
 
 let validTheme: Action['theme']
 
@@ -729,4 +733,44 @@ function findActionTranslation(actionId: string, locale: 'fr' | 'en') {
   return prisma.actionTranslation.findUnique({
     where: { actionId_locale: { actionId, locale } },
   })
+}
+
+describe('getPropertyValue', () => {
+  const linkedJsonProperty = {
+    type: 'rich_text',
+    rich_text: [
+      textSegment('{"@context": "'),
+      textSegment('https://schema.org', 'https://schema.org/'),
+      textSegment('", "@graph": []}'),
+    ],
+  } as unknown as Parameters<typeof getPropertyValue>[0]
+
+  it('keeps URLs raw in JSON properties, so the JSON-LD stays valid', () => {
+    expect(getPropertyValue(linkedJsonProperty, { asPlainText: true })).toBe(
+      '{"@context": "https://schema.org", "@graph": []}'
+    )
+  })
+
+  it('converts links to Markdown in text properties', () => {
+    expect(getPropertyValue(linkedJsonProperty)).toBe(
+      '{"@context": "[https://schema.org](https://schema.org/)", "@graph": []}'
+    )
+  })
+})
+
+function textSegment(content: string, link?: string) {
+  return {
+    type: 'text',
+    text: { content, link: link ? { url: link } : null },
+    annotations: {
+      bold: false,
+      italic: false,
+      strikethrough: false,
+      underline: false,
+      code: false,
+      color: 'default',
+    },
+    plain_text: content,
+    href: link ?? null,
+  }
 }

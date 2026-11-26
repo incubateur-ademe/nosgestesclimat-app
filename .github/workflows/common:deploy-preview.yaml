@@ -14,6 +14,7 @@ jobs:
   resolve-pr:
     name: Resolve PR info
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.actor != 'dependabot[bot]'
     environment: Preview app
     outputs:
       pr_number: ${{ steps.resolve.outputs.pr_number }}

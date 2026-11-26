@@ -53,10 +53,7 @@ export default function Localisation({
         <div className="flex flex-wrap items-baseline gap-2 sm:flex-nowrap">
           {region !== initialRegion && (
             <div className="mt-2">
-              <Button
-                variant="text"
-                size="sm"
-                onClick={resetRegion as () => void}>
+              <Button variant="text" size="sm" onClick={resetRegion}>
                 <Trans>Revenir à ma région par défaut </Trans>{' '}
                 <span aria-label={supportedRegions[initialRegion][locale].nom}>
                   <CountryFlag

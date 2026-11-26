@@ -1,6 +1,6 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import UserSpaceTabs from '@/components/layout/UserSpaceTabs'
-import TransServer from '@/components/translation/trans/TransServer'
+import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import { throwNextError } from '@/helpers/server/error'
@@ -53,17 +53,15 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
 
       <div className="mb-6">
         <Title className="mb-0">
-          <TransServer i18nKey="mon-espace.settings.title">
-            Paramètres
-          </TransServer>
+          <Trans i18nKey="mon-espace.settings.title">Paramètres</Trans>
         </Title>
       </div>
 
       <section aria-labelledby="user-info-title" className="mb-10">
         <h2 id="user-info-title" className="mb-4">
-          <TransServer i18nKey="mon-espace.settings.userInfos.title">
+          <Trans i18nKey="mon-espace.settings.userInfos.title">
             Mes informations
-          </TransServer>
+          </Trans>
         </h2>
 
         <div className="flex max-w-180 flex-col gap-8">
@@ -72,9 +70,9 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
           </QueryClientProviderWrapper>
 
           <h2 className="mt-8">
-            <TransServer i18nKey="settings.newsletters.title">
+            <Trans i18nKey="settings.newsletters.title">
               Inscription à nos contenus
-            </TransServer>
+            </Trans>
           </h2>
           <NewsletterSettings {...{ newsletters, subscriptions }} />
         </div>

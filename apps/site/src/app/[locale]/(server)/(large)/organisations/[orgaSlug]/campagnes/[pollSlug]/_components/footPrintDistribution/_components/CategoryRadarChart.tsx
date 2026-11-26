@@ -5,6 +5,7 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIsMobileLayout } from '@/hooks/useIsMobileLayout'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
+import { cn } from 'cn'
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -14,7 +15,6 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
-import { cn } from 'cn'
 
 interface Props {
   userValues: Record<Categories, number>
@@ -61,8 +61,8 @@ export default function CategoryRadarChart({
 
     return {
       category,
-      name: categoryLabels[category as keyof typeof categoryLabels],
-      nameFull: categoryLabelsFull[category as keyof typeof categoryLabelsFull],
+      name: categoryLabels[category],
+      nameFull: categoryLabelsFull[category],
       user: userValue,
       average: averageValue,
       userFormatted: formatFootprint(userValue, {

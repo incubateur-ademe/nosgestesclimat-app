@@ -2,7 +2,6 @@
 
 import { DEFAULT_PLAFOND, DEFAULT_PLANCHER } from '@/constants/model/bounds'
 import getNamespace from '@/publicodes-state/helpers/getNamespace'
-import type { FormattedSuggestion } from '@/publicodes-state/types'
 import type {
   DottedName,
   NGCRuleNode,
@@ -88,13 +87,10 @@ export default function useContent({ dottedName, rule }: Props) {
     const suggestionsFolder = (rule?.rawNode.mosaique?.suggestions ||
       rule?.rawNode.suggestions) as Suggestions
     const suggestions = suggestionsFolder
-      ? Object.keys(suggestionsFolder).map(
-          (key) =>
-            ({
-              label: key,
-              value: suggestionsFolder[key],
-            }) as FormattedSuggestion
-        )
+      ? Object.keys(suggestionsFolder).map((key) => ({
+          label: key,
+          value: suggestionsFolder[key],
+        }))
       : []
 
     return suggestions

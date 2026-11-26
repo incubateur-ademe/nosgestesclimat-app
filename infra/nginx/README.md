@@ -299,6 +299,26 @@ template. Le certificat reste valide — les fichiers dans
 Le renouvellement automatique via `certbot.timer` utilise l'authenticator nginx
 et fonctionne sans intervention.
 
+### Redirection `jagis.beta.gouv.fr`
+
+Le vhost vit dans `nginx.conf.tpl` comme les autres, mais sur un **lineage
+séparé** : un échec de validation sur `jagis` ne doit pas faire échouer le
+renouvellement du certificat principal.
+
+Le challenge HTTP-01 exige que le nom résolve déjà ici : la bascule DNS précède
+l'émission, donc la redirection ne peut être mergée qu'ensuite (`nginx -t`
+refuse la conf tant que les fichiers manquent — prod et preprod reverteraient
+tour à tour).
+
+    # Après la bascule DNS
+    certbot certonly --nginx -d jagis.beta.gouv.fr -d www.jagis.beta.gouv.fr
+
+`certonly` et non `--nginx` seul : le plugin installerait sinon le certificat
+dans la conf, qu'il n'a pas à éditer.
+
+Sur **preprod**, cloud-init pose un certificat auto-signé au même chemin : le
+vhost y est chargé, aucun trafic jagis n'y arrive, et `nginx -t` doit passer.
+
 ## Reverse proxy PostHog (`/revp/`)
 
 Le tracking PostHog transite par un pathname de notre domaine (`/revp/`) au lieu

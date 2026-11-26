@@ -17,6 +17,13 @@ export function convertNotionRichTextToMd(
   return items.map(convertItem).join('')
 }
 
+/** Raw text of the property, without Markdown formatting (links included). */
+export function convertNotionRichTextToPlainText(
+  items: RichTextItemResponse[]
+): string {
+  return items.map((item) => item.plain_text).join('')
+}
+
 function convertItem(item: RichTextItemResponse): string {
   if (item.type !== 'text') return item.plain_text
 

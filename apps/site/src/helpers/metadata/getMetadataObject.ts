@@ -1,5 +1,6 @@
 import { noIndexObject } from '@/constants/metadata'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
+import { getSiteUrl } from '@/helpers/metadata/getSiteUrl'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import type { Metadata } from 'next'
@@ -45,11 +46,6 @@ export const buildLanguagesForLocales = (
 ): Partial<Record<Locale, string>> =>
   Object.fromEntries(locales.map((locale) => [locale, path]))
 
-const BASE_URL =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
-    : 'https://nosgestesclimat.fr'
-
 const buildURL = ({
   params,
   searchParams,
@@ -70,11 +66,11 @@ const buildURL = ({
         )}`
       : ''
 
-  return `${BASE_URL}${getLocalizedPath(locale, `${paramsPart}${searchParamsPart}`)}`
+  return `${getSiteUrl()}${getLocalizedPath(locale, `${paramsPart}${searchParamsPart}`)}`
 }
 
 const buildAlternateUrl = (path: string, locale: Locale) =>
-  `${BASE_URL}${getLocalizedPath(locale, path)}`
+  `${getSiteUrl()}${getLocalizedPath(locale, path)}`
 
 /** Absolute-URL `alternates` metadata: canonical + hreflang (including
  * x-default). Exported for pages that only need alternates on top of inherited

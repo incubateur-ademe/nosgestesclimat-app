@@ -69,9 +69,6 @@ export function getCategoriesObject({
     {
       groupCategoriesAndSubcategoriesFootprints: {},
       userCategoriesAndSubcategoriesFootprints: {},
-    } as {
-      groupCategoriesAndSubcategoriesFootprints: CategoriesAndSubcategoriesFootprintsType
-      userCategoriesAndSubcategoriesFootprints: CategoriesAndSubcategoriesFootprintsType
     }
   )
 
