@@ -18,33 +18,6 @@ interface Props {
   maxLabel?: string
 }
 
-function formatBoundLabel({
-  label,
-  bound,
-  unit,
-}: {
-  label?: string
-  bound: number
-  unit?: string
-}): string {
-  if (label) return label
-  return unit ? `${bound} ${unit}` : String(bound)
-}
-
-function formatValueText({
-  value,
-  unit,
-  hint,
-}: {
-  value: number
-  unit?: string
-  hint?: string
-}): string {
-  return [unit ? `${value} ${unit}` : String(value), hint]
-    .filter(Boolean)
-    .join(', ')
-}
-
 export default function SliderNumberInput({
   id,
   instructionLabel,
@@ -103,4 +76,31 @@ export default function SliderNumberInput({
       </div>
     </div>
   )
+}
+
+function formatBoundLabel({
+  label,
+  bound,
+  unit,
+}: {
+  label?: string
+  bound: number
+  unit?: string
+}): string {
+  if (label) return label
+  return unit ? `${bound} ${unit}` : String(bound)
+}
+
+function formatValueText({
+  value,
+  unit,
+  hint,
+}: {
+  value: number
+  unit?: string
+  hint?: string
+}): string {
+  return [unit ? `${value} ${unit}` : String(value), hint]
+    .filter(Boolean)
+    .join(', ')
 }
