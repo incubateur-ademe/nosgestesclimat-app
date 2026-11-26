@@ -87,7 +87,7 @@ describe('getPollResult', () => {
     const poll = await pollFactory.withOrganisation(organisation).create()
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPollId(poll.id)
       .params({ userId: user.id })
       .create()
@@ -106,7 +106,7 @@ describe('getPollResult', () => {
     const poll = await pollFactory.withOrganisation(organisation).create()
     const user = await userFactory.create()
     await simulationFactory
-      .started()
+      .withStatus('answering_major_questions')
       .withPollId(poll.id)
       .params({ userId: user.id })
       .create()
@@ -125,12 +125,12 @@ describe('getPollResult', () => {
     const poll = await pollFactory.withOrganisation(organisation).create()
     const user = await userFactory.create()
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPollId(poll.id)
       .params({ userId: user.id, date: new Date('2026-01-01') })
       .create()
     const mostRecent = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPollId(poll.id)
       .params({ userId: user.id, date: new Date('2026-06-01') })
       .create()

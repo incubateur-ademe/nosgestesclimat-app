@@ -1,6 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { ModelString } from '@nosgestesclimat/core/features/models/helpers/model-versions'
-import type { SimulationStatus } from '@nosgestesclimat/core/features/simulations/types/simulation'
+import type { SimulationStatus } from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
 import type {
   ComputedResults,
   Situation,
@@ -15,7 +15,6 @@ export interface Simulation {
   foldedSteps: DottedName[]
   persona?: string
   computedResults: ComputedResults
-  progression: number
   status: SimulationStatus
   model: ModelString
   /** Server-owned: absent on simulations that have not been persisted yet. */

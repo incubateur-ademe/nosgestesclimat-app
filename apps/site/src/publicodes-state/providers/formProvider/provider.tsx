@@ -14,9 +14,9 @@ import type { PropsWithChildren } from 'react'
 import { useMemo } from 'react'
 import FormContext from './context'
 import { useCurrent } from './hooks/useCurrent'
-import useProgression from './hooks/useProgression'
 import useQuestions from './hooks/useQuestions'
 import useQuestionsWithForgottenAtTheEnd from './hooks/useQuestionsWithForgottenAtTheEnd'
+import useSimulationStatus from './hooks/useSimulationStatus'
 
 interface Props {
   root: DottedName
@@ -94,12 +94,12 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     [reorderedQuestionsByCategories, reorderedRemainingQuestions]
   )
 
-  useProgression({
+  useSimulationStatus({
     categories: orderedTestCategoriesWithProfile,
     remainingQuestions: reorderedRemainingQuestions,
     relevantQuestions: reorderedRelevantQuestions,
     updateCurrentSimulation,
-    currentStored: simulation,
+    currentStoredStatus: simulation?.status,
   })
 
   return (

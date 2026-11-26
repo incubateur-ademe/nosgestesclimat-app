@@ -65,7 +65,7 @@ describe('assessActions', () => {
     findActionAssessmentsBySimulation(simulation.id)
 
   beforeEach(async () => {
-    simulation = await simulationFactory.completed().create()
+    simulation = await simulationFactory.withStatus('full_result_seen').create()
   })
 
   afterEach(async () => {

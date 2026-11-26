@@ -25,7 +25,7 @@ function createSimulation({ persona }: { persona?: string }) {
     foldedSteps: [],
     situation: {},
     computedResults: getComputedResults(engine),
-    progression: 1,
+    status: 'full_result_seen',
   }
 }
 

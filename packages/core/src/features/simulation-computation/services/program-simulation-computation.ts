@@ -24,7 +24,7 @@ export function createProgramSimulationComputation(
     if (!isSimulationCompleted(simulation)) {
       throw new SimulationNotFinishedError({
         simulationId: simulation.id,
-        progression: simulation.progression,
+        status: simulation.status,
       })
     }
 

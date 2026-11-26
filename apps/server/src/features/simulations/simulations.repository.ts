@@ -1,5 +1,4 @@
 import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
-import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import type { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   simulationSelection,
@@ -22,7 +21,7 @@ export const createParticipantSimulation = async <
       date,
       model,
       foldedSteps,
-      progression,
+      status,
       situation,
       additionalQuestionsAnswers,
     },
@@ -34,8 +33,6 @@ export const createParticipantSimulation = async <
   },
   { session }: { session: Session }
 ) => {
-  const incomingStatus = simulationStatusFromProgression(progression)
-
   const existingSimulation = await session.simulation.findUnique({
     where: {
       id,
@@ -54,7 +51,7 @@ export const createParticipantSimulation = async <
   if (
     existingSimulation &&
     isSimulationCompleted(existingSimulation) &&
-    !isSimulationCompleted({ status: incomingStatus })
+    !isSimulationCompleted({ status })
   ) {
     throw new ImmutableSimulationException()
   }
@@ -69,8 +66,7 @@ export const createParticipantSimulation = async <
     },
     situation,
     foldedSteps,
-    progression,
-    status: incomingStatus,
+    status,
     computedResults,
     ...(additionalQuestionsAnswers?.length
       ? {

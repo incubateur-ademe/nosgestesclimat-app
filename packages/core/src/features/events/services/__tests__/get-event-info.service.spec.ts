@@ -6,6 +6,7 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
+import type { SimulationStatus } from '../../../simulations/validators/simulation.schema.ts'
 import { eventFactory } from '../../factories/event.factory.ts'
 import { refreshEventComputation } from '../../repositories/event.repository.ts'
 import type { EventInfo } from '../../types/event-info.ts'
@@ -25,7 +26,7 @@ const seedPoll = async (
   simulationCount: number,
   options: {
     pollCreatedAt?: Date
-    simulationProgression?: number
+    simulationStatus?: SimulationStatus
     simulationDates?: Date[]
   } = {}
 ) => {
@@ -47,9 +48,7 @@ const seedPoll = async (
   for (let i = 0; i < simulationCount; i++) {
     const sim = await simulationFactory.create({
       createdAt: simulationCreatedAt(i),
-      // The shared factory randomizes progression by default: make it explicit
-      // so only the requested value ends up in the event window.
-      progression: options.simulationProgression ?? 1,
+      status: options.simulationStatus ?? 'full_result_seen',
     })
     await prisma.simulationPoll.create({
       data: { pollId: poll.id, simulationId: sim.id },
@@ -173,7 +172,7 @@ describe('getEventInfo', () => {
     // Simulation in the date range, but no poll — should still be counted
     await simulationFactory.create({
       createdAt: new Date(event.startDate.getTime() + 60 * 60 * 1000),
-      progression: 1,
+      status: 'full_result_seen',
     })
     await refreshEventComputation()
 
@@ -356,7 +355,7 @@ describe('getEventInfo', () => {
     expect(result.organisationCount).toBe(1)
   })
 
-  it('does not count incomplete simulations (progression < 1)', async () => {
+  it('does not count incomplete simulations', async () => {
     const event = await eventFactory.create()
 
     const org = await organisationFactory.create({
@@ -364,9 +363,11 @@ describe('getEventInfo', () => {
       slug: 'org',
     })
 
-    // 3 completed + 1 in progress (progression = 0.5)
+    // 3 completed + 1 in progress
     await seedPoll(event, org, 3)
-    await seedPoll(event, org, 1, { simulationProgression: 0.5 })
+    await seedPoll(event, org, 1, {
+      simulationStatus: 'answering_major_questions',
+    })
 
     await refreshEventComputation()
 
@@ -438,7 +439,7 @@ describe('getEventInfo', () => {
 
     await simulationFactory.create({
       createdAt: event.startDate,
-      progression: 1,
+      status: 'full_result_seen',
     })
     await refreshEventComputation()
 
@@ -452,7 +453,7 @@ describe('getEventInfo', () => {
 
     await simulationFactory.create({
       createdAt: event.endDate,
-      progression: 1,
+      status: 'full_result_seen',
     })
     await refreshEventComputation()
 
@@ -466,11 +467,11 @@ describe('getEventInfo', () => {
 
     await simulationFactory.create({
       createdAt: new Date(event.startDate.getTime() - 1000),
-      progression: 1,
+      status: 'full_result_seen',
     }) // 1s before
     await simulationFactory.create({
       createdAt: new Date(event.endDate.getTime() + 1000),
-      progression: 1,
+      status: 'full_result_seen',
     }) // 1s after
     await refreshEventComputation()
 

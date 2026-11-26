@@ -33,7 +33,7 @@ export function useTrackSimulator() {
 
   const { relevantAnsweredQuestions, remainingQuestions } = useFormState()
 
-  const { progression, status, foldedSteps, situation } = currentSimulation
+  const { status, foldedSteps, situation } = currentSimulation
 
   const { cookieState } = useCookieManagement()
 
@@ -44,7 +44,7 @@ export function useTrackSimulator() {
   // Track users that have seen the first question
   useEffect(() => {
     if (
-      progression === 0 &&
+      status === 'not_started' &&
       foldedSteps.length === 0 &&
       !getIsEventTracked(FIRST_QUESTION_SEEN, simulationId)
     ) {
@@ -56,12 +56,12 @@ export function useTrackSimulator() {
 
       markAsEventTracked(FIRST_QUESTION_SEEN, simulationId)
     }
-  }, [remainingQuestions, progression, foldedSteps, simulationId])
+  }, [remainingQuestions, status, foldedSteps, simulationId])
 
   // Track users that have answered at first question
   useEffect(() => {
     if (
-      progression > 0 &&
+      status !== 'not_started' &&
       foldedSteps.length === 1 &&
       !getIsEventTracked(FIRST_QUESTION_ANSWERED, simulationId)
     ) {
@@ -81,7 +81,7 @@ export function useTrackSimulator() {
     }
   }, [
     relevantAnsweredQuestions,
-    progression,
+    status,
     foldedSteps,
     simulationId,
     currentSimulation,

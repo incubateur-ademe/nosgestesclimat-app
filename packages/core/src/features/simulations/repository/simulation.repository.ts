@@ -5,10 +5,7 @@ import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type {
-  Prisma,
-  SimulationStatus,
-} from '../../../prisma/generated/client.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
@@ -16,16 +13,15 @@ import type { Model } from '../../models/types/model.ts'
 import { SimulationNotFoundError } from '../errors/simulations.error.ts'
 import { type NewSimulation } from '../helpers/new-simulation.ts'
 import { COMPLETED_SIMULATION_STATUSES } from '../helpers/simulation-guards.ts'
-import { simulationStatusFromProgression } from '../helpers/simulation-status.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
 const simulationSelect = {
   id: true,
   date: true,
   model: true,
-  progression: true,
   status: true,
   situation: true,
   foldedSteps: true,
@@ -46,7 +42,7 @@ export const createSimulation = async (
     userId,
     model,
     date,
-    progression,
+    status,
     situation,
     foldedSteps,
     computedResults,
@@ -59,8 +55,7 @@ export const createSimulation = async (
       userId,
       model: serializeModel(model),
       date,
-      progression,
-      status: simulationStatusFromProgression(progression),
+      status,
       situation: situation as unknown as Prisma.InputJsonValue,
       foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
       computedResults: computedResults as unknown as Prisma.InputJsonValue,
@@ -84,10 +79,8 @@ export const createManySimulations = async (
   if (simulations.length === 0) return
 
   await tx.simulation.createMany({
-    data: simulations.map(({ model, progression, ...rest }) => ({
+    data: simulations.map(({ model, ...rest }) => ({
       ...rest,
-      progression,
-      status: simulationStatusFromProgression(progression),
       ...(model ? { model: serializeModel(model) } : {}),
       situation: rest.situation as unknown as Prisma.InputJsonValue,
       foldedSteps: rest.foldedSteps as unknown as Prisma.InputJsonValue[],
@@ -216,7 +209,6 @@ export const updateSimulation = async (
     userId,
     situation,
     foldedSteps,
-    progression,
     status,
     computedResults,
     model,
@@ -225,7 +217,6 @@ export const updateSimulation = async (
     userId: string
     situation: Situation<DottedName>
     foldedSteps: DottedName[]
-    progression: number
     status: SimulationStatus
     computedResults: ComputedResults
     model?: ModelString
@@ -239,7 +230,6 @@ export const updateSimulation = async (
       data: {
         situation: situation as unknown as Prisma.InputJsonValue,
         foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
-        progression,
         status,
         computedResults: computedResults as unknown as Prisma.InputJsonValue,
         ...(model ? { model } : {}),

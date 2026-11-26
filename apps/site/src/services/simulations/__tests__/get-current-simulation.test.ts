@@ -60,7 +60,6 @@ describe('getCurrentSimulation', () => {
       situation: entity.situation,
       foldedSteps: entity.foldedSteps,
       computedResults: entity.computedResults,
-      progression: entity.progression,
       status: entity.status,
       model: serializeModel(entity.model),
       updatedAt: entity.updatedAt.toISOString(),

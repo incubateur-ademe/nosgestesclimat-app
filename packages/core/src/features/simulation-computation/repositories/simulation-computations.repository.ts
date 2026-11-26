@@ -3,6 +3,7 @@ import { failure, success } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
+import { COMPLETED_SIMULATION_STATUSES } from '../../simulations/helpers/simulation-guards.ts'
 import { ComputationAlreadyExistsError } from '../errors/simulation-computation.error.ts'
 import type { SimulationComputationStatus } from '../types/computation.ts'
 import { mapSimulation } from './simulation.mapper.ts'
@@ -63,7 +64,7 @@ export const findLastFinishedSimulationByUserId = async (
   // simulation can have none: model unsupported at completion, or simulation
   // predating the computation feature.
   const simulation = await prisma.simulation.findFirst({
-    where: { userId, progression: 1 },
+    where: { userId, status: { in: [...COMPLETED_SIMULATION_STATUSES] } },
     orderBy: { createdAt: 'desc' },
     include: { computations: { select: { status: true } } },
   })

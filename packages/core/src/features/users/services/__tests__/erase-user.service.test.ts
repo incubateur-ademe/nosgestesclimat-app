@@ -45,7 +45,10 @@ describe('eraseUser', () => {
       await organisationFactory.withAdministrator(user).create()
       await refreshTokenFactory.params({ userId }).create()
       await verificationCodeFactory.params({ email }).create()
-      await simulationFactory.params({ userId }).completed().create()
+      await simulationFactory
+        .params({ userId })
+        .withStatus('full_result_seen')
+        .create()
 
       // A group the user runs: creating one makes its administrator a
       // participant too, and someone else took part in it.

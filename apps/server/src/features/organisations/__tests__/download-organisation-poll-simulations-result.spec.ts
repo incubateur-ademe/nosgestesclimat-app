@@ -347,20 +347,20 @@ describe('Given a NGC user', () => {
               })
             })
 
-            describe('And simulations with different progressions exist', () => {
+            describe('And simulations with different statuses exist', () => {
               let excelBuffer: Buffer
 
               beforeEach(async () => {
-                // Create a complete simulation (progression: 1)
+                // Create a complete simulation
                 await createOrganisationPollSimulation({
                   pollId,
-                  simulation: { progression: 1 },
+                  simulation: { status: 'full_result_seen' },
                 })
 
-                // Create an incomplete simulation (progression: 0.5)
+                // Create an incomplete simulation
                 await createOrganisationPollSimulation({
                   pollId,
-                  simulation: { progression: 0.5 },
+                  simulation: { status: 'answering_major_questions' },
                 })
 
                 // Capture the Excel buffer when uploaded

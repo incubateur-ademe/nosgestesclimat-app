@@ -54,7 +54,6 @@ export const defaultGroupParticipantSimulationSelection = {
   date: true,
   situation: true,
   foldedSteps: true,
-  progression: true,
   status: true,
   computedResults: true,
   additionalQuestionsAnswers: {
@@ -132,7 +131,6 @@ export const defaultSimulationSelection = {
   model: true,
   situation: true,
   foldedSteps: true,
-  progression: true,
   status: true,
   computedResults: true,
   additionalQuestionsAnswers: {

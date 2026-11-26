@@ -36,7 +36,7 @@ describe('getPollParticipation', () => {
     const poll = await pollFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -55,7 +55,7 @@ describe('getPollParticipation', () => {
     const poll = await pollFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -76,7 +76,7 @@ describe('getPollParticipation', () => {
       pollFactory.create(),
     ])
     const simulation = await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -97,7 +97,7 @@ describe('getPollParticipation', () => {
     ])
     const poll = await pollFactory.create()
     const simulation = await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -117,7 +117,7 @@ describe('getPollParticipation', () => {
     const [older, latest] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.2)
+        .withStatus('answering_major_questions')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -126,7 +126,7 @@ describe('getPollParticipation', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.5)
+        .withStatus('answering_major_questions')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -154,7 +154,7 @@ describe('getPollParticipation', () => {
     const poll = await pollFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

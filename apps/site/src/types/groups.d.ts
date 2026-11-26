@@ -8,7 +8,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
  */
 export type ParticipantSimulationSummary = Pick<
   Simulation,
-  'computedResults' | 'progression' | 'status'
+  'computedResults' | 'status'
 >
 
 interface BaseParticipant {

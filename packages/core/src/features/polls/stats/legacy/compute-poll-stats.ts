@@ -13,13 +13,16 @@ import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRule
 import * as v from 'valibot'
 import { toError } from '../../../../lib/to-error.ts'
 import { prisma } from '../../../../prisma/client.ts'
-import type { SimulationStatus } from '../../../../prisma/generated/client.ts'
 import type { Logger } from '../../../logger/index.ts'
-import { isSimulationCompleted } from '../../../simulations/helpers/simulation-guards.ts'
+import {
+  COMPLETED_SIMULATION_STATUSES,
+  isSimulationCompleted,
+} from '../../../simulations/helpers/simulation-guards.ts'
 import {
   ComputedResultsSchema,
   type ComputedResults,
 } from '../../../simulations/validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../../../simulations/validators/simulation.schema.ts'
 import {
   SituationSchema,
   type Situation,
@@ -98,7 +101,12 @@ async function* batchPollSimulations(pollId: string) {
       take: BATCH_SIZE,
       skip: cursor ? 1 : 0,
       ...(cursor ? { cursor } : {}),
-      where: { pollId, simulation: { progression: 1 } },
+      where: {
+        pollId,
+        simulation: {
+          status: { in: [...COMPLETED_SIMULATION_STATUSES] },
+        },
+      },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
       select: {
         id: true,

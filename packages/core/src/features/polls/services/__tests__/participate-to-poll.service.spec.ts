@@ -49,7 +49,6 @@ describe('participateToPoll', () => {
         id: simulationId,
         date: expect.any(Date),
         model,
-        progression: 0,
         status: 'not_started',
         situation: {},
         foldedSteps: [],
@@ -136,7 +135,7 @@ describe('participateToPoll', () => {
         await findSimulationById({ id: simulation.id, userId: user.id })
       ).toEqual(
         expect.objectContaining({
-          progression: 1,
+          status: 'full_result_seen',
           updatedAt: simulation.updatedAt,
           situation: simulation.situation,
         })
@@ -248,7 +247,7 @@ describe('participateToPoll', () => {
       const { poll } = await campaign()
       const simulation = await simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.2)
+        .withStatus('answering_major_questions')
         .params({ userId: user.id })
         .create()
 
@@ -378,7 +377,7 @@ const unverified = (user: { id: string }): AppUser => ({
 const completedSimulation = (userId: string) =>
   simulationFactory
     .withModelRegion('FR')
-    .completed()
+    .withStatus('full_result_seen')
     .params({ userId })
     .create()
 

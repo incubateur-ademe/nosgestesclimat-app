@@ -50,7 +50,7 @@ const simulationDeletionTest = signedInTest.extend<{
   signedInUserWithSimulation: [
     async ({ signedInUser }, use) => {
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: signedInUser.id })
         .withValidComputedResults()
         .create()

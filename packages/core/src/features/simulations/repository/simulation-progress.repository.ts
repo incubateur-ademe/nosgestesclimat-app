@@ -1,5 +1,4 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import {
   COMPLETED_SIMULATION_STATUSES,
@@ -13,11 +12,11 @@ import {
   hasValidComputedResults,
   type ComputedResults,
 } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 import { isValidSimulation } from '../validators/simulation.validator.ts'
 
 const latestSimulationSelect = {
   id: true,
-  progression: true,
   status: true,
   model: true,
   computedResults: true,
@@ -25,7 +24,6 @@ const latestSimulationSelect = {
 
 type SimulationProgressRow<S extends SimulationStatus = SimulationStatus> = {
   id: string
-  progression: number
   status: S
   model: ModelString
   computedResults: ComputedResults
@@ -33,12 +31,10 @@ type SimulationProgressRow<S extends SimulationStatus = SimulationStatus> = {
 
 const toProgress = <S extends SimulationStatus>({
   id,
-  progression,
   status,
   model,
 }: SimulationProgressRow<S>): SimulationProgress & { status: S } => ({
   id,
-  progression,
   status,
   model,
 })

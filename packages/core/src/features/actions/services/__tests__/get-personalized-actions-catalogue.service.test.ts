@@ -40,7 +40,10 @@ describe('getPersonalizedActionsCatalogue', () => {
     it('returns "not-programmed" status, all visible actions without assessments, and no top actions', async () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
-      await simulationFactory.completed().params({ userId: user.id }).create()
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .params({ userId: user.id })
+        .create()
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
@@ -57,13 +60,13 @@ describe('getPersonalizedActionsCatalogue', () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
       const older = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id, createdAt: new Date('2024-01-01') })
         .withCompletedComputation()
         .create()
       // Model unsupported at completion: finished but never computed.
       await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id, createdAt: new Date('2024-06-01') })
         .withModelVersion({ publishedTag: '1.0.0' })
         .create()
@@ -90,7 +93,7 @@ describe('getPersonalizedActionsCatalogue', () => {
         const action = await actionFactory.published().create()
         const user = await userFactory.create()
         await simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .params({ userId: user.id })
           .withComputationStatus(status)
           .create()
@@ -116,17 +119,17 @@ describe('getPersonalizedActionsCatalogue', () => {
       const user = await userFactory.create()
       const [older] = await Promise.all([
         simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .params({ userId: user.id, createdAt: new Date('2024-01-01') })
           .withCompletedComputation()
           .create(),
         simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .params({ userId: user.id, createdAt: new Date('2024-06-01') })
           .withPendingComputation()
           .create(),
         simulationFactory
-          .started()
+          .withStatus('answering_major_questions')
           .params({ userId: user.id, createdAt: new Date('2024-12-01') })
           .create(),
       ])
@@ -159,14 +162,14 @@ describe('getPersonalizedActionsCatalogue', () => {
     it('returns the completed assessments even when a newer simulation is unfinished', async () => {
       const user = await userFactory.create()
       const completed = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id, createdAt: new Date('2024-01-01') })
         .withCompletedComputation()
         .create()
       // A more recent simulation the user started but never finished: it has
       // no computation and must not shadow the previous completed one.
       await simulationFactory
-        .started()
+        .withStatus('answering_major_questions')
         .params({ userId: user.id, createdAt: new Date('2024-12-01') })
         .create()
 
@@ -202,7 +205,7 @@ describe('getPersonalizedActionsCatalogue', () => {
     it('returns only applicable actions sorted by impact desc, unknown impact last', async () => {
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .withCompletedComputation()
         .create()
@@ -263,7 +266,7 @@ describe('getPersonalizedActionsCatalogue', () => {
     it('returns at most 3 top actions when more than 3 actions have impact', async () => {
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .withCompletedComputation()
         .create()
@@ -307,7 +310,7 @@ describe('getPersonalizedActionsCatalogue', () => {
     it('excludes deleted and unpublished actions', async () => {
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .withCompletedComputation()
         .create()
@@ -347,7 +350,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .withCompletedComputation()
         .create()
@@ -382,7 +385,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .withCompletedComputation()
         .create()
@@ -470,7 +473,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId: user.id })
         .create()
       const assessment = await actionAssessmentFactory

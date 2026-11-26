@@ -20,7 +20,6 @@ export type Simulation = {
    */
   createdAt: string
   model: string
-  progression: number
   situation: Record<string, unknown>
 }
 
@@ -177,7 +176,7 @@ export const fetchSimulationBatch = ({
     query: `
       /* sql */
       select coalesce(json_agg(t), '[]') from (
-        select id, "createdAt", model, progression, situation
+        select id, "createdAt", model, situation
         from :"schema"."Simulation"
         where ${cursor} ${upper}
         order by "createdAt", id
@@ -205,7 +204,7 @@ export const fetchSimulationsByIds = ({
     query: `
       /* sql */
       select coalesce(json_agg(t order by "createdAt", id), '[]') from (
-        select id, "createdAt", model, progression, situation
+        select id, "createdAt", model, situation
         from :"schema"."Simulation"
         where id = any(string_to_array(:'ids', ',')::uuid[])
       ) t;
@@ -254,11 +253,11 @@ export const fetchSampledSimulations = ({
     // One point per chronological slice: `ntile` splits the version into
     // `perVersion` buckets, and the first simulation of each is kept.
     inner = `
-      select id, "createdAt", model, progression, situation from (
-        select id, "createdAt", model, progression, situation,
+      select id, "createdAt", model, situation from (
+        select id, "createdAt", model, situation,
           row_number() over (partition by version, bucket order by "createdAt", id) as rn
         from (
-          select s.id, s."createdAt", s.model, s.progression, s.situation,
+          select s.id, s."createdAt", s.model, s.situation,
             ${versionExpression} as version,
             ntile(:'perVersion'::int) over (
               partition by ${versionExpression} order by s."createdAt", s.id
@@ -273,9 +272,9 @@ export const fetchSampledSimulations = ({
     // Reproducible draw without `setseed()` (which would apply to the whole
     // session): the order depends on `md5(id + seed)`.
     inner = `
-      select id, "createdAt", model, progression, situation
+      select id, "createdAt", model, situation
       from (
-        select s.id, s."createdAt", s.model, s.progression, s.situation,
+        select s.id, s."createdAt", s.model, s.situation,
           row_number() over (
             partition by ${versionExpression}
             order by md5(s.id::text || :'sampleSeed')
@@ -287,9 +286,9 @@ export const fetchSampledSimulations = ({
     `
   } else {
     inner = `
-      select id, "createdAt", model, progression, situation
+      select id, "createdAt", model, situation
       from (
-        select s.id, s."createdAt", s.model, s.progression, s.situation,
+        select s.id, s."createdAt", s.model, s.situation,
           row_number() over (partition by ${versionExpression} order by s."createdAt", s.id) as rn
         from :"schema"."Simulation" s
         ${where}

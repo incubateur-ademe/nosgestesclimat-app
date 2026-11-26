@@ -84,7 +84,7 @@ describe('processNextPendingComputation', () => {
       'transport . voiture . km': { question: 'Combien ?', unité: 'km' },
     })
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPendingComputation()
       .params({ situation: { 'transport . voiture . km': 12000 } })
       .create()
@@ -125,7 +125,7 @@ describe('processNextPendingComputation', () => {
   // The worker reports the failure: only the assessment knows what failed.
   it('marks the job failed without evaluating the simulation when the actions cannot be assessed', async () => {
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPendingComputation()
       .create()
     const assessmentError = new ActionAssessmentPublicodesError({
@@ -152,7 +152,7 @@ describe('processNextPendingComputation', () => {
 
   it('keeps the action assessments and marks the job failed when the evaluation throws', async () => {
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPendingComputation()
       .create()
 
@@ -184,7 +184,7 @@ describe('processNextPendingComputation', () => {
   // action assessments do not depend on them: they are kept.
   it('keeps the action assessments, marks the job failed and fails with the public rules that cannot be evaluated', async () => {
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPendingComputation()
       .create()
 
@@ -215,7 +215,7 @@ describe('processNextPendingComputation', () => {
 
   it('reprocesses a reclaimed stale job without a duplicate-key failure', async () => {
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withStaleProcessingComputation()
       .create()
 
@@ -235,7 +235,7 @@ describe('processNextPendingComputation', () => {
   describe('with public rules', () => {
     it('evaluates the simulation with the public rules resolved for its model', async () => {
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .withPendingComputation()
         .create()
       const publicRules: Rule[] = [
@@ -264,7 +264,10 @@ describe('processNextPendingComputation', () => {
     it('keeps the rules resolved for a failed job usable by the next ones', async () => {
       await Promise.all(
         [1, 2].map(() =>
-          simulationFactory.completed().withPendingComputation().create()
+          simulationFactory
+            .withStatus('full_result_seen')
+            .withPendingComputation()
+            .create()
         )
       )
 
@@ -313,7 +316,10 @@ describe('processNextPendingComputation', () => {
   // drops what it cached.
   describe('resets the engine cache once evaluated', () => {
     it('after a processed job', async () => {
-      await simulationFactory.completed().withPendingComputation().create()
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .withPendingComputation()
+        .create()
       const resetCache = vi.spyOn(engine, 'resetCache')
 
       await processNextPendingComputation(getEngine)
@@ -324,7 +330,10 @@ describe('processNextPendingComputation', () => {
     })
 
     it('after a failed job', async () => {
-      await simulationFactory.completed().withPendingComputation().create()
+      await simulationFactory
+        .withStatus('full_result_seen')
+        .withPendingComputation()
+        .create()
       evaluateSimulation.mockRejectedValue(
         new Error('Engine evaluation failed')
       )

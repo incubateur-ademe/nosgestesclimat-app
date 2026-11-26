@@ -205,7 +205,7 @@ export async function seedAssessedSimulation(
   userId: string
 ) {
   const simulation = await simulationFactory
-    .completed()
+    .withStatus('full_result_seen')
     .params({ userId })
     .withValidComputedResults()
     .withCompletedComputation()

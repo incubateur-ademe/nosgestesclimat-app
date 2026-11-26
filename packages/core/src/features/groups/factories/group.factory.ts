@@ -19,7 +19,7 @@ class GroupFactory extends Factory<Group, never, Group> {
   }: { userId: string } & Partial<GroupParticipant>) {
     return this.afterCreate(async (data) => {
       const simulation = await simulationFactory
-        .completed()
+        .withStatus('full_result_seen')
         .params({ userId })
         .create()
 

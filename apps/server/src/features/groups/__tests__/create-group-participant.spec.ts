@@ -301,7 +301,7 @@ describe('Given a NGC user', () => {
             date: true,
             model: true,
             situation: true,
-            progression: true,
+            status: true,
             computedResults: true,
             user: {
               select: {

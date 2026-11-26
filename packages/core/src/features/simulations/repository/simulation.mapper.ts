@@ -1,16 +1,15 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import { parseModel } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 import { isValidSimulation } from '../validators/simulation.validator.ts'
 
 type SimulationRow = {
   id: string
   date: Date
   model: string
-  progression: number
   status: SimulationStatus
   situation: unknown
   foldedSteps: unknown
@@ -37,7 +36,6 @@ export const mapSimulation = (row: SimulationRow): Simulation | null => {
     id: row.id,
     date: row.date,
     model,
-    progression: row.progression,
     status: row.status,
     situation: row.situation as Situation<DottedName>,
     foldedSteps: row.foldedSteps as DottedName[],

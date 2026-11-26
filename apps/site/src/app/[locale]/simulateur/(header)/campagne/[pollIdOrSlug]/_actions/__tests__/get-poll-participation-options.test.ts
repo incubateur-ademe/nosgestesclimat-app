@@ -88,7 +88,7 @@ describe('getPollParticipationOptions', () => {
     })
     const inProgressSimulation = simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .build()
     serviceMock.getPollParticipationOptions.mockResolvedValue({
       currentPollSimulation: inProgressSimulation,
@@ -110,7 +110,7 @@ describe('getPollParticipationOptions', () => {
     })
     const completedSimulation = simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .build()
     serviceMock.getPollParticipationOptions.mockResolvedValue({
       currentPollSimulation: completedSimulation,
@@ -138,7 +138,7 @@ describe('getPollParticipationOptions', () => {
     })
     const reusableSimulation = simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .build()
     const reusablePolls = [{ id: 'other-poll', name: 'Other', slug: 'other' }]
     serviceMock.getPollParticipationOptions.mockResolvedValue({

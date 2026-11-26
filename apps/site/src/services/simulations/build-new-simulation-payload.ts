@@ -30,7 +30,6 @@ export async function buildNewSimulationPayload(): Promise<Simulation> {
       } as ComputedResultsFootprint
       return acc
     }, {} as ComputedResults),
-    progression: 0,
     status: 'not_started',
     model: await resolveNewSimulationModelString(),
   }

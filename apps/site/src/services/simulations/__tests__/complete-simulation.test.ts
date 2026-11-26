@@ -114,10 +114,7 @@ describe('completeSimulation', () => {
     }
     serviceMock.completeSimulation.mockResolvedValue(failure)
 
-    const payload = aPayload({
-      progression: 0.5,
-      status: 'answering_major_questions',
-    })
+    const payload = aPayload({ status: 'answering_major_questions' })
     const result = await completeSimulation(payload)
 
     expect(serviceMock.completeSimulation).toHaveBeenCalledWith(
@@ -140,7 +137,6 @@ describe('completeSimulation', () => {
       userSession: session,
       simulationId: payload.id,
       model: payload.model,
-      progression: 1,
       status: 'full_result_seen',
       situation: payload.situation,
       foldedSteps: payload.foldedSteps,
@@ -255,7 +251,7 @@ const aPayload = (
 ): CompleteSimulationPayload => {
   const simulation = toSimulationDto(
     simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ foldedSteps: ['transport . voiture . km'] })
       .build()
   )
@@ -266,7 +262,6 @@ const aPayload = (
   return {
     id,
     model,
-    progression: 1,
     status,
     situation: situation as CompleteSimulationPayload['situation'],
     foldedSteps,

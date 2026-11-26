@@ -3,6 +3,7 @@ import type { Situation } from 'publicodes'
 import { parseModel } from '../../models/helpers/model-versions.ts'
 import { createManySimulations } from '../repository/simulation.repository.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 /**
  * The shape of a simulation as it comes out of long-lived client state
@@ -12,11 +13,20 @@ import type { ComputedResults } from '../validators/computed-results.schema.ts'
 export interface LegacySimulationInput {
   id: string
   date: Date | string
-  progression: number
+  /** Simulations stored before the status column carry only a progression. */
+  progression?: number
+  status?: SimulationStatus
   situation: Situation<DottedName>
   foldedSteps: DottedName[]
   computedResults: ComputedResults
   model?: string
+}
+
+/** Translates the legacy progression into the lifecycle status. */
+const legacyStatus = (progression: number | undefined): SimulationStatus => {
+  if (progression === 1) return 'full_result_seen'
+  if (!progression) return 'not_started'
+  return 'answering_major_questions'
 }
 
 /**
@@ -44,7 +54,7 @@ export const importLegacyLocalSimulations = async ({
         id: simulation.id,
         userId,
         date: new Date(simulation.date),
-        progression: simulation.progression,
+        status: simulation.status ?? legacyStatus(simulation.progression),
         situation: simulation.situation,
         foldedSteps: simulation.foldedSteps,
         computedResults: simulation.computedResults,

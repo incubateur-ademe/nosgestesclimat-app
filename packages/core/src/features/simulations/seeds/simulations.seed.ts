@@ -7,8 +7,6 @@ import {
   pickPersonaName,
 } from './persona-computations.ts'
 
-const COMPLETED_PROGRESSION = 1
-
 /**
  * The model demo simulations are answered against: the installed model, exactly
  * as the app records it when a simulation is completed. The version is reduced
@@ -62,7 +60,7 @@ export const seedSimulations = async ({
       userId: userId ?? null,
       model: SEED_MODEL,
       date: new Date(),
-      progression: COMPLETED_PROGRESSION,
+      status: 'full_result_seen',
       situation: computation.situation,
       foldedSteps: [],
       computedResults: computation.computedResults,

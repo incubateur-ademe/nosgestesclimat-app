@@ -42,7 +42,7 @@ test.describe('Given a user that completed a test', () => {
     // the core factories rather than run through the UI. Seeded after the
     // test start above, it is the user's current (latest) simulation.
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id, situation: persona.situation })
       .withValidComputedResults()
       .create()

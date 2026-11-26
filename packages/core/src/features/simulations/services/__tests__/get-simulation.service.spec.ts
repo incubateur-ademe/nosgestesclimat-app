@@ -32,7 +32,7 @@ describe('getSimulation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -49,7 +49,6 @@ describe('getSimulation', () => {
         locale: 'fr',
         version: { publishedTag: expect.any(String) },
       },
-      progression: 0.5,
       status: 'answering_major_questions',
       situation: {},
       foldedSteps: [],
@@ -66,7 +65,7 @@ describe('getSimulation', () => {
       userFactory.create(),
     ])
     const simulation = await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -79,7 +78,7 @@ describe('getSimulation', () => {
   it('returns null when the simulation has invalid computedResults', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withDeprecatedComputedResults()
       .params({ userId: user.id })
       .create()
@@ -92,7 +91,7 @@ describe('getSimulation', () => {
   it('returns null when the model string cannot be parsed', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -113,7 +112,7 @@ describe('getSimulation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
