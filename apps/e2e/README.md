@@ -44,7 +44,8 @@ et preprod), et une partie **propre à chaque suite**.
 - `stack/` — orchestration des stacks par worker (bases, copies du build,
   processus), lancée par le `globalSetup` de `playwright.config.ts`.
   `stack/playwright-worker-env.ts` pointe chaque worker sur sa base et son
-  site.
+  site. Les processus appartiennent au `globalSetup` : `stack/control.ts`
+  expose au worker le redémarrage de sa propre stack, sur `localhost:3300`.
 - `tests/local/fixtures.ts` — la base commune, plus le reset de la base du
   worker avant chaque test (`tests/local/database.ts`, option
   `resetDatabase`), et `localVisitorState` (bandeau cookies refusé, pas de
@@ -74,13 +75,18 @@ les prépare et les démarre, puis les arrête en fin de run :
   `apps/site/.next-e2e-<i>`, en y remplaçant les URL inlinées au build
   (`localhost:3000` → `localhost:310i`, `localhost:3001` → `localhost:320i`).
   Une copie déjà patchée pour le même build est réutilisée ;
-- avant chaque test, la base du worker est vidée : rien n'est seedé, chaque
-  test crée ses données (actions comprises) avec les factories de core.
+- avant chaque test, la base du worker est vidée puis sa stack redémarrée :
+  le site garde ses lectures en mémoire (`use cache`), seul un process neuf
+  oublie les données du test précédent. Rien n'est seedé : chaque test crée
+  ses données (actions comprises) avec les factories de core.
+  Le redémarrage vaut aussi en mode dev, où il coûte un boot de `next dev` par
+  test.
 
 Le mock (port 3002) est démarré par Playwright et partagé entre les workers.
-Les logs sont écrits dans `apps/e2e/logs/` : `<app>-<i>.log` pour les stacks,
-`mock.log` pour le mock. Un processus qui s'arrête en cours de route met fin
-au run, sans relance : c'est une erreur à corriger, son log en donne la cause.
+Les logs sont écrits dans `apps/e2e/logs/` : `<app>-<i>.log` pour les stacks
+(chaque redémarrage ajoute à la suite du même fichier), `mock.log` pour le
+mock. Un processus qui s'arrête en cours de route met fin au run, sans
+relance : c'est une erreur à corriger, son log en donne la cause.
 
 Prérequis : Postgres et Redis en local.
 

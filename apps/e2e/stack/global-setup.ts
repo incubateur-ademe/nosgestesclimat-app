@@ -1,6 +1,13 @@
 import type { FullConfig } from '@playwright/test'
 import { prepareBuilds } from './builds.ts'
-import { isDevMode, MAX_WORKERS, serverPort, sitePort } from './config.ts'
+import {
+  CONTROL_PORT,
+  isDevMode,
+  MAX_WORKERS,
+  serverPort,
+  sitePort,
+} from './config.ts'
+import { startControl } from './control.ts'
 import { prepareDatabases } from './databases.ts'
 import { assertPortsFree, startStack, stopStacks } from './processes.ts'
 
@@ -24,7 +31,10 @@ export default async function globalSetup(config: FullConfig) {
   }
 
   const indexes = Array.from({ length: n }, (_, i) => i)
-  await assertPortsFree(indexes.flatMap((i) => [sitePort(i), serverPort(i)]))
+  await assertPortsFree([
+    CONTROL_PORT,
+    ...indexes.flatMap((i) => [sitePort(i), serverPort(i)]),
+  ])
 
   await Promise.all([
     prepareDatabases(n),
@@ -32,12 +42,18 @@ export default async function globalSetup(config: FullConfig) {
   ])
 
   console.log(`[e2e] Starting ${n} stack(s)…`)
+  let stopControl: (() => Promise<void>) | undefined
   try {
     await Promise.all(indexes.map((i) => startStack(i, { dev })))
+    stopControl = await startControl({ dev, stacks: n })
   } catch (error) {
+    await stopControl?.()
     await stopStacks()
     throw error
   }
 
-  return stopStacks
+  return async () => {
+    await stopControl()
+    await stopStacks()
+  }
 }

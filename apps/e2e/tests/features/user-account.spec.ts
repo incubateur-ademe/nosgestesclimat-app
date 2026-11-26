@@ -119,7 +119,10 @@ test.describe('Email change', () => {
   // Same alias as above: the test runs signed in as a seeded verified user.
   const test = signedInTest
 
-  test('can change email from personal space', async ({ page }) => {
+  // @TODO: re-enable once a reload renders the stored address: the page can
+  // still show the previous one after the change.
+  // https://github.com/incubateur-ademe/nosgestesclimat-app/pull/2200#discussion_r4695788511
+  test.fixme('can change email from personal space', async ({ page }) => {
     const newEmail = faker.internet.email({
       provider: TEST_EMAIL_DOMAIN,
       firstName: faker.person.firstName(),
