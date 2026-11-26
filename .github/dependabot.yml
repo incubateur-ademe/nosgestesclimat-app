@@ -31,6 +31,11 @@ updates:
         update-types:
           - "minor"
           - "patch"
+        # `packages/core/src/test-utils/db.ts` patches pglite internals, and pglite
+        # is 0.x: its minors are breaking. Bump these two by hand.
+        exclude-patterns:
+          - "@electric-sql/pglite"
+          - "pglite-prisma-adapter"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
