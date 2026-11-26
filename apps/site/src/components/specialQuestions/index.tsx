@@ -12,22 +12,22 @@ interface Props {
 
 type SpecialQuestionProps = Props & { question: DottedName }
 
-const PLAT_RULENAME: DottedName = 'alimentation . plats'
-const VOITURE_RULENAME: DottedName = 'transport . voiture . km'
-const TEXTILE_RULENAME: DottedName = 'divers . textile . volume'
+const MEAL_RULENAME: DottedName = 'alimentation . plats'
+const CAR_RULENAME: DottedName = 'transport . voiture . km'
+const CLOTHING_RULENAME: DottedName = 'divers . textile . volume'
 
 const specialQuestions: Record<
   string,
   (props: SpecialQuestionProps) => JSX.Element
 > = {
-  [PLAT_RULENAME]: (props: Props) => (
-    <Plats key={PLAT_RULENAME} question={PLAT_RULENAME} {...props} />
+  [MEAL_RULENAME]: (props: Props) => (
+    <Plats key={MEAL_RULENAME} question={MEAL_RULENAME} {...props} />
   ),
-  [VOITURE_RULENAME]: (props: Props) => (
-    <Voiture key={VOITURE_RULENAME} question={VOITURE_RULENAME} {...props} />
+  [CAR_RULENAME]: (props: Props) => (
+    <Voiture key={CAR_RULENAME} question={CAR_RULENAME} {...props} />
   ),
-  [TEXTILE_RULENAME]: (props: Props) => (
-    <Textile key={TEXTILE_RULENAME} question={TEXTILE_RULENAME} {...props} />
+  [CLOTHING_RULENAME]: (props: Props) => (
+    <Textile key={CLOTHING_RULENAME} question={CLOTHING_RULENAME} {...props} />
   ),
 }
 
