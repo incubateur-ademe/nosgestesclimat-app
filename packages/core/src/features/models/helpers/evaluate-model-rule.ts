@@ -24,6 +24,7 @@ export const evaluateModelRule = ({
 }): NewRuleEvaluationResult => {
   let evaluation: {
     nodeValue: unknown
+    type?: 'number' | 'boolean' | 'string' | 'date' | 'reference'
     missingVariables: Record<string, number>
   }
 
@@ -36,7 +37,7 @@ export const evaluateModelRule = ({
     return failure(new RuleEvaluationThrewError({ ruleName, cause, metric }))
   }
 
-  const { nodeValue, missingVariables } = evaluation
+  const { nodeValue, missingVariables, type } = evaluation
 
   const rule = {
     name: ruleName,
@@ -47,6 +48,13 @@ export const evaluateModelRule = ({
     missingVariables: Object.entries(missingVariables)
       .filter(([name]) => name !== ruleName)
       .map(([name, weight]) => ({ name, weight })),
+  }
+
+  // A date is not a storable value: its nodeValue is only its text, named by its type.
+  if (type === 'date') {
+    return failure(
+      new UnexpectedNodeValueError({ ruleName, metric, nodeValue: type })
+    )
   }
 
   if (typeof nodeValue === 'number') {
@@ -65,7 +73,6 @@ export const evaluateModelRule = ({
     return success({ ...rule, applicable: true, value: nodeValue })
   }
 
-  // A date evaluates to its text (e.g. '01/03/2023'), read as a string.
   if (typeof nodeValue === 'boolean' || typeof nodeValue === 'string') {
     return success({ ...rule, applicable: true, value: nodeValue })
   }

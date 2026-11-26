@@ -25,15 +25,22 @@ const evaluate = (
   args: Omit<Parameters<typeof evaluateModelRuleBase>[0], keyof typeof base>
 ) => evaluateModelRuleBase({ ...args, ...base })
 
-/** Every evaluation mocked to return `nodeValue`: no formula yields a non-finite number or an object. */
-const engineWithNodeValue = (nodeValue: unknown): Engine => {
+/** Every evaluation mocked to return `nodeValue` (and `type` when given): no formula yields a non-finite number or an object. */
+const engineWithNodeValue = (
+  nodeValue: unknown,
+  type?: 'number' | 'boolean' | 'string' | 'date'
+): Engine => {
   const engine = engineWith({
     'footprint . rule': { public: 'oui', valeur: 1 },
   })
   const evaluate = engine.evaluate.bind(engine)
   vi.spyOn(engine, 'evaluate').mockImplementation(
     (expression) =>
-      ({ ...evaluate(expression), nodeValue }) as ReturnType<Engine['evaluate']>
+      ({
+        ...evaluate(expression),
+        nodeValue,
+        ...(type === undefined ? {} : { type }),
+      }) as ReturnType<Engine['evaluate']>
   )
   return engine
 }
@@ -160,24 +167,6 @@ describe('evaluateModelRule', () => {
         missingVariables: [],
         applicable: true,
         value: '',
-      },
-    })
-  })
-
-  it('evaluates a date value as applicable, read as its text', () => {
-    const engine = engineWith({
-      'footprint . date': { public: 'oui', valeur: '01/03/2023' },
-    })
-
-    expect(evaluate({ engine, ruleName: 'footprint . date' })).toEqual({
-      success: true,
-      data: {
-        ...base,
-        name: 'footprint . date',
-        metric: null,
-        missingVariables: [],
-        applicable: true,
-        value: '01/03/2023',
       },
     })
   })
@@ -381,6 +370,23 @@ describe('evaluateModelRule', () => {
           nodeValue: label,
         })
       }
+    })
+
+    it('when the evaluation is a date, named by its type', () => {
+      const result = evaluate({
+        engine: engineWithNodeValue('01/03/2023', 'date'),
+        ruleName: 'footprint . rule',
+      })
+      if (result.success) {
+        throw new Error('Expected a date evaluation to fail')
+      }
+      expect(result.error).toBeInstanceOf(UnexpectedNodeValueError)
+      expect(result.error).toMatchObject({
+        code: 'unexpected_node_value',
+        ruleName: 'footprint . rule',
+        metric: null,
+        nodeValue: 'date',
+      })
     })
 
     it('when the node value has an unexpected type, named by its type', () => {
