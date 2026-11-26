@@ -12,6 +12,7 @@ import type { ComponentProps, ReactNode } from 'react'
 
 interface Props {
   className?: string
+  triggerId?: string
   label: string
   title: ReactNode
   children: ReactNode
@@ -27,6 +28,7 @@ interface Props {
 
 export default function FootprintInfoPopover({
   className,
+  triggerId,
   label,
   title,
   children,
@@ -40,6 +42,7 @@ export default function FootprintInfoPopover({
     <Popover>
       <PopoverTrigger asChild>
         <button
+          id={triggerId}
           type="button"
           aria-label={label}
           className={cn(
