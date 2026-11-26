@@ -16,6 +16,10 @@ updates:
       interval: "weekly"
     # A grouped PR counts as one, majors get their own slots.
     open-pull-requests-limit: 10
+    ignore:
+      # From 1.10.2 the package ships .mjs only but still exports .js paths:
+      # TypeScript and Node cannot resolve `@publicodes/tools/migration`.
+      - dependency-name: "@publicodes/tools"
     # Minor and patch bumps land in a single PR; majors keep their own.
     groups:
       minor-and-patch:

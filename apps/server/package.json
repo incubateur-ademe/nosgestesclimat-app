@@ -37,7 +37,7 @@
     "@notionhq/client": "^2.3.0",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
-    "@publicodes/tools": "^1.10.6",
+    "@publicodes/tools": "~1.8.1",
     "axios": "^1.20.0",
     "axios-retry": "^4.5.0",
     "cors": "^2.8.6",
