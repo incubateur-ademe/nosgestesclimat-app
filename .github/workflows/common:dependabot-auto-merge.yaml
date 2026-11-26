@@ -2,7 +2,7 @@ name: Dependabot auto-merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
@@ -20,12 +20,15 @@ jobs:
       - name: Fetch Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v3
+        with:
+          # A maintainer fixing the lockfile rewrites the commit, losing the signature.
+          skip-commit-verification: true
 
-      # Majors keep their own PR and stay in review.
+      # Groups carry the minor and patch updates; ungrouped PRs are majors.
       - name: Approve
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        if: steps.metadata.outputs.dependency-group != ''
         run: gh pr review --approve "$PR_URL"
 
       - name: Enable auto-merge
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        if: steps.metadata.outputs.dependency-group != ''
         run: gh pr merge --auto --squash "$PR_URL"
