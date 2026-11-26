@@ -202,7 +202,7 @@ describe('evaluateModelRule', () => {
     }
   })
 
-  it('evaluates an undefined value as not defined, an unanswered question or a rule without formula', () => {
+  it('evaluates an undefined value as not defined, an unanswered question or a rule without formula, each reported as its own missing variable', () => {
     const engine = engineWith({
       'footprint . unanswered': {
         public: 'oui',
@@ -222,7 +222,7 @@ describe('evaluateModelRule', () => {
           ...base,
           name: ruleName,
           metric: 'water',
-          missingVariables: [],
+          missingVariables: [{ name: ruleName, weight: 1 }],
           applicable: undefined,
         },
       })
@@ -300,7 +300,7 @@ describe('evaluateModelRule', () => {
     })
   })
 
-  it('never reports the rule as its own missing variable, a `par défaut` included', () => {
+  it('reports the rule as its own missing variable, a `par défaut` included', () => {
     const engine = engineWith({
       'footprint . default': { public: 'oui', 'par défaut': 5 },
     })
@@ -316,7 +316,7 @@ describe('evaluateModelRule', () => {
         ...base,
         name: 'footprint . default',
         metric: null,
-        missingVariables: [],
+        missingVariables: [{ name: 'footprint . default', weight: 1 }],
         applicable: true,
         value: 5,
       },

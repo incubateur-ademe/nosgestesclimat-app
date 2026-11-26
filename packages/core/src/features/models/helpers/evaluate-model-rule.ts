@@ -44,10 +44,11 @@ export const evaluateModelRule = ({
     metric,
     simulationId,
     createdAt,
-    // Publicodes lists a `par défaut` rule among its own missing variables.
-    missingVariables: Object.entries(missingVariables)
-      .filter(([name]) => name !== ruleName)
-      .map(([name, weight]) => ({ name, weight })),
+    // A `par défaut` rule refers to itself: Publicodes lists it among its own
+    // missing variables, and the evaluation keeps it.
+    missingVariables: Object.entries(missingVariables).map(
+      ([name, weight]) => ({ name, weight })
+    ),
   }
 
   // A date is not a storable value: its nodeValue is only its text, named by its type.

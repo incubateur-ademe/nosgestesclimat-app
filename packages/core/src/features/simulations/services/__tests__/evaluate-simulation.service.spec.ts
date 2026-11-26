@@ -572,7 +572,7 @@ describe('evaluateSimulation', () => {
       ])
     })
 
-    it('never links a rule to itself', async () => {
+    it('links a rule to itself when it is its own missing variable, a `par défaut` included', async () => {
       const [self] = await storeRules(['footprint . self'])
 
       const result = await evaluate(
@@ -584,7 +584,14 @@ describe('evaluateSimulation', () => {
       expect(await findEvaluations()).toEqual([
         evaluation(self, { applicable: true, value: 5 }),
       ])
-      expect(await findLinks()).toEqual([])
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: self.id,
+          missingRuleId: self.id,
+          weight: 1,
+        },
+      ])
     })
 
     it('links each metric’s missing variables from that metric’s evaluation row, to the missing variable’s row of that metric when there is one', async () => {
@@ -748,10 +755,17 @@ describe('evaluateSimulation', () => {
         await prisma.rule.count({ where: { name: 'footprint . question' } })
       ).toBe(1)
       expect(await findStoredRule('footprint . question')).toEqual(question)
+      // The unanswered question rule is its own missing variable: a self-link too.
       expect(await findLinks()).toEqual([
         {
           simulationId: simulation.id,
           ruleId: total.id,
+          missingRuleId: question.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: question.id,
           missingRuleId: question.id,
           weight: 1,
         },
