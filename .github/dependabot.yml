@@ -20,6 +20,9 @@ updates:
       # From 1.10.2 the package ships .mjs only but still exports .js paths:
       # TypeScript and Node cannot resolve `@publicodes/tools/migration`.
       - dependency-name: "@publicodes/tools"
+      # Model bumps rename rules, which surface as `DottedName` type errors:
+      # .github/workflows/common:update-model.yaml owns those.
+      - dependency-name: "@incubateur-ademe/nosgestesclimat"
     # Minor and patch bumps land in a single PR; majors keep their own.
     groups:
       minor-and-patch:
