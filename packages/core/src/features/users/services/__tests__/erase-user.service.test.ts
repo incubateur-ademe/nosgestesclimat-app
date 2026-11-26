@@ -91,7 +91,7 @@ describe('eraseUser', () => {
     it('deletes the organisation administrations', async () => {
       expect(
         await prisma.organisationAdministrator.findFirst({
-          where: { userEmail: email },
+          where: { userId },
         })
       ).toBeNull()
     })

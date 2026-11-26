@@ -63,7 +63,7 @@ const findOrganisationBySlugOrId = <
 >(
   {
     params: { organisationIdOrSlug },
-    user: { email: userEmail },
+    user: { id: userId },
     select = { id: true } as T,
   }: {
     params: OrganisationParams
@@ -77,7 +77,7 @@ const findOrganisationBySlugOrId = <
       OR: [{ id: organisationIdOrSlug }, { slug: organisationIdOrSlug }],
       administrators: {
         some: {
-          userEmail,
+          userId,
         },
       },
     },
@@ -90,7 +90,7 @@ export const findOrganisationPollBySlugOrId = <
 >(
   {
     params: { organisationIdOrSlug, pollIdOrSlug },
-    user: { email: userEmail },
+    user: { id: userId },
     select = { id: true } as T,
   }: {
     params: OrganisationPollParams
@@ -106,7 +106,7 @@ export const findOrganisationPollBySlugOrId = <
         OR: [{ id: organisationIdOrSlug }, { slug: organisationIdOrSlug }],
         administrators: {
           some: {
-            userEmail,
+            userId,
           },
         },
       },
@@ -184,7 +184,7 @@ export const createOrganisationAndAdministrator = async (
       numberOfCollaborators,
       administrators: {
         create: {
-          userEmail: email,
+          userId: id,
         },
       },
     },
@@ -213,16 +213,6 @@ export const updateAdministratorOrganisation = async (
     type,
     name: organisationName,
     numberOfCollaborators,
-    administrators: {
-      update: {
-        where: {
-          userEmail,
-        },
-        data: {
-          userEmail,
-        },
-      },
-    },
   }
 
   let administrator
@@ -257,9 +247,9 @@ export const updateAdministratorOrganisation = async (
     administrator = administratorResult.data
 
     if (email) {
+      // Only the caller's view of the account changes: the administration
+      // follows the user id, so the new address needs no write here.
       user.email = email
-      organisationUpdate.administrators.update.where.userEmail = email
-      organisationUpdate.administrators.update.data.userEmail = email
     }
   }
 
@@ -277,7 +267,7 @@ export const updateAdministratorOrganisation = async (
 }
 
 export const fetchUserOrganisations = async (
-  { email: userEmail }: PartialVerifiedUser,
+  { id: userId }: PartialVerifiedUser,
   {
     session,
     query: { pageSize, page },
@@ -286,7 +276,7 @@ export const fetchUserOrganisations = async (
   const where = {
     administrators: {
       some: {
-        userEmail,
+        userId,
       },
     },
   }
@@ -580,7 +570,7 @@ export const getOrganisationsBatchBrevoStats = ({
         o.type as "organisationType",
         (
           SELECT vu.email FROM "ngc"."OrganisationAdministrator" oa
-          JOIN "ngc"."VerifiedUser" vu ON vu.email = oa."userEmail"
+          JOIN "ngc"."VerifiedUser" vu ON vu.id = oa."userId"
           WHERE oa."organisationId" = o.id
           ORDER BY oa."createdAt" ASC
           LIMIT 1

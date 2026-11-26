@@ -2,28 +2,27 @@ import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 
 /**
- * Keyed on the email because that is the identity `OrganisationAdministrator`
- * links on — it references `VerifiedUser.email`, which is that model's primary
- * key.
+ * Keyed on the user id, the identity `OrganisationAdministrator` links on: it
+ * references `VerifiedUser.id`.
  */
 export const findOrganisationAdministrator = async ({
-  userEmail,
+  userId,
   organisationSlug,
 }: {
-  userEmail: string
+  userId: string
   organisationSlug: string
 }): Promise<{ id: string } | null> =>
   prisma.organisationAdministrator.findFirst({
-    where: { userEmail, organisation: { slug: organisationSlug } },
+    where: { userId, organisation: { slug: organisationSlug } },
     select: { id: true },
   })
 
-/** Removes the administrations that point at the user's verified email. */
+/** Removes the administrations that point at the user. */
 export const deleteOrganisationAdministrationsForUser = async (
   { userId }: { userId: string },
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<void> => {
   await session.organisationAdministrator.deleteMany({
-    where: { user: { is: { id: userId } } },
+    where: { userId },
   })
 }
