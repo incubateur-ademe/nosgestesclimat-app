@@ -18,7 +18,7 @@ export const MUST_NOT_ASK_QUESTIONS = new Set<DottedName>([
 ])
 
 const PRIORITY_QUESTIONS_BASE_MODE = new Set<DottedName>([
-  'alimentation . repas . déjeuner et dîner',
+  'alimentation . déjeuner et dîner . par semaine',
   'logement . type',
   'logement . propriétaire',
   'logement . lieu de vie',
@@ -57,7 +57,7 @@ export const MUST_SHOW_DESCRIPTION = new Set<DottedName>([
   'logement . surface',
   'logement . chauffage . collectif',
   'divers . animaux domestiques . empreinte',
-  'alimentation . repas . déjeuner et dîner',
+  'alimentation . déjeuner et dîner . par semaine',
   'alimentation . local . consommation',
   'transport . avion . vols annuels',
   'transport . avion . vols amortis',

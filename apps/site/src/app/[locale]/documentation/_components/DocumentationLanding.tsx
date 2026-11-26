@@ -23,7 +23,7 @@ export default async function DocumentationLanding({
     'services sociétaux': t(
       'Les constantes de **services publics et marchands** calculées à partir des travaux du SDES'
     ),
-    'alimentation . repas . déjeuner et dîner': t(
+    'alimentation . déjeuner et dîner . par semaine': t(
       '**6 repas** représentatifs de notre consommation'
     ),
     'alimentation . déchets': t("Un modèle inédit d'empreinte des **déchets**"),

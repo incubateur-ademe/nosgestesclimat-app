@@ -6,22 +6,22 @@ import { useRule } from '@/publicodes-state'
 
 export default function DishesNumberInfo() {
   const { numericValue: numberRepasVegetalien } = useRule(
-    'alimentation . repas . déjeuner et dîner . végétalien . nombre'
+    'alimentation . déjeuner et dîner . végétalien . nombre'
   )
   const { numericValue: numberRepasVegetarien } = useRule(
-    'alimentation . repas . déjeuner et dîner . végétarien . nombre'
+    'alimentation . déjeuner et dîner . végétarien . nombre'
   )
   const { numericValue: numberRepasViandeRouge } = useRule(
-    'alimentation . repas . déjeuner et dîner . viande rouge . nombre'
+    'alimentation . déjeuner et dîner . viande rouge . nombre'
   )
   const { numericValue: numberRepasViandeBlanche } = useRule(
-    'alimentation . repas . déjeuner et dîner . viande blanche . nombre'
+    'alimentation . déjeuner et dîner . viande blanche . nombre'
   )
   const { numericValue: numberRepasPoissonGras } = useRule(
-    'alimentation . repas . déjeuner et dîner . poisson gras . nombre'
+    'alimentation . déjeuner et dîner . poisson gras . nombre'
   )
   const { numericValue: numberRepasPoissonBlanc } = useRule(
-    'alimentation . repas . déjeuner et dîner . poisson blanc . nombre'
+    'alimentation . déjeuner et dîner . poisson blanc . nombre'
   )
 
   const totalNumberOfPlats =
