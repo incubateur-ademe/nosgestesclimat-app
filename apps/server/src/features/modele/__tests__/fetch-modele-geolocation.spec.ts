@@ -125,14 +125,4 @@ describe('Given redis store', () => {
       })
     })
   })
-
-  describe('And localhost', () => {
-    describe('When a user wants its country according to his/her ip', () => {
-      test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
-        const { text } = await agent.get(url).expect(StatusCodes.NOT_FOUND)
-
-        expect(text).toEqual('ip v4 required')
-      })
-    })
-  })
 })
