@@ -9,7 +9,7 @@ export type RuleValue = number | boolean | string
  * `undefined`: not defined for the situation. A `false` value is an applicable
  * rule saying "no" — never a non-applicable one.
  */
-export type Applicability =
+export type RuleEvaluationOutput =
   | { applicable: true; value: RuleValue }
   | { applicable: false }
   | { applicable: undefined }
@@ -20,7 +20,7 @@ export type RuleEvaluation = {
   metric: Metric | null
   simulationId: string
   createdAt: Date
-} & Applicability
+} & RuleEvaluationOutput
 
 /** Write-side evaluation, carrying the reported missing variables (stored as links). */
 export type NewRuleEvaluation = RuleEvaluation & {

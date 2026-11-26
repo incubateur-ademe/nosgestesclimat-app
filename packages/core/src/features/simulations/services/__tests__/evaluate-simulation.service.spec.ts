@@ -9,7 +9,7 @@ import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
 import { ruleKey } from '../../../models/helpers/rule-key.ts'
 import { findRule } from '../../../models/repositories/rules.repository.ts'
-import type { Applicability } from '../../../models/types/rule-evaluation.ts'
+import type { RuleEvaluationOutput } from '../../../models/types/rule-evaluation.ts'
 import type { Metric, Rule } from '../../../models/types/rule.ts'
 import {
   createTestEngine,
@@ -77,7 +77,7 @@ describe('evaluateSimulation', () => {
   /** Expected evaluation of a rule, as read back. */
   const evaluation = (
     { name, metric = null }: { name: string; metric?: Metric | null },
-    applicability: Applicability
+    applicability: RuleEvaluationOutput
   ) => ({
     simulationId: simulation.id,
     createdAt: expect.any(Date),

@@ -1,9 +1,9 @@
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import type { RuleEvaluationModel } from '../../../prisma/generated/models/RuleEvaluation.ts'
 import type {
-  Applicability,
   NewRuleEvaluation,
   RuleEvaluation,
+  RuleEvaluationOutput,
   RuleValue,
 } from '../../models/types/rule-evaluation.ts'
 import { CorruptRuleEvaluationError } from '../errors/simulations.error.ts'
@@ -50,7 +50,7 @@ type RuleEvaluationRow = RuleEvaluationModel & {
 }
 
 /** Throws a `CorruptRuleEvaluationError` on a row breaking the invariant. */
-const applicabilityOf = (db: RuleEvaluationRow): Applicability => {
+const applicabilityOf = (db: RuleEvaluationRow): RuleEvaluationOutput => {
   const values = [db.valueNumber, db.valueBoolean, db.valueString].filter(
     (value) => value !== null
   )
