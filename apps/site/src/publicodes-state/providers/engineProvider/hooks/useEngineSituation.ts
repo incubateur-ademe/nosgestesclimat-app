@@ -26,7 +26,7 @@ export function useAddToEngineSituation({
   const addToEngineSituation = useCallback(
     (situationToAdd: Situation): Situation => {
       if (!engine) {
-        return {} as Situation
+        return {}
       }
       engine.setSituation({ ...situation, ...situationToAdd })
 

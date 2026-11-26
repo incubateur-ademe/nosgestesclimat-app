@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { getMetadataObject } from '../getMetadataObject'
+import { getSiteUrl } from '../getSiteUrl'
 
-const BASE_URL = 'https://nosgestesclimat.fr'
+const BASE_URL = getSiteUrl()
 
 describe('getMetadataObject', () => {
   it('defaults languages from canonical when not explicitly provided, including x-default', () => {

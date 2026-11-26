@@ -17,7 +17,7 @@ const mockResendCode = vi.fn().mockResolvedValue(undefined)
 
 const defaultAuth: AuthContextValue = {
   state: { phase: 'idle', emailError: null },
-  sendEmail: vi.fn() as unknown as AuthContextValue['sendEmail'],
+  sendEmail: vi.fn(),
   submitCode: vi.fn(),
   resendCode: mockResendCode,
   goBack: vi.fn(),

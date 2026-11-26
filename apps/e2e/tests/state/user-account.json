@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "ngc_ff_overrides",
-      "value": "{\"abc-test-layout-catalogue\":\"control\",\"abc-test-action-card\":\"control\",\"ab-test-global-footprint-display\":\"control\"}",
+      "value": "{\"abc-test-layout-catalogue\":\"control\",\"abc-test-action-card\":\"control\"}",
       "domain": "localhost",
       "path": "/",
       "expires": -1,

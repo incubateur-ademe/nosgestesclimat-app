@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker'
-import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json'
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json'
 import { getComputedResults } from '@nosgestesclimat/core/features/simulations/helpers/get-computed-results'
 import Engine from 'publicodes'
 
-const engine = new Engine<DottedName>(rules as Partial<NGCRules>, {
+const engine = new Engine<DottedName>(rules, {
   logger: { warn: () => {}, error: () => {}, log: () => {} },
   strict: {
     situation: false,

@@ -84,7 +84,7 @@ describe('ActionTracker', () => {
     render(
       <ActionTracker
         eventName="displayed"
-        action={{ ...action, trackingId: 'alimentation' } as typeof action}
+        action={{ ...action, trackingId: 'alimentation' }}
       />
     )
     loadFlags()
