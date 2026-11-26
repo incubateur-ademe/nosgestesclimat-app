@@ -1,31 +1,29 @@
-/** What a footprint measures. The model names them `carbone` and `eau`. */
-export type Metric = 'carbon' | 'water'
+/** The non-default metric: the model names it 'eau', the default 'carbone' (stored as null). */
+export type Metric = 'water'
 
-/** The metrics every public rule is evaluated and stored for. */
-export const PUBLIC_RULE_METRICS: readonly Metric[] = ['carbon', 'water']
-
-/**
- * A rule of the model carrying `public: oui`: part of the model's output
- * contract, whose evaluations are stored. `title` and `description` are the
- * model's French `titre` and `description`.
- */
-export interface PublicRule {
+/** A model rule as the row(s) to store: one per metric. */
+export interface NewRule {
+  /** Dotted name, a plain string: may be a rule of any model version. */
   name: string
+  /** The model's `public: oui` mark: part of the model's output contract. */
+  public: boolean
+  /** The model's French `titre` and `description`, persisted for 3rd party tools. */
   title: string | null
   description: string | null
-}
-
-/** A public rule to store for one metric. */
-export interface NewRule extends PublicRule {
-  metric: Metric
+  /** The model's `empreinte eau: oui` mark: the rule also gets a water-metric evaluation. */
+  appliesToWaterMetric: boolean
 }
 
 /**
- * A stored public rule, identified by its name and metric. The name is its
- * identity across model versions: a stored rule is never renamed.
+ * A stored rule, identified by (name, water mark) and never renamed across model
+ * versions: an `empreinte eau: oui` rule is two rows sharing the name, each with
+ * its own evaluations.
  */
 export interface Rule {
   id: number
   name: string
-  metric: Metric
+  /** The persisted `public: oui` mark. */
+  public: boolean
+  appliesToWaterMetric: boolean
+  // No `title`/`description`: the wording is for 3rd party db syncs, not the entity.
 }

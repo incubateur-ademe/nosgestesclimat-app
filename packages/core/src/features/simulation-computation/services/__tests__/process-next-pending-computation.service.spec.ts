@@ -239,8 +239,12 @@ describe('processNextPendingComputation', () => {
         .withPendingComputation()
         .create()
       const publicRules: Rule[] = [
-        { id: 1, name: 'footprint . transport', metric: 'carbon' },
-        { id: 2, name: 'footprint . transport', metric: 'water' },
+        {
+          id: 1,
+          name: 'footprint . transport',
+          public: true,
+          appliesToWaterMetric: false,
+        },
       ]
       resolvePublicRules.mockResolvedValue(publicRules)
 
@@ -275,9 +279,10 @@ describe('processNextPendingComputation', () => {
         resolvedRules ??= await upsertRules([
           {
             name: 'footprint . transport',
-            metric: 'carbon',
+            public: true,
             title: null,
             description: null,
+            appliesToWaterMetric: false,
           },
         ])
         return resolvedRules
@@ -289,10 +294,14 @@ describe('processNextPendingComputation', () => {
             await createRuleEvaluations(
               publicRules.map((rule) => ({
                 simulationId,
-                ruleId: rule.id,
+                createdAt: new Date(),
+                name: rule.name,
+                metric: null,
                 applicable: true,
                 value: 1,
+                missingVariables: [],
               })),
+              publicRules,
               { session }
             )
             return success()
