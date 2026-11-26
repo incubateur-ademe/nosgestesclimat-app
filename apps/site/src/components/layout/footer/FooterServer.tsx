@@ -8,9 +8,9 @@ import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import { cn } from 'cn'
 import { cacheLife } from 'next/cache'
 import Link from 'next/link'
-import { cn } from 'cn'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
@@ -22,7 +22,7 @@ interface Props {
 }
 
 // `'use cache'` impose une fonction async, même sans `await` à faire :
-// eslint-disable-next-line @typescript-eslint/require-await
+
 export default async function FooterServer({
   backgroundColor = 'default',
   locale,
@@ -153,9 +153,7 @@ export default async function FooterServer({
                   <InlineLink
                     href={ACTIONS_PATH}
                     className="text-default text-sm no-underline hover:underline">
-                    <Trans i18nKey="footer.resources.actions">
-                      J’agis
-                    </Trans>
+                    <Trans i18nKey="footer.resources.actions">J’agis</Trans>
                   </InlineLink>
                 </li>
                 <li>
@@ -208,9 +206,7 @@ export default async function FooterServer({
               <ul>
                 <li className="block md:inline">
                   <InlineLink href="/accessibilite">
-                    <Trans>
-                      Accessibilité : partiellement conforme
-                    </Trans>
+                    <Trans>Accessibilité : partiellement conforme</Trans>
                   </InlineLink>
                   <span aria-hidden="true" className="mx-1 hidden sm:inline">
                     |

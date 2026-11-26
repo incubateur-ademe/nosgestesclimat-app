@@ -11,7 +11,6 @@ import { useEngine } from '@/publicodes-state'
 import type { Metric } from '@/publicodes-state/types'
 import { RulePage } from '@publicodes/react-ui'
 import Head from 'next/head'
-import type Engine from 'publicodes'
 import { useState } from 'react'
 import MetricSwitchButton from './documentationClient/MetricSwitchButton'
 
@@ -64,9 +63,9 @@ export default function DocumentationClient({ slugs }: Props) {
         }}
       />
       <RulePage
-        language={locale as 'fr' | 'en'}
+        language={locale}
         rulePath={path ?? ''}
-        engine={engine as Engine}
+        engine={engine}
         documentationPath={documentationPath}
         searchBar={true}
         rulesToHide={Array.from(RULES_TO_HIDE)}

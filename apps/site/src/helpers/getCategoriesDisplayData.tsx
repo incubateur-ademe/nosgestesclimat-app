@@ -127,8 +127,7 @@ export function getCategoriesDisplayData({
   return categories
     .map((dottedName, i) => {
       const value = categoriesData[dottedName]
-      const meta =
-        CATEGORIES_MAPPER[dottedName as keyof typeof CATEGORIES_MAPPER]
+      const meta = CATEGORIES_MAPPER[dottedName]
 
       return {
         dottedName,

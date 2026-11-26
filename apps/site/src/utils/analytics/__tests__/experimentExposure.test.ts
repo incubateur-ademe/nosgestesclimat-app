@@ -1,14 +1,27 @@
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
 import type { FeatureFlagsCallback } from 'posthog-js'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from 'vitest'
 import { FLAGS_TIMEOUT_MS } from '../experimentExposure'
 
 const FLAG = 'abc-test-layout-catalogue'
 
-const posthogMock = vi.hoisted(() => ({
-  featureFlags: { hasLoadedFlags: false } as
-    | { hasLoadedFlags: boolean }
-    | undefined,
+interface PosthogMock {
+  featureFlags: { hasLoadedFlags: boolean } | undefined
+  onFeatureFlags: Mock<(callback: FeatureFlagsCallback) => () => void>
+  getFeatureFlag: Mock
+  captureException: Mock
+}
+
+const posthogMock: PosthogMock = vi.hoisted(() => ({
+  featureFlags: { hasLoadedFlags: false },
   onFeatureFlags: vi.fn<(callback: FeatureFlagsCallback) => () => void>(),
   getFeatureFlag: vi.fn(),
   captureException: vi.fn(),

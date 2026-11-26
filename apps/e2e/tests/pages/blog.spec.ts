@@ -3,7 +3,7 @@ import { expect, test } from '../local/fixtures'
 test('should render without breaking the app', async ({ page }) => {
   await page.goto('/blog')
 
-  expect(page.locator('h1').filter({ hasText: 'Le blog' })).toBeDefined()
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 })
 
 test('displays a list of articles, which are themselves displayed correctly', async ({
@@ -11,10 +11,12 @@ test('displays a list of articles, which are themselves displayed correctly', as
 }) => {
   await page.goto('/blog')
 
-  expect(page.getByTestId('blog-list')).toBeDefined()
+  const articleLink = page.getByTestId('blog-list').locator('a').first()
 
-  await page.getByTestId('blog-list').locator('a').first().click()
+  await expect(articleLink).toBeVisible()
+
+  await articleLink.click()
 
   await expect(page).toHaveURL(/blog\/[a-z0-9/]+/)
-  expect(page.locator('h1')).toBeDefined()
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 })

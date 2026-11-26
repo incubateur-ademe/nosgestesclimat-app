@@ -1,6 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
-import * as v from 'valibot'
+import type * as v from 'valibot'
 import type { Model } from '../../models/types/model.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import type { SimulationStatusSchema } from '../validators/simulation.schema.ts'
