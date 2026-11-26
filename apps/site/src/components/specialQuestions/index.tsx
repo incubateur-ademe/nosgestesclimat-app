@@ -12,7 +12,8 @@ interface Props {
 
 type SpecialQuestionProps = Props & { question: DottedName }
 
-const PLAT_RULENAME: DottedName = 'alimentation . plats'
+const PLAT_RULENAME: DottedName =
+  'alimentation . déjeuner et dîner . par semaine'
 const VOITURE_RULENAME: DottedName = 'transport . voiture . km'
 const TEXTILE_RULENAME: DottedName = 'divers . textile . volume'
 

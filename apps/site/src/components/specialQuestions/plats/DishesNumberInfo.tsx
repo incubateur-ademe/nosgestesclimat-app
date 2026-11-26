@@ -5,9 +5,32 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useRule } from '@/publicodes-state'
 
 export default function DishesNumberInfo() {
-  const { numericValue: totalNumberOfPlats } = useRule(
-    'ui . nombre de repas par semaine'
+  const { numericValue: numberRepasVegetalien } = useRule(
+    'alimentation . déjeuner et dîner . végétalien . nombre'
   )
+  const { numericValue: numberRepasVegetarien } = useRule(
+    'alimentation . déjeuner et dîner . végétarien . nombre'
+  )
+  const { numericValue: numberRepasViandeRouge } = useRule(
+    'alimentation . déjeuner et dîner . viande rouge . nombre'
+  )
+  const { numericValue: numberRepasViandeBlanche } = useRule(
+    'alimentation . déjeuner et dîner . viande blanche . nombre'
+  )
+  const { numericValue: numberRepasPoissonGras } = useRule(
+    'alimentation . déjeuner et dîner . poisson gras . nombre'
+  )
+  const { numericValue: numberRepasPoissonBlanc } = useRule(
+    'alimentation . déjeuner et dîner . poisson blanc . nombre'
+  )
+
+  const totalNumberOfPlats =
+    numberRepasVegetalien +
+    numberRepasVegetarien +
+    numberRepasViandeRouge +
+    numberRepasViandeBlanche +
+    numberRepasPoissonGras +
+    numberRepasPoissonBlanc
 
   return (
     <>
