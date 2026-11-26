@@ -73,16 +73,11 @@ describe('updateSimulationSituation', () => {
         situation,
         foldedSteps,
         progression: 0.5,
+        status: 'answering_major_questions',
         computedResults,
         date: new Date('2024-01-01'),
       })
     )
-    expect(
-      await prisma.simulation.findUnique({
-        where: { id: simulation.id },
-        select: { status: true },
-      })
-    ).toEqual({ status: 'answering_major_questions' })
   })
 
   it('leaves the model unchanged when none is supplied', async () => {
