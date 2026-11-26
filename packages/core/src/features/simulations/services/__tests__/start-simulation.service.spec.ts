@@ -31,6 +31,13 @@ describe('startSimulation', () => {
       updatedAt: expect.any(Date),
       userId: user.id,
     })
+
+    expect(
+      await prisma.simulation.findUnique({
+        where: { id: simulationId },
+        select: { status: true },
+      })
+    ).toEqual({ status: 'not_started' })
   })
 
   it('starts a second simulation instead of overwriting the first', async () => {

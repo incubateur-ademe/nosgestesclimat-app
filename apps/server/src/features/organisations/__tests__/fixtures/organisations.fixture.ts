@@ -1,6 +1,7 @@
 import type supertest from 'supertest'
 
 import { faker } from '@faker-js/faker'
+import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import * as v from 'valibot'
@@ -209,6 +210,7 @@ export const createOrganisationPollSimulation = async ({
       situation,
       foldedSteps,
       progression,
+      status: simulationStatusFromProgression(progression),
       computedResults,
       userId,
       polls: { create: { pollId } },
