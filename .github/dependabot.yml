@@ -11,9 +11,19 @@ updates:
     directory: "/"
     cooldown:
       default-days: 7
-    # Check the npm registry for updates every day (weekdays)
+    # Check the npm registry for updates every week
     schedule:
       interval: "weekly"
+    # A grouped PR counts as one, majors get their own slots.
+    open-pull-requests-limit: 10
+    # Minor and patch bumps land in a single PR; majors keep their own.
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -22,3 +32,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
