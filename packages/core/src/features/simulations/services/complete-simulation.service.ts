@@ -6,7 +6,6 @@ import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import { runSideEffect } from '../../../lib/run-side-effect.ts'
 import { transaction } from '../../../lib/transaction.ts'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
@@ -44,6 +43,7 @@ import {
   updateSimulation,
 } from '../repository/simulation.repository.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 interface CompleteSimulationDependencies {
   logger: Logger

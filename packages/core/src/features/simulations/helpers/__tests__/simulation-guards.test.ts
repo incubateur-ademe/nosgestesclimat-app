@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { SimulationStatus } from '../../../../prisma/generated/client.ts'
+import type { SimulationStatus } from '../../validators/simulation.schema.ts'
 import { isSimulationCompleted } from '../simulation-guards.ts'
 
 const completion = (status: SimulationStatus) =>

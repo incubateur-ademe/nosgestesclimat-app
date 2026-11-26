@@ -5,3 +5,5 @@ export const SimulationStatusSchema = v.picklist([
   'answering_major_questions',
   'full_result_seen',
 ])
+
+export type SimulationStatus = v.InferOutput<typeof SimulationStatusSchema>

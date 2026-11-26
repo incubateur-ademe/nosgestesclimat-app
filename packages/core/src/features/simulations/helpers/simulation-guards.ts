@@ -1,5 +1,5 @@
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { Simulation } from '../types/simulation.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 /** A simulation is completed once its full result has been shown to the user.
  * The intermediate `answering_major_questions` state stays editable. */

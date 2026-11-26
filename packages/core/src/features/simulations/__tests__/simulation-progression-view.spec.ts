@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import { createTestDatabase } from '../../../test-utils/db.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 const MIGRATIONS_DIR = path.join('.', 'prisma', 'migrations')
 

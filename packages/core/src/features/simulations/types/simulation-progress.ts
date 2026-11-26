@@ -1,6 +1,6 @@
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import type { CompletedSimulationStatus } from '../helpers/simulation-guards.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 export interface SimulationProgress {
   id: string

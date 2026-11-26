@@ -2,7 +2,6 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Result } from '../../../lib/result.ts'
 import { failure } from '../../../lib/result.ts'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import {
   SimulationCompletedError,
@@ -13,6 +12,7 @@ import { isSimulationCompleted } from '../helpers/simulation-guards.ts'
 import { findSimulationProgressById } from '../repository/simulation-progress.repository.ts'
 import { updateSimulation } from '../repository/simulation.repository.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 /**
  * Updates what changes when a user answers a question. Unlike  creation,

@@ -1,7 +1,7 @@
 import { DomainError } from '../../../lib/errors.ts'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
+import type { SimulationStatus } from '../../simulations/validators/simulation.schema.ts'
 
 export class UnsupportedModelError extends DomainError<'unsupported_model'> {
   public readonly model: Model

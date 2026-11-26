@@ -1,9 +1,9 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { randomUUID } from 'node:crypto'
 import type { Situation } from 'publicodes'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { Model } from '../../models/types/model.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 import { emptyComputedResults } from './empty-computed-results.ts'
 
 /**

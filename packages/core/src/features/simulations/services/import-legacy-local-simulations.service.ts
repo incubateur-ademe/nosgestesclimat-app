@@ -1,9 +1,9 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import { parseModel } from '../../models/helpers/model-versions.ts'
 import { createManySimulations } from '../repository/simulation.repository.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 
 /**
  * The shape of a simulation as it comes out of long-lived client state

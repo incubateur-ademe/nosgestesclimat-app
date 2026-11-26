@@ -2,10 +2,7 @@ import { faker } from '@faker-js/faker'
 import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import type {
-  Prisma,
-  SimulationStatus,
-} from '../../../prisma/generated/client.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
 import {
   ModelRegionSchema,
@@ -14,6 +11,7 @@ import {
   type ModelRegion,
 } from '../../models/types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
+import type { SimulationStatus } from '../validators/simulation.schema.ts'
 import {
   computedResultsFactory,
   deprecatedComputedResults,

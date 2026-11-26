@@ -1,14 +1,12 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import type {
-  Organisation,
-  SimulationStatus,
-} from '../../../../prisma/generated/client.ts'
+import type { Organisation } from '../../../../prisma/generated/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
+import type { SimulationStatus } from '../../../simulations/validators/simulation.schema.ts'
 import { eventFactory } from '../../factories/event.factory.ts'
 import { refreshEventComputation } from '../../repositories/event.repository.ts'
 import type { EventInfo } from '../../types/event-info.ts'
