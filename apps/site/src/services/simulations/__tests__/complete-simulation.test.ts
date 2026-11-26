@@ -106,24 +106,21 @@ describe('completeSimulation', () => {
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
   })
 
-  it('forwards a completion the client did not finish to the core service', async () => {
+  it('rejects a completion the client did not finish', async () => {
     vi.mocked(getUserSession).mockResolvedValue(aSession())
-    const failure = {
-      success: false,
-      error: { code: 'simulation_incomplete' },
-    }
-    serviceMock.completeSimulation.mockResolvedValue(failure)
 
-    const payload = aPayload({
-      progression: 0.5,
-      status: 'answering_major_questions',
-    })
-    const result = await completeSimulation(payload)
-
-    expect(serviceMock.completeSimulation).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 'answering_major_questions' })
+    // The payload carries a finished simulation, so the schema settles it here;
+    // the core keeps its own check for the callers that do not come through an
+    // action.
+    const result = await completeSimulation(
+      aPayload({ progression: 0.5, status: 'answering_major_questions' })
     )
-    expect(result).toEqual(failure)
+
+    expect(result).toMatchObject({
+      success: false,
+      error: { code: 'invalid_payload' },
+    })
+    expect(serviceMock.completeSimulation).not.toHaveBeenCalled()
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
   })
 

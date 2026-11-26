@@ -16,7 +16,7 @@ export function useCompleteSimulation() {
         const { id, model, progression, status, situation, foldedSteps } =
           currentSimulation
         // An incomplete simulation is not filtered out here on purpose: the
-        // server answers with a `simulation_incomplete` failure, which no side
+        // action answers with an `invalid_payload` failure, which no side
         // reports.
         await completeSimulationAction({
           id,
