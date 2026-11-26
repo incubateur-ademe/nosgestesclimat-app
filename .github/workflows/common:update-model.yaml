@@ -33,7 +33,7 @@ jobs:
       # git config, which clashes with the GitHub App token used by
       # create-pull-request to push the branch.
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: main
           persist-credentials: false
@@ -43,7 +43,7 @@ jobs:
       # open the PR (so CI runs on it, dependabot-style).
       - name: Generate GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.MODEL_BOT_APP_ID }}
           private-key: ${{ secrets.MODEL_BOT_APP_PRIVATE_KEY }}
@@ -58,10 +58,10 @@ jobs:
       # Reconcile the lockfile with the bumped package.json, otherwise the
       # app's CI (pnpm install --frozen-lockfile) would fail on the PR.
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Use Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: './package.json'
           cache: 'pnpm'
@@ -110,7 +110,7 @@ jobs:
           RELEASE_BODY: ${{ env.RELEASE_BODY }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: chore/upgrade-model-v${{ env.NEW_VERSION }}
