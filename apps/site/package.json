@@ -79,7 +79,7 @@
     "fuse.js": "7.5.0",
     "gray-matter": "^4.0.3",
     "html-to-image": "^1.11.13",
-    "i18next": "^26.4.2",
+    "i18next": "^26.4.3",
     "ioredis": "^5.10.1",
     "iron-session": "^8.0.4",
     "is-mobile": "^5.0.0",
