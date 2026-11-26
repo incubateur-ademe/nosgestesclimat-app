@@ -32,7 +32,7 @@ export default function DocumentationRouter({
 
   if (
     isDocumentationClient ||
-    (currentSimulation && currentSimulation.progression > 0)
+    (currentSimulation && currentSimulation.status !== 'not_started')
   )
     return (
       <EngineProvider

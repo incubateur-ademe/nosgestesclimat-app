@@ -5,13 +5,17 @@ import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { Prisma } from '../../../prisma/generated/client.ts'
+import type {
+  Prisma,
+  SimulationStatus,
+} from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
 import { SimulationNotFoundError } from '../errors/simulations.error.ts'
 import { type NewSimulation } from '../helpers/new-simulation.ts'
+import { COMPLETED_SIMULATION_STATUSES } from '../helpers/simulation-guards.ts'
 import { simulationStatusFromProgression } from '../helpers/simulation-status.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
@@ -22,6 +26,7 @@ const simulationSelect = {
   date: true,
   model: true,
   progression: true,
+  status: true,
   situation: true,
   foldedSteps: true,
   computedResults: true,
@@ -137,7 +142,7 @@ export const findLatestCompletedSimulation = async ({
   userId: string
 }): Promise<Simulation | null> => {
   const row = await prisma.simulation.findFirst({
-    where: { userId, progression: 1 },
+    where: { userId, status: { in: [...COMPLETED_SIMULATION_STATUSES] } },
     orderBy: { date: 'desc' },
     select: simulationSelect,
   })
@@ -155,7 +160,7 @@ export const findLatestCompletedPollSimulation = async ({
   const row = await prisma.simulation.findFirst({
     where: {
       userId,
-      progression: 1,
+      status: { in: [...COMPLETED_SIMULATION_STATUSES] },
       polls: {
         some: {
           poll: isCuid(pollIdOrSlug)
@@ -179,7 +184,7 @@ export const findCompletedSimulations = async ({
   limit?: number
 }): Promise<Simulation[]> => {
   const rows = await prisma.simulation.findMany({
-    where: { userId, progression: 1 },
+    where: { userId, status: { in: [...COMPLETED_SIMULATION_STATUSES] } },
     orderBy: { date: 'desc' },
     take: limit,
     select: simulationSelect,
@@ -212,6 +217,7 @@ export const updateSimulation = async (
     situation,
     foldedSteps,
     progression,
+    status,
     computedResults,
     model,
   }: {
@@ -220,6 +226,7 @@ export const updateSimulation = async (
     situation: Situation<DottedName>
     foldedSteps: DottedName[]
     progression: number
+    status: SimulationStatus
     computedResults: ComputedResults
     model?: ModelString
   },
@@ -233,7 +240,7 @@ export const updateSimulation = async (
         situation: situation as unknown as Prisma.InputJsonValue,
         foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
         progression,
-        status: simulationStatusFromProgression(progression),
+        status,
         computedResults: computedResults as unknown as Prisma.InputJsonValue,
         ...(model ? { model } : {}),
       },

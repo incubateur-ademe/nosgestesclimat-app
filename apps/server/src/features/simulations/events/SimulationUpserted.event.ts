@@ -10,7 +10,7 @@ import type { SimulationCreateQuery } from '../simulations.validator.ts'
 
 export type SimulationEvent = Pick<
   Simulation,
-  'id' | 'progression' | 'computedResults' | 'date' | 'situation'
+  'id' | 'progression' | 'status' | 'computedResults' | 'date' | 'situation'
 >
 
 export type SimulationAsyncEvent = SimulationEvent | ModelToDto<SimulationEvent>

@@ -142,6 +142,7 @@ describe('Given a NGC user', () => {
           userId,
           simulation: {
             ...payload.simulation,
+            status: expect.any(String),
             date: expect.any(String),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -497,6 +498,7 @@ describe('Given a NGC user', () => {
         userId,
         simulation: {
           ...payload.simulation,
+          status: expect.any(String),
           date: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
@@ -564,6 +566,7 @@ describe('Given a NGC user', () => {
         userId: administratorId,
         simulation: {
           ...payload.simulation,
+          status: expect.any(String),
           date: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),

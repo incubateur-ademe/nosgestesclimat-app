@@ -1,4 +1,5 @@
 import { mapComputedResultsToContactAttributes } from '@nosgestesclimat/core/features/simulations/emails/map-computed-results-to-contact-attributes'
+import { isSimulationCompleted as _isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import {
   UTM_CAMPAIGN_KEY,
@@ -332,9 +333,9 @@ export const sendSimulationUpsertedEmail = ({
   origin: string
   locale: Locales
   verified: boolean
-  simulation: Pick<Simulation, 'id' | 'progression' | 'computedResults'>
+  simulation: Pick<Simulation, 'id' | 'status' | 'computedResults'>
 }>) => {
-  const isSimulationCompleted = simulation.progression === 1
+  const isSimulationCompleted = _isSimulationCompleted(simulation)
 
   if (verified) {
     // TODO send in progress email when autheticated

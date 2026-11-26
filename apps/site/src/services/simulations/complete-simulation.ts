@@ -54,7 +54,7 @@ export const completeSimulation = logger.withSpan(
       return parsed
     }
 
-    const { id, progression, situation, foldedSteps, computedResults } =
+    const { id, progression, status, situation, foldedSteps, computedResults } =
       parsed.data
 
     const { model } = await ensureSimulationModel(parsed.data, logger)
@@ -63,6 +63,7 @@ export const completeSimulation = logger.withSpan(
       userSession: session,
       simulationId: id,
       progression,
+      status,
       model,
       situation: situation,
       foldedSteps: foldedSteps as DottedName[],

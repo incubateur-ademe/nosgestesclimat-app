@@ -19,6 +19,7 @@ import {
   getIsEventTracked,
   markAsEventTracked,
 } from '@/utils/analytics/trackUniqueEvent'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { useEffect } from 'react'
 import { useTrackTimeOnSimulation } from './useTrackTimeOnSimulation'
 
@@ -32,7 +33,7 @@ export function useTrackSimulator() {
 
   const { relevantAnsweredQuestions, remainingQuestions } = useFormState()
 
-  const { progression, foldedSteps, situation } = currentSimulation
+  const { progression, status, foldedSteps, situation } = currentSimulation
 
   const { cookieState } = useCookieManagement()
 
@@ -88,7 +89,10 @@ export function useTrackSimulator() {
   ])
 
   useEffect(() => {
-    if (progression === 1 && !getIsEventTracked(TEST_COMPLETED, simulationId)) {
+    if (
+      isSimulationCompleted(currentSimulation) &&
+      !getIsEventTracked(TEST_COMPLETED, simulationId)
+    ) {
       const timeSpentOnSimulation = trackTimeOnSimulation()
 
       // Track GTM event if available
@@ -112,7 +116,7 @@ export function useTrackSimulator() {
       markAsEventTracked(TEST_COMPLETED, simulationId)
     }
   }, [
-    progression,
+    status,
     trackTimeOnSimulation,
     getNumericValue,
     simulationId,

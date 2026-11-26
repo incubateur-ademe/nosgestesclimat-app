@@ -6,6 +6,7 @@ import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import { runSideEffect } from '../../../lib/run-side-effect.ts'
 import { transaction } from '../../../lib/transaction.ts'
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
@@ -68,6 +69,7 @@ export function createCompleteSimulation({
       userSession,
       simulationId,
       progression,
+      status,
       model,
       situation,
       foldedSteps,
@@ -78,6 +80,7 @@ export function createCompleteSimulation({
       userSession: AppUser
       simulationId: string
       progression: number
+      status: SimulationStatus
       /** The model the client ran the test with; persisted with the completion. */
       model: string
       situation: Situation<DottedName>
@@ -90,7 +93,9 @@ export function createCompleteSimulation({
     > => {
       const userId = userSession.id
 
-      if (progression !== 1) return failure(new SimulationIncompleteError())
+      if (!isSimulationCompleted({ status })) {
+        return failure(new SimulationIncompleteError())
+      }
       if (computedResults.carbone.bilan === 0) {
         return failure(new ZeroFootprintError())
       }
@@ -129,6 +134,7 @@ export function createCompleteSimulation({
             situation,
             foldedSteps,
             progression,
+            status,
             computedResults,
             model: serializeModel(clientModel),
           },

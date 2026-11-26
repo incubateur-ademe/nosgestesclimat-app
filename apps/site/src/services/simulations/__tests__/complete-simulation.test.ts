@@ -112,7 +112,9 @@ describe('completeSimulation', () => {
     // The payload carries a finished simulation, so the schema settles it here;
     // the core keeps its own check for the callers that do not come through an
     // action.
-    const result = await completeSimulation(aPayload({ progression: 0.5 }))
+    const result = await completeSimulation(
+      aPayload({ progression: 0.5, status: 'answering_major_questions' })
+    )
 
     expect(result).toMatchObject({
       success: false,
@@ -136,6 +138,7 @@ describe('completeSimulation', () => {
       simulationId: payload.id,
       model: payload.model,
       progression: 1,
+      status: 'full_result_seen',
       situation: payload.situation,
       foldedSteps: payload.foldedSteps,
       computedResults: payload.computedResults,
@@ -255,11 +258,13 @@ const aPayload = (
   )
   simulation.computedResults.carbone.bilan = 1000
 
-  const { id, model, situation, foldedSteps, computedResults } = simulation
+  const { id, model, situation, foldedSteps, status, computedResults } =
+    simulation
   return {
     id,
     model,
     progression: 1,
+    status,
     situation: situation as CompleteSimulationPayload['situation'],
     foldedSteps,
     computedResults,

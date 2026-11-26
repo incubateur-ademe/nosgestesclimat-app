@@ -34,7 +34,6 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
   const simulation = useOptionalSimulation()
   const situation = simulation?.situation ?? EMPTY_SITUATION
   const foldedSteps = simulation?.foldedSteps ?? EMPTY_FOLDED_STEPS
-  const progression = simulation?.progression
   const { updateCurrentSimulation } = useUser()
 
   const {
@@ -100,7 +99,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     remainingQuestions: reorderedRemainingQuestions,
     relevantQuestions: reorderedRelevantQuestions,
     updateCurrentSimulation,
-    currentStoredProgression: progression,
+    currentStored: simulation,
   })
 
   return (

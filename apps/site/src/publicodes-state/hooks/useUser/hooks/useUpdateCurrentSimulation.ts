@@ -21,6 +21,7 @@ export default function useUpdateCurrentSimulation({ setSimulation }: Props) {
       foldedStepToAdd,
       computedResults,
       progression,
+      status,
     }: UpdateCurrentSimulationProps) => {
       setSimulation((prevSimulation) => {
         if (!prevSimulation) return prevSimulation
@@ -55,6 +56,10 @@ export default function useUpdateCurrentSimulation({ setSimulation }: Props) {
 
         if (progression !== undefined) {
           simulationToUpdate.progression = progression
+        }
+
+        if (status !== undefined) {
+          simulationToUpdate.status = status
         }
 
         return simulationToUpdate

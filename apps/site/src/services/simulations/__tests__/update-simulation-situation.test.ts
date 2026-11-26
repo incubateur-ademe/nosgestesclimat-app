@@ -55,14 +55,22 @@ const aPayload = (
   )
   simulation.computedResults.carbone.bilan = 1000
 
-  const { id, model, situation, foldedSteps, progression, computedResults } =
-    simulation
+  const {
+    id,
+    model,
+    situation,
+    foldedSteps,
+    progression,
+    status,
+    computedResults,
+  } = simulation
   return {
     id,
     model,
     situation: situation as UpdateSimulationSituationPayload['situation'],
     foldedSteps,
     progression,
+    status,
     computedResults,
     ...overrides,
   }
@@ -95,6 +103,7 @@ describe('updateSimulationSituation', () => {
       situation: payload.situation,
       foldedSteps: payload.foldedSteps,
       progression: 0.5,
+      status: 'answering_major_questions',
       computedResults: payload.computedResults,
       model: 'FR-fr-1.2.3',
     })

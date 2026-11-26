@@ -2,6 +2,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Result } from '../../../lib/result.ts'
 import { failure } from '../../../lib/result.ts'
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import {
   SimulationCompletedError,
@@ -24,6 +25,7 @@ export const updateSimulationSituation = async ({
   situation,
   foldedSteps,
   progression,
+  status,
   computedResults,
   model,
 }: {
@@ -32,6 +34,7 @@ export const updateSimulationSituation = async ({
   situation: Situation<DottedName>
   foldedSteps: DottedName[]
   progression: number
+  status: SimulationStatus
   computedResults: ComputedResults
   /** Written only when supplied in order to repair a broken model string */
   model?: ModelString
@@ -67,6 +70,7 @@ export const updateSimulationSituation = async ({
     situation,
     foldedSteps,
     progression,
+    status,
     computedResults,
     model,
   })

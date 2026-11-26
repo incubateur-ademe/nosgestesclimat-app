@@ -31,6 +31,7 @@ export async function buildNewSimulationPayload(): Promise<Simulation> {
       return acc
     }, {} as ComputedResults),
     progression: 0,
+    status: 'not_started',
     model: await resolveNewSimulationModelString(),
   }
 }

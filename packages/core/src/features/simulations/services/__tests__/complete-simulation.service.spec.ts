@@ -77,6 +77,7 @@ describe('completeSimulation', () => {
       date: new Date('2024-01-01'),
       model: simulation.model,
       progression: 1,
+      status: 'full_result_seen',
       situation,
       foldedSteps,
       computedResults,
@@ -84,12 +85,6 @@ describe('completeSimulation', () => {
       updatedAt: expect.any(Date),
       userId: user.id,
     })
-    expect(
-      await prisma.simulation.findUnique({
-        where: { id: simulation.id },
-        select: { status: true },
-      })
-    ).toEqual({ status: 'full_result_seen' })
     expect(await findSimulationComputation(simulation.id)).not.toBeNull()
   })
 
@@ -245,7 +240,7 @@ describe('completeSimulation', () => {
     )
   })
 
-  it('fails with simulation_incomplete when the progression is not 1', async () => {
+  it('fails with simulation_incomplete when the status is not completed', async () => {
     const { completeSimulation, backgroundTaskRunner } = setup()
     const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
@@ -254,7 +249,7 @@ describe('completeSimulation', () => {
       userSession: authenticated(user),
       simulationId: simulation.id,
       ...payload,
-      progression: 0.9,
+      status: 'answering_major_questions',
     })
 
     expect(result).toEqual({
@@ -781,6 +776,7 @@ const payload = {
   situation,
   foldedSteps,
   progression: 1,
+  status: 'full_result_seen',
   computedResults,
   locale: 'fr',
 } satisfies Omit<

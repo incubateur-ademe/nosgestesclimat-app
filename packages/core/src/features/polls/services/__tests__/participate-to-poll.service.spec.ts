@@ -50,6 +50,7 @@ describe('participateToPoll', () => {
         date: expect.any(Date),
         model,
         progression: 0,
+        status: 'not_started',
         situation: {},
         foldedSteps: [],
         computedResults: emptyComputedResults(),

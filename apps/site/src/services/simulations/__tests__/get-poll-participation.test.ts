@@ -77,6 +77,7 @@ describe('getPollParticipation', () => {
       foldedSteps: entity.foldedSteps,
       computedResults: entity.computedResults,
       progression: entity.progression,
+      status: entity.status,
       model: serializeModel(entity.model),
       updatedAt: entity.updatedAt.toISOString(),
     })

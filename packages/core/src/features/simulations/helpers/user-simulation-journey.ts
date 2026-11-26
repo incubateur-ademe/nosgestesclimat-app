@@ -1,8 +1,13 @@
 import type {
   ActiveUserSimulationJourney,
   CompletedUserSimulationJourney,
+  SimulationProgress,
   UserSimulationJourney,
 } from '../types/simulation-progress.ts'
+import { isSimulationCompleted } from './simulation-guards.ts'
+
+const isStarted = (simulation: SimulationProgress) =>
+  simulation.status !== 'not_started'
 
 export const hasSimulation = (
   journey: UserSimulationJourney
@@ -12,19 +17,20 @@ export const hasSimulation = (
 export const hasUnstartedSimulation = (
   journey: UserSimulationJourney
 ): journey is ActiveUserSimulationJourney | CompletedUserSimulationJourney =>
-  journey.currentSimulation?.progression === 0
+  !!journey.currentSimulation && !isStarted(journey.currentSimulation)
 
 export const hasCurrentSimulationInProgress = (
   journey: UserSimulationJourney
 ): journey is ActiveUserSimulationJourney | CompletedUserSimulationJourney =>
   !!journey.currentSimulation &&
-  journey.currentSimulation.progression > 0 &&
-  journey.currentSimulation.progression < 1
+  isStarted(journey.currentSimulation) &&
+  !isSimulationCompleted(journey.currentSimulation)
 
 export const hasCompletedCurrentSimulation = (
   journey: UserSimulationJourney
 ): journey is CompletedUserSimulationJourney =>
-  journey.currentSimulation?.progression === 1
+  !!journey.currentSimulation &&
+  isSimulationCompleted(journey.currentSimulation)
 
 export const hasCompletedSimulation = (
   journey: UserSimulationJourney

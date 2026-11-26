@@ -102,6 +102,7 @@ const participantToDto = (
     simulation: simulation && {
       computedResults: simulation.computedResults,
       progression: simulation.progression,
+      status: simulation.status,
     },
   }
 }

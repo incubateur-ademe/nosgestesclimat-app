@@ -1,3 +1,4 @@
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
@@ -49,12 +50,12 @@ export const getPollSimulationsExcelData = async (
       select: {
         date: true,
         computedResults: true,
-        progression: true,
+        status: true,
       },
     },
     session
   )) {
-    if (simulation.progression !== 1) {
+    if (!isSimulationCompleted(simulation)) {
       continue
     }
     const computedResults = v.safeParse(

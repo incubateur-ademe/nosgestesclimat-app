@@ -11,6 +11,7 @@ export function toSimulationDto(simulation: SimulationEntity): Simulation {
     computedResults:
       simulation.computedResults as Simulation['computedResults'],
     progression: simulation.progression,
+    status: simulation.status,
     model: serializeModel(simulation.model),
     updatedAt: simulation.updatedAt.toISOString(),
   }

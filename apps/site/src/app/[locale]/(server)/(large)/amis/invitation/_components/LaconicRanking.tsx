@@ -6,6 +6,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { sortParticipantsByFootprint } from '@/helpers/groups/sortParticipantsByFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import type { ReactNode } from 'react'
 import { getParticipantName } from '../../_helpers/getParticipantName'
 
@@ -36,7 +37,7 @@ export default function LaconicRanking({ group }: Props) {
   }
 
   const participantsWithCompletedTest = group.participants.filter(
-    ({ simulation }) => simulation.progression === 1
+    ({ simulation }) => isSimulationCompleted(simulation)
   )
 
   const particpantsOrdered = sortParticipantsByFootprint(

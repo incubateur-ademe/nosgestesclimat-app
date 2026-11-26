@@ -41,8 +41,15 @@ export const updateSimulationSituation = logger.withSpan(
       return parsed
     }
 
-    const { id, model, situation, foldedSteps, progression, computedResults } =
-      await ensureSimulationModel(parsed.data, logger)
+    const {
+      id,
+      model,
+      situation,
+      foldedSteps,
+      progression,
+      status,
+      computedResults,
+    } = await ensureSimulationModel(parsed.data, logger)
 
     const result = await updateSimulationSituationService({
       userId: session.id,
@@ -50,6 +57,7 @@ export const updateSimulationSituation = logger.withSpan(
       situation,
       foldedSteps: foldedSteps as DottedName[],
       progression,
+      status,
       computedResults,
       model,
     })

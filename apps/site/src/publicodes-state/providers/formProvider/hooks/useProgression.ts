@@ -1,5 +1,8 @@
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { UpdateCurrentSimulationProps } from '@/publicodes-state/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
+import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import { useEffect, useMemo } from 'react'
 
 interface Props {
@@ -8,7 +11,7 @@ interface Props {
   relevantQuestions: DottedName[]
   updateCurrentSimulation: (simulation: UpdateCurrentSimulationProps) => void
   /** Absent when there is no persisted simulation yet. */
-  currentStoredProgression: number | undefined
+  currentStored: Pick<Simulation, 'progression' | 'status'> | undefined
 }
 
 /**
@@ -18,7 +21,7 @@ export default function useProgression({
   remainingQuestions,
   relevantQuestions,
   updateCurrentSimulation,
-  currentStoredProgression,
+  currentStored,
 }: Props) {
   const progression = useMemo(
     () =>
@@ -31,9 +34,16 @@ export default function useProgression({
 
   // Updates the progression stored in the user object / hook
   useEffect(() => {
-    // Never retrograde a simulation which is already completed
-    if (currentStoredProgression === 1 && progression < 1) return
+    const status = simulationStatusFromProgression(progression)
 
-    updateCurrentSimulation({ progression })
-  }, [progression, updateCurrentSimulation, currentStoredProgression])
+    // Never retrograde a simulation which is already completed
+    if (
+      currentStored &&
+      isSimulationCompleted(currentStored) &&
+      !isSimulationCompleted({ status })
+    )
+      return
+
+    updateCurrentSimulation({ progression, status })
+  }, [progression, updateCurrentSimulation, currentStored])
 }

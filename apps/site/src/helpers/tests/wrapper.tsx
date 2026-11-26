@@ -68,6 +68,7 @@ const defaultSimulation: Simulation = {
     },
   },
   progression: 0,
+  status: 'not_started',
 }
 
 const defaultUser = {

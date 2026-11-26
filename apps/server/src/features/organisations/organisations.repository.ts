@@ -586,8 +586,8 @@ export const getOrganisationsBatchBrevoStats = ({
           LIMIT 1
         ) as "administratorEmail",
         COUNT(DISTINCT p.id) as "pollsCreatedCount",
-        COUNT(DISTINCT sp."simulationId") FILTER (WHERE s.progression = 1) as "organisationSimulationsCompletedCount",
-        MAX(s.date) FILTER (WHERE s.progression = 1) as "organisationLastSimulationDate",
+        COUNT(DISTINCT sp."simulationId") FILTER (WHERE s.status IN ('major_questions_result_seen', 'full_result_seen')) as "organisationSimulationsCompletedCount",
+        MAX(s.date) FILTER (WHERE s.status IN ('major_questions_result_seen', 'full_result_seen')) as "organisationLastSimulationDate",
         COALESCE((
           SELECT COUNT(*) FROM "ngc"."SimulationPoll" WHERE "pollId" = (
             SELECT p2.id FROM "ngc"."Poll" p2 WHERE p2."organisationId" = o.id ORDER BY p2."createdAt" DESC LIMIT 1

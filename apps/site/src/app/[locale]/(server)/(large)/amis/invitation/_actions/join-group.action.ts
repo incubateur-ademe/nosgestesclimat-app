@@ -6,6 +6,7 @@ import {
 } from '@/constants/urls/paths'
 import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -31,7 +32,7 @@ export const joinGroup = async ({
   // screen they were served before taking part.
   revalidatePath(GROUP_RESULTS_ROUTE_PATTERN, 'page')
 
-  if (simulation?.progression === 1) {
+  if (simulation && isSimulationCompleted(simulation)) {
     redirect(getLinkToGroupDashboard({ groupId }))
   } else {
     redirect(TUTORIAL_PATH)

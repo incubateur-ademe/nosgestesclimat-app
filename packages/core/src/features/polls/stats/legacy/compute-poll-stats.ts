@@ -13,7 +13,9 @@ import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRule
 import * as v from 'valibot'
 import { toError } from '../../../../lib/to-error.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import type { SimulationStatus } from '../../../../prisma/generated/client.ts'
 import type { Logger } from '../../../logger/index.ts'
+import { isSimulationCompleted } from '../../../simulations/helpers/simulation-guards.ts'
 import {
   ComputedResultsSchema,
   type ComputedResults,
@@ -57,17 +59,17 @@ const getEmptyComputedResults = (): ComputedResults => ({
 })
 
 type SimulationToCompute = {
-  progression: number
+  status: SimulationStatus
   computedResults: ComputedResults
   situation: Situation
 }
 
 const isValidSimulation = (simulation: {
-  progression: number
+  status: SimulationStatus
   computedResults: unknown
   situation: unknown
 }): simulation is SimulationToCompute => {
-  if (simulation.progression !== 1) {
+  if (!isSimulationCompleted(simulation)) {
     return false
   }
 
@@ -103,7 +105,7 @@ async function* batchPollSimulations(pollId: string) {
         simulationId: true,
         simulation: {
           select: {
-            progression: true,
+            status: true,
             computedResults: true,
             situation: true,
           },

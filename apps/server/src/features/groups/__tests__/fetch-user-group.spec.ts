@@ -189,10 +189,14 @@ describe('Given a NGC user', () => {
               name: group.administrator.name,
             },
             participants: participants.map(
-              ({ id, simulation: { computedResults, progression }, name }) => ({
+              ({
+                id,
+                simulation: { computedResults, progression, status },
+                name,
+              }) => ({
                 id,
                 name,
-                simulation: { computedResults, progression },
+                simulation: { computedResults, progression, status },
               })
             ),
           })
