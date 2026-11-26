@@ -684,6 +684,14 @@ entries:
   cookieConsent.banner.title.lock: Fenêtre modale de gestion des cookies
   cookieConsent.board.title: Cookie management panel
   cookieConsent.board.title.lock: Panneau de gestion des cookies
+  simulator.customQuestions.housingSurface.instruction: 'Use the slider to enter the surface area:'
+  simulator.customQuestions.housingSurface.hint.studio: about one room (studio)
+  simulator.customQuestions.housingSurface.hint.twoRooms: about a 2-room home (1 bedroom)
+  simulator.customQuestions.housingSurface.hint.threeRooms: about a 3-room home (2 bedrooms)
+  simulator.customQuestions.housingSurface.hint.fourRooms: about a 4-room home (3 bedrooms)
+  simulator.customQuestions.housingSurface.hint.fiveRooms: More than 5 rooms (4 bedrooms)
+  simulator.customQuestions.housingSurface.minLabel: 10 m²
+  simulator.customQuestions.housingSurface.maxLabel: 250 m² and more
   simulator.customQuestions.textile.open: I want to detail my wardrobe
   simulator.customQuestions.textile.open.lock: Je détaille ma garde-robe
   'Pour plus de précision:': 'More precision:'
