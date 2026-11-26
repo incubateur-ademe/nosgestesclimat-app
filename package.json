@@ -39,11 +39,11 @@
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-react-hooks": "6.1.1",
     "husky": "^9.1.7",
-    "knip": "^6.45.1",
+    "knip": "^6.46.1",
     "lint-staged": "^16.4.0",
     "prettier": "^3.10.1",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "prettier-plugin-tailwindcss": "^0.7.4",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.73.0"
   },
