@@ -338,8 +338,8 @@ importers:
         specifier: ^1.11.13
         version: 1.11.13
       i18next:
-        specifier: ^26.4.2
-        version: 26.4.2(typescript@5.9.3)
+        specifier: ^27.2.2
+        version: 27.2.2(typescript@5.9.3)
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
@@ -393,7 +393,7 @@ importers:
         version: 7.92.0(@types/react@19.3.0)(react@19.3.1)
       react-i18next:
         specifier: ^17.0.16
-        version: 17.0.16(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
+        version: 17.0.16(i18next@27.2.2(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -583,7 +583,7 @@ importers:
         version: 7.10.1
       '@prisma/client':
         specifier: ^7.10.1
-        version: 7.10.1(prisma@7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)
+        version: 7.10.1(prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)
       '@publicodes/tools':
         specifier: 1.8.0
         version: 1.8.0(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)
@@ -604,7 +604,7 @@ importers:
         version: 5.30.6
       prisma:
         specifier: ^7.10.1
-        version: 7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
+        version: 7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
       publicodes:
         specifier: ^1.10.4
         version: 1.10.4
@@ -619,7 +619,7 @@ importers:
         version: 1.5.0(typescript@5.9.3)
       vitest:
         specifier: ^4.1.4
-        version: 4.1.4(@opentelemetry/api@1.10.0)(@types/node@24.19.4)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.19.4)(typescript@5.9.3))(vite@6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1))
+        version: 4.1.4(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.19.2)(typescript@5.9.3))(vite@6.4.2(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1))
     devDependencies:
       '@electric-sql/pglite':
         specifier: ^0.3.16
@@ -629,7 +629,7 @@ importers:
         version: 9.0.10
       pglite-prisma-adapter:
         specifier: ^0.6.1
-        version: 0.6.1(@electric-sql/pglite@0.3.16)(@prisma/client@7.10.1(prisma@7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3))
+        version: 0.6.1(@electric-sql/pglite@0.3.16)(@prisma/client@7.10.1(prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3))
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -4778,9 +4778,6 @@ packages:
   '@types/node@24.19.2':
     resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
 
-  '@types/node@24.19.4':
-    resolution: {integrity: sha512-s04odlR3ksJrLu7QLi+pddkWLD0RmSbcP9KuWn2/ozQKAp/YgwBC/6x9kJj8yAzZnGPfxePm7zm7nysVPCRagw==}
-
   '@types/node@26.6.6':
     resolution: {integrity: sha512-MzQj+8Kx3XI40OmUAE6Qoh58ZMNstNNMwn2nfd3qWsfe7nDNSqJNzes4njhz6AHwrSHOffSLwXU6yb474Q4aog==}
 
@@ -7459,8 +7456,9 @@ packages:
       typescript:
         optional: true
 
-  i18next@26.4.2:
-    resolution: {integrity: sha512-RX+R0VLg13IbvRuJSxnqykUFS9vQZTl8wYpWPCIUDWVrSGjsQywB5Y+pjzrkboxGAuYfJZVH1InFTdgBdxq6ug==}
+  i18next@27.2.2:
+    resolution: {integrity: sha512-1/AJgz/bpE/YL6tqekQlZAzDhkmrUBbgU8+Xon/Lwv6c5WdYuyFZ9mb86OVfR2C2XujUDT7Rz23Ydaq4l981lA==}
+    engines: {node: '>=22'}
     peerDependencies:
       typescript: ^5 || ^6 || ^7
     peerDependenciesMeta:
@@ -12924,14 +12922,6 @@ snapshots:
       '@types/node': 24.19.2
     optional: true
 
-  '@inquirer/confirm@5.1.21(@types/node@24.19.4)':
-    dependencies:
-      '@inquirer/core': 10.3.2(@types/node@24.19.4)
-      '@inquirer/type': 3.0.10(@types/node@24.19.4)
-    optionalDependencies:
-      '@types/node': 24.19.4
-    optional: true
-
   '@inquirer/confirm@5.1.21(@types/node@26.6.6)':
     dependencies:
       '@inquirer/core': 10.3.2(@types/node@26.6.6)
@@ -12966,20 +12956,6 @@ snapshots:
       '@types/node': 24.19.2
     optional: true
 
-  '@inquirer/core@10.3.2(@types/node@24.19.4)':
-    dependencies:
-      '@inquirer/ansi': 1.0.2
-      '@inquirer/figures': 1.0.15
-      '@inquirer/type': 3.0.10(@types/node@24.19.4)
-      cli-width: 4.1.0
-      mute-stream: 2.0.0
-      signal-exit: 4.1.0
-      wrap-ansi: 6.2.0
-      yoctocolors-cjs: 2.1.3
-    optionalDependencies:
-      '@types/node': 24.19.4
-    optional: true
-
   '@inquirer/core@10.3.2(@types/node@26.6.6)':
     dependencies:
       '@inquirer/ansi': 1.0.2
@@ -13002,11 +12978,6 @@ snapshots:
   '@inquirer/type@3.0.10(@types/node@24.19.2)':
     optionalDependencies:
       '@types/node': 24.19.2
-    optional: true
-
-  '@inquirer/type@3.0.10(@types/node@24.19.4)':
-    optionalDependencies:
-      '@types/node': 24.19.4
     optional: true
 
   '@inquirer/type@3.0.10(@types/node@26.6.6)':
@@ -13743,11 +13714,11 @@ snapshots:
       prisma: 7.10.1(@types/node@18.19.130)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
       typescript: 5.9.3
 
-  '@prisma/client@7.10.1(prisma@7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)':
+  '@prisma/client@7.10.1(prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       '@prisma/client-runtime-utils': 7.10.1
     optionalDependencies:
-      prisma: 7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
+      prisma: 7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
       typescript: 5.9.3
 
   '@prisma/config@7.10.1(magicast@0.5.2)':
@@ -15633,10 +15604,6 @@ snapshots:
     dependencies:
       undici-types: 7.24.6
 
-  '@types/node@24.19.4':
-    dependencies:
-      undici-types: 7.24.6
-
   '@types/node@26.6.6':
     dependencies:
       undici-types: 8.9.0
@@ -16145,16 +16112,6 @@ snapshots:
     optionalDependencies:
       msw: 2.12.14(@types/node@24.19.2)(typescript@5.9.3)
       vite: 6.4.2(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1)
-    optional: true
-
-  '@vitest/mocker@4.1.4(msw@2.12.14(@types/node@24.19.4)(typescript@5.9.3))(vite@6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1))':
-    dependencies:
-      '@vitest/spy': 4.1.4
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      msw: 2.12.14(@types/node@24.19.4)(typescript@5.9.3)
-      vite: 6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1)
 
   '@vitest/mocker@4.1.4(msw@2.12.14(@types/node@26.6.6)(typescript@5.9.3))(vite@6.4.1(@types/node@26.6.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1))':
     dependencies:
@@ -18957,7 +18914,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  i18next@26.4.2(typescript@5.9.3):
+  i18next@27.2.2(typescript@5.9.3):
     optionalDependencies:
       typescript: 5.9.3
 
@@ -20155,32 +20112,6 @@ snapshots:
       - '@types/node'
     optional: true
 
-  msw@2.12.14(@types/node@24.19.4)(typescript@5.9.3):
-    dependencies:
-      '@inquirer/confirm': 5.1.21(@types/node@24.19.4)
-      '@mswjs/interceptors': 0.41.3
-      '@open-draft/deferred-promise': 2.2.0
-      '@types/statuses': 2.0.6
-      cookie: 1.1.1
-      graphql: 16.13.2
-      headers-polyfill: 4.0.3
-      is-node-process: 1.2.0
-      outvariant: 1.4.3
-      path-to-regexp: 6.3.0
-      picocolors: 1.1.1
-      rettime: 0.10.1
-      statuses: 2.0.2
-      strict-event-emitter: 0.5.1
-      tough-cookie: 6.0.1
-      type-fest: 5.5.0
-      until-async: 3.0.2
-      yargs: 17.7.2
-    optionalDependencies:
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - '@types/node'
-    optional: true
-
   msw@2.12.14(@types/node@26.6.6)(typescript@5.9.3):
     dependencies:
       '@inquirer/confirm': 5.1.21(@types/node@26.6.6)
@@ -20220,9 +20151,9 @@ snapshots:
       sql-escaper: 1.9.1
     optional: true
 
-  mysql2@3.24.4(@types/node@24.19.4):
+  mysql2@3.24.4(@types/node@24.19.2):
     dependencies:
-      '@types/node': 24.19.4
+      '@types/node': 24.19.2
       aws-ssl-profiles: 1.1.2
       generate-function: 2.3.1
       iconv-lite: 0.7.3
@@ -20783,10 +20714,10 @@ snapshots:
       '@prisma/driver-adapter-utils': 6.10.1
       postgres-array: 3.0.4
 
-  pglite-prisma-adapter@0.6.1(@electric-sql/pglite@0.3.16)(@prisma/client@7.10.1(prisma@7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)):
+  pglite-prisma-adapter@0.6.1(@electric-sql/pglite@0.3.16)(@prisma/client@7.10.1(prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)):
     dependencies:
       '@electric-sql/pglite': 0.3.16
-      '@prisma/client': 7.10.1(prisma@7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)
+      '@prisma/client': 7.10.1(prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3))(typescript@5.9.3)
       '@prisma/driver-adapter-utils': 6.10.1
       postgres-array: 3.0.4
 
@@ -21016,13 +20947,13 @@ snapshots:
       - react-dom
     optional: true
 
-  prisma@7.10.1(@types/node@24.19.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3):
+  prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3):
     dependencies:
       '@prisma/config': 7.10.1(magicast@0.5.2)
       '@prisma/dev': 0.24.17(typescript@5.9.3)
       '@prisma/engines': 7.10.1
       '@prisma/studio-core': 0.33.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      mysql2: 3.24.4(@types/node@24.19.4)
+      mysql2: 3.24.4(@types/node@24.19.2)
       postgres: 3.4.7
     optionalDependencies:
       typescript: 5.9.3
@@ -21257,11 +21188,11 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-i18next@17.0.16(i18next@26.4.2(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3):
+  react-i18next@17.0.16(i18next@27.2.2(typescript@5.9.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3):
     dependencies:
       '@babel/runtime': 7.29.10
       html-parse-stringify: 4.0.1
-      i18next: 26.4.2(typescript@5.9.3)
+      i18next: 27.2.2(typescript@5.9.3)
       react: 19.3.1
       use-sync-external-store: 1.6.0(react@19.3.1)
     optionalDependencies:
@@ -22984,24 +22915,6 @@ snapshots:
       terser: 5.46.1
       tsx: 4.21.0
       yaml: 2.9.1
-    optional: true
-
-  vite@6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1):
-    dependencies:
-      esbuild: 0.25.12
-      fdir: 6.5.0(picomatch@4.0.7)
-      picomatch: 4.0.7
-      postcss: 8.5.33
-      rollup: 4.68.7
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 24.19.4
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      lightningcss: 1.33.0
-      terser: 5.46.1
-      tsx: 4.21.0
-      yaml: 2.9.1
 
   vitest@4.1.4(@opentelemetry/api@1.10.0)(@types/node@18.19.130)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.2(@types/node@18.19.130)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1)):
     dependencies:
@@ -23060,39 +22973,6 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.10.0
       '@types/node': 24.19.2
-      '@vitest/coverage-v8': 4.1.4(@vitest/browser@4.1.4)(vitest@4.1.4)
-      '@vitest/ui': 4.1.4(vitest@4.1.4)
-      happy-dom: 20.8.9
-      jsdom: 27.4.0(@noble/hashes@1.8.0)
-    transitivePeerDependencies:
-      - msw
-    optional: true
-
-  vitest@4.1.4(@opentelemetry/api@1.10.0)(@types/node@24.19.4)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.19.4)(typescript@5.9.3))(vite@6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1)):
-    dependencies:
-      '@vitest/expect': 4.1.4
-      '@vitest/mocker': 4.1.4(msw@2.12.14(@types/node@24.19.4)(typescript@5.9.3))(vite@6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1))
-      '@vitest/pretty-format': 4.1.4
-      '@vitest/runner': 4.1.4
-      '@vitest/snapshot': 4.1.4
-      '@vitest/spy': 4.1.4
-      '@vitest/utils': 4.1.4
-      es-module-lexer: 2.0.0
-      expect-type: 1.3.0
-      magic-string: 0.30.21
-      obug: 2.1.1
-      pathe: 2.0.3
-      picomatch: 4.0.3
-      std-env: 4.0.0
-      tinybench: 2.9.0
-      tinyexec: 1.1.1
-      tinyglobby: 0.2.15
-      tinyrainbow: 3.1.0
-      vite: 6.4.2(@types/node@24.19.4)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.9.1)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@opentelemetry/api': 1.10.0
-      '@types/node': 24.19.4
       '@vitest/coverage-v8': 4.1.4(@vitest/browser@4.1.4)(vitest@4.1.4)
       '@vitest/ui': 4.1.4(vitest@4.1.4)
       happy-dom: 20.8.9
