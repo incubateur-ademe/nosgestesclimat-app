@@ -44,6 +44,7 @@ de pull lui-même.
 | `install-otelcol.sh`        | Installe/upgrade le collecteur (idempotent, version épinglée)   |
 | `otelcol-config.yaml`       | Config OpenTelemetry Collector (nginx → PostHog Logs)           |
 | `generate-cloud-init.sh`    | Génère `cloud-init.preprod.yaml` et `cloud-init.prod.yaml`      |
+| `apt/`                      | Politique de mise à jour auto (sécurité, fenêtre, reboot)       |
 
 ### `deploy.env`
 
@@ -77,6 +78,60 @@ Ces fichiers sont téléchargés au first boot (via cloud-init `runcmd`) et ne s
 
 - Soit recréer l'instance (cloud-init télécharge les nouvelles versions)
 - Soit SSH manuel : `curl -fsSL https://raw.githubusercontent.com/incubateur-ademe/nosgestesclimat-app/refs/heads/main/infra/nginx/pull-config.sh -o /usr/local/bin/nginx-config-pull.sh`
+
+## Mises à jour automatiques
+
+La politique tient dans `apt/52unattended-upgrades-ngc`, posée par
+`apt/install.sh`. Deux classes, deux traitements :
+
+| Classe      | Source                                 | Traitement              |
+| ----------- | -------------------------------------- | ----------------------- |
+| Sécurité    | `-security` (Ubuntu) + dépôt nginx.org | automatique, quotidien  |
+| Fonctionnel | `-updates`, bumps de version           | manuel, preprod d'abord |
+
+`nginx` et `nginx-module-otel` viennent de nginx.org, qu'Ubuntu n'autorise pas
+par défaut : le verrou de version du module sur le binaire les exclut alors
+**tous les deux** de la mise à jour automatique. D'où l'`Origins-Pattern`.
+
+Le fichier est séparé de `20auto-upgrades` et `50unattended-upgrades` : tous deux
+sont gérés par ucf, qui les fusionne à chaque montée de version du paquet.
+
+### Fenêtre
+
+    03:00 ± 10 min   apt-daily.timer          rafraîchit les listes
+    03:30 ± 20 min   apt-daily-upgrade.timer  installe la sécurité
+    04:15            reboot si /var/run/reboot-required
+
+Les timers du paquet tirent à 6 h et 18 h avec jusqu'à 12 h d'aléa : ni l'ordre
+entre listes et installation ni l'heure d'une casse ne sont prévisibles.
+`apt.systemd.daily install` ne rafraîchit pas les listes lui-même, d'où les
+30 min d'écart entre les deux runs.
+
+### Reboot
+
+Seuls le noyau, dbus et la microcode CPU exigent un reboot. Les bibliothèques
+(glibc, openssl) s'appliquent par restart des services, que `needrestart` fait
+automatiquement depuis Ubuntu 24.04, y compris en run non interactif.
+
+Le restart de nginx est à froid : l'index de cache (`keys_zone=ngc_cache:500m`)
+est perdu, et le temps que le loader le relise depuis le disque, les HIT
+redeviennent des MISS et tapent l'upstream. À 03:30 l'impact est négligeable.
+
+### Appliquer à une instance existante
+
+Ces fichiers ne sont tirés qu'au first boot. Pour appliquer la politique sans
+recréer l'instance :
+
+    curl -fsSL https://raw.githubusercontent.com/incubateur-ademe/nosgestesclimat-app/refs/heads/main/infra/nginx/apt/install.sh -o /tmp/install-apt-policy.sh
+    sudo NGC_REF=main bash /tmp/install-apt-policy.sh
+
+### Non couvert
+
+- `certbot` et `python3-certbot-nginx` sont dans universe, sans maintenance de
+  sécurité Canonical hors ESM.
+- `otelcol-contrib` : version épinglée dans `generate-cloud-init.sh`, aucun
+  mécanisme de mise à jour.
+- Les mises à jour fonctionnelles et la montée de version d'Ubuntu.
 
 ## Logs Nginx → PostHog (OpenTelemetry)
 
