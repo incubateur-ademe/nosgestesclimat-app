@@ -166,6 +166,7 @@ const PG_TO_PRISMA_CODE: Record<string, string> = {
 }
 
 function createPrismaClient(adapter: PrismaPGlite) {
+  // @ts-expect-error : pglite-prisma-adapter pins its own @prisma/driver-adapter-utils
   const basePrisma = new PrismaClient({ adapter })
 
   return basePrisma.$extends({
