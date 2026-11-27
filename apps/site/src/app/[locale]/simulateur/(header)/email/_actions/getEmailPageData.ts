@@ -2,6 +2,7 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { getSimulationMode } from '@nosgestesclimat/core/features/simulations/helpers/get-simulation-mode'
 import { getLatestSimulationResult } from '@nosgestesclimat/core/features/simulations/services/get-latest-simulation-result.service'
 
+import logger from '@/logger/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { toSimulationDto } from '@/services/simulations/simulation.dto'
 import { notFound } from 'next/navigation'
@@ -21,6 +22,7 @@ export async function getEmailPageData(): Promise<EmailPageData> {
   const result = await getLatestSimulationResult({
     userId: user.id,
     withTendency: false,
+    logger,
   })
   if (!result) notFound()
 

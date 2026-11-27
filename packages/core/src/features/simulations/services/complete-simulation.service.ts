@@ -21,7 +21,11 @@ import { findManyPollSummariesBySimulationId } from '../../polls/repositories/po
 import { enqueuePollStatsComputation } from '../../polls/stats/services/enqueue-poll-stats-computation.ts'
 import type { PollSummary } from '../../polls/types/poll.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
-import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
+import {
+  createSimulationComputation,
+  findSimulationComputation,
+} from '../../simulation-computation/repositories/simulation-computations.repository.ts'
+import type { SimulationComputationStatus } from '../../simulation-computation/types/computation.ts'
 import { findUserById } from '../../users/repositories/users.repository.ts'
 import { mapComputedResultsToContactAttributes } from '../emails/map-computed-results-to-contact-attributes.ts'
 import {
@@ -52,7 +56,13 @@ interface CompleteSimulationDependencies {
   origin: string
   /** Runs the post-completion side effects outside of the request lifecycle */
   backgroundTaskRunner: BackgroundTaskRunner
+  /** Injectable so tests assert the poll schedule without waiting real
+   * seconds; defaults to a real promise-based `setTimeout`. */
+  sleep?: (ms: number) => Promise<void>
 }
+
+const defaultSleep = (ms: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms))
 
 export function createCompleteSimulation({
   logger,
@@ -60,6 +70,7 @@ export function createCompleteSimulation({
   sendEmail,
   origin,
   backgroundTaskRunner,
+  sleep = defaultSleep,
 }: CompleteSimulationDependencies) {
   return logger.withSpan(
     'core.service.completeSimulation',
@@ -156,6 +167,12 @@ export function createCompleteSimulation({
 
       if (!updated.success) return updated
 
+      // A computation row exists only when the model was supported: wait for
+      // it, bounded, so the redirect lands with the rule evaluations written.
+      if (isModelSupportedForComputation) {
+        await waitForSimulationComputation({ logger, sleep, simulationId })
+      }
+
       const groups = await findManyGroupsBySimulationId({
         simulationId,
       })
@@ -220,6 +237,46 @@ export function createCompleteSimulation({
         groups,
         polls,
       })
+    }
+  )
+}
+
+/** Delays before each status read: 1s, then 500ms four times, then 1s twice —
+ * one read after each delay, at 1s, 1.5s, 2s, 2.5s, 3s, 4s and 5s. */
+const COMPUTATION_POLL_DELAYS_MS = [
+  1000, 500, 500, 500, 500, 1000, 1000,
+] as const
+
+/**
+ * Waits, bounded to 5 seconds, for the simulation's computation job to reach a
+ * terminal status, so the completion response carries the rule evaluations the
+ * job writes. Reads the computation row only through the repository's
+ * find-by-simulation method, one read after each poll delay, and stops early
+ * on `completed` or `failed`. When the cap is hit while the job is still
+ * running, logs one warning with the simulation id and the last seen status
+ * and returns normally: the completion proceeds anyway.
+ */
+const waitForSimulationComputation = async ({
+  logger,
+  sleep,
+  simulationId,
+}: {
+  logger: Logger
+  sleep: (ms: number) => Promise<void>
+  simulationId: string
+}): Promise<void> => {
+  let lastSeenStatus: SimulationComputationStatus | null = null
+  for (const delayMs of COMPUTATION_POLL_DELAYS_MS) {
+    await sleep(delayMs)
+    const computation = await findSimulationComputation(simulationId)
+    lastSeenStatus = computation?.status ?? null
+    if (lastSeenStatus === 'completed' || lastSeenStatus === 'failed') return
+  }
+  logger.warn(
+    'Simulation computation unfinished after the 5s wait on completion',
+    {
+      simulationId,
+      status: lastSeenStatus,
     }
   )
 }

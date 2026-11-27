@@ -3,6 +3,7 @@ import type { SimulationResult } from '@nosgestesclimat/core/features/simulation
 import { v4 as randomUUID } from 'uuid'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { serverLoggerMock } from '@/helpers/tests/mockLogger'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { getLatestSimulationResult } from '../get-latest-simulation-result'
 
@@ -11,6 +12,8 @@ const serviceMock = vi.hoisted(() => ({
 }))
 
 const notFoundMock = vi.hoisted(() => vi.fn())
+
+vi.mock('@/logger/logger.server', () => ({ default: serverLoggerMock }))
 
 vi.mock('@/services/auth/get-user-session', () => ({
   getUserSession: vi.fn(),
@@ -61,6 +64,7 @@ describe('getLatestSimulationResult', () => {
     expect(serviceMock.getLatestSimulationResultService).toHaveBeenCalledWith({
       withTendency: false,
       userId,
+      logger: serverLoggerMock,
     })
   })
 
@@ -89,6 +93,7 @@ describe('getLatestSimulationResult', () => {
     expect(serviceMock.getLatestSimulationResultService).toHaveBeenCalledWith({
       withTendency: false,
       userId,
+      logger: serverLoggerMock,
     })
   })
 
@@ -117,6 +122,7 @@ describe('getLatestSimulationResult', () => {
     expect(serviceMock.getLatestSimulationResultService).toHaveBeenCalledWith({
       withTendency: true,
       userId,
+      logger: serverLoggerMock,
     })
   })
 
