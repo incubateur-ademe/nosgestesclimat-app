@@ -24,7 +24,6 @@
       "ignoreDependencies": [
         "i18next-parser",
         "yaml-loader",
-        "react-tooltip",
         "eslint-plugin-react-hooks"
       ],
       "ignoreBinaries": ["only-allow"]

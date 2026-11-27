@@ -71,9 +71,7 @@
     "@types/yargs": "^17.0.35",
     "@vitest/coverage-v8": "^4.1.2",
     "msw": "^2.12.14",
-    "pglite-prisma-adapter": "^0.6.1",
     "redis-mock": "^0.56.3",
-    "rimraf": "^6.1.4",
     "supertest": "^7.3.2",
     "vitest": "^4.1.2"
   },
