@@ -22,6 +22,7 @@ apt:
 packages:
   - nginx
   - nginx-module-otel
+  - unattended-upgrades
   - certbot
   - python3-certbot-nginx
   - gettext-base
@@ -57,6 +58,14 @@ write_files:
 
 runcmd:
   - mkdir -p /var/cache/nginx /var/lib/nginx-config
+  # Automatic security updates, installed first: the policy must hold even if a
+  # later provisioning step fails.
+  - |
+    set -euo pipefail
+    RAW="https://raw.githubusercontent.com/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx/apt"
+    curl -fsSL "$RAW/install.sh" -o /usr/local/bin/install-apt-policy.sh
+    chmod +x /usr/local/bin/install-apt-policy.sh
+    NGC_REF="__TEMPLATE_REF__" /usr/local/bin/install-apt-policy.sh
   # Rétention des logs nginx : 2 jours au lieu de 14. On ne touche qu'au nombre
   # de rotations du fichier livré par Ubuntu (daily, compress, postrotate… sont
   # déjà corrects).

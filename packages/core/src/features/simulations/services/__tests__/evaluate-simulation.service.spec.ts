@@ -7,36 +7,28 @@ import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
-import { PUBLIC_RULE_METRICS, type Rule } from '../../../models/types/rule.ts'
-import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { ruleKey } from '../../../models/helpers/rule-key.ts'
+import { findRule } from '../../../models/repositories/rules.repository.ts'
+import type { RuleEvaluationOutput } from '../../../models/types/rule-evaluation.ts'
+import type { Metric, Rule } from '../../../models/types/rule.ts'
+import {
+  createTestEngine,
+  METRIC_RULE,
+} from '../../../simulation-computation/factories/engine.factory.ts'
 import { PublicRulesEvaluationError } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
+import { findRuleEvaluationsBySimulation } from '../../repository/rule-evaluations.repository.ts'
 import type { Simulation } from '../../types/simulation.ts'
 import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
 
 const logger = createTestLogger()
 const evaluateSimulation = createEvaluateSimulation({ logger })
 
-/**
- * Required by any rule evaluated for a metric: the evaluation sets it in its
- * context. Copied from the model.
- */
-const METRIC_RULE: RawPublicodes<string> = {
-  métrique: {
-    avec: { carbone: null, eau: null },
-    'une possibilité': ['carbone', 'eau'],
-    'par défaut': "'carbone'",
-  },
-}
-
-/** An engine with the given rules, next to the metric they are evaluated for. */
+/** The given rules, plus METRIC_RULE so they can be evaluated per metric. */
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
 
-/**
- * The rule evaluation errors reported for a failed evaluation, which counts
- * them.
- */
+/** The errors a failed evaluation logged; the returned error only counts them. */
 const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   if (result.success) {
     throw new Error('Expected evaluateSimulation to fail')
@@ -47,38 +39,52 @@ const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   return reported
 }
 
-const storeRules = (names: string[]): Promise<Rule[]> =>
+/** Stores each name's rows: the default one always, plus the water row when `appliesToWaterMetric`. */
+const storeRules = (
+  names: string[],
+  appliesToWaterMetric = false
+): Promise<Rule[]> =>
   Promise.all(
-    names.flatMap((name) =>
-      PUBLIC_RULE_METRICS.map((metric) => ruleFactory.create({ name, metric }))
-    )
+    names.flatMap((name) => [
+      ruleFactory.create({ name, appliesToWaterMetric: false }),
+      ...(appliesToWaterMetric
+        ? [ruleFactory.create({ name, appliesToWaterMetric: true })]
+        : []),
+    ])
   )
 
 describe('evaluateSimulation', () => {
   let simulation: Simulation
 
-  /**
-   * PGlite has a single connection, so a write that bypasses the session
-   * would hang the test.
-   */
+  /** PGlite has one connection: writes must go through the session. */
   const evaluate = (engine: Engine, publicRules: Rule[]) =>
     transaction((session) =>
       evaluateSimulation(engine, simulation.id, publicRules, { session })
     )
 
-  const findRuleEvaluations = async () => {
-    const rows = await prisma.ruleEvaluation.findMany({
-      where: { simulationId: simulation.id },
-      include: { rule: true },
-      orderBy: [{ rule: { name: 'asc' } }, { rule: { metric: 'asc' } }],
-    })
-    return rows.map(({ rule, applicable, valueNumber }) => ({
-      name: rule.name,
-      metric: rule.metric,
-      applicable,
-      valueNumber,
-    }))
+  /** The simulation's evaluations sorted like `rules` (by name, then metric). */
+  const findRuleEvaluations = async (
+    rules: { name: string; metric?: Metric | null }[]
+  ) => {
+    const keys = rules.map(({ name, metric }) => ruleKey(name, metric))
+    return (await findRuleEvaluationsBySimulation(simulation.id)).toSorted(
+      (a, b) =>
+        keys.indexOf(ruleKey(a.name, a.metric)) -
+        keys.indexOf(ruleKey(b.name, b.metric))
+    )
   }
+
+  /** Expected evaluation of a rule, as read back. */
+  const evaluation = (
+    { name, metric = null }: { name: string; metric?: Metric | null },
+    applicability: RuleEvaluationOutput
+  ) => ({
+    simulationId: simulation.id,
+    createdAt: expect.any(Date),
+    name,
+    metric,
+    ...applicability,
+  })
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -95,6 +101,7 @@ describe('evaluateSimulation', () => {
       'footprint . transport',
       'footprint . food',
     ])
+    const [transport, food] = rules
 
     await evaluate(
       engineWith({
@@ -104,70 +111,81 @@ describe('evaluateSimulation', () => {
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . food',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 0,
-      },
-      {
-        name: 'footprint . food',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 0,
-      },
-      {
-        name: 'footprint . transport',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 12.5,
-      },
-      {
-        name: 'footprint . transport',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 12.5,
-      },
+    expect(await findRuleEvaluations(rules)).toEqual([
+      evaluation(transport, { applicable: true, value: 12.5 }),
+      evaluation(food, { applicable: true, value: 0 }),
     ])
   })
 
-  it('stores a public rule valued null or false as not applicable', async () => {
-    const rules = await storeRules(['footprint . null', 'footprint . false'])
+  it('stores each public rule with a boolean value as applicable, false included', async () => {
+    const rules = await storeRules(['footprint . yes', 'footprint . no'])
+    const [yes, no] = rules
 
     await evaluate(
       engineWith({
-        'footprint . null': { public: 'oui', 'non applicable si': 'oui' },
-        'footprint . false': { public: 'oui', valeur: 'non' },
+        'footprint . yes': { public: 'oui', valeur: 'oui' },
+        'footprint . no': { public: 'oui', valeur: 'non' },
       }),
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . false',
-        metric: 'carbon',
-        applicable: false,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . false',
-        metric: 'water',
-        applicable: false,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . null',
-        metric: 'carbon',
-        applicable: false,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . null',
-        metric: 'water',
-        applicable: false,
-        valueNumber: null,
-      },
+    expect(await findRuleEvaluations(rules)).toEqual([
+      evaluation(yes, { applicable: true, value: true }),
+      evaluation(no, { applicable: true, value: false }),
+    ])
+  })
+
+  it('stores each public rule with a string value as applicable, the empty string included', async () => {
+    const rules = await storeRules(['footprint . text', 'footprint . empty'])
+    const [text, empty] = rules
+
+    await evaluate(
+      engineWith({
+        'footprint . text': { public: 'oui', valeur: "'texte'" },
+        'footprint . empty': { public: 'oui', valeur: "''" },
+      }),
+      rules
+    )
+
+    expect(await findRuleEvaluations(rules)).toEqual([
+      evaluation(text, { applicable: true, value: 'texte' }),
+      evaluation(empty, { applicable: true, value: '' }),
+    ])
+  })
+
+  it('stores a public rule valued null as not applicable, whatever its type', async () => {
+    const rules = await storeRules([
+      'footprint . number',
+      'footprint . boolean',
+      'footprint . string',
+    ])
+    const [number, boolean, string] = rules
+
+    await evaluate(
+      engineWith({
+        'footprint . number': {
+          public: 'oui',
+          'non applicable si': 'oui',
+          valeur: 1,
+        },
+        'footprint . boolean': {
+          public: 'oui',
+          'applicable si': 'non',
+          valeur: 'oui',
+        },
+        'footprint . string': {
+          public: 'oui',
+          'applicable si': 'non',
+          valeur: "'texte'",
+        },
+      }),
+      rules
+    )
+
+    expect(await findRuleEvaluations(rules)).toEqual([
+      evaluation(number, { applicable: false }),
+      evaluation(boolean, { applicable: false }),
+      evaluation(string, { applicable: false }),
     ])
   })
 
@@ -176,6 +194,7 @@ describe('evaluateSimulation', () => {
       'footprint . unanswered',
       'footprint . no formula',
     ])
+    const [unanswered, noFormula] = rules
 
     await evaluate(
       engineWith({
@@ -189,105 +208,128 @@ describe('evaluateSimulation', () => {
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . no formula',
-        metric: 'carbon',
-        applicable: null,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . no formula',
-        metric: 'water',
-        applicable: null,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . unanswered',
-        metric: 'carbon',
-        applicable: null,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . unanswered',
-        metric: 'water',
-        applicable: null,
-        valueNumber: null,
-      },
+    expect(await findRuleEvaluations(rules)).toEqual([
+      evaluation(unanswered, { applicable: undefined }),
+      evaluation(noFormula, { applicable: undefined }),
     ])
   })
 
-  it('evaluates each public rule for its metric', async () => {
-    const rules = await storeRules(['footprint . water dependent'])
+  // A water-marked rule (`empreinte eau: oui`) has two rows sharing its name,
+  // each evaluated under its own metric.
+  describe('water metric context', () => {
+    it('evaluates each row of a water-applicable rule with its own metric', async () => {
+      const [waterDependent, waterDependentWater] = await storeRules(
+        ['footprint . water dependent'],
+        true
+      )
+      const [carbonOnly] = await storeRules(['footprint . carbon only'])
+      const value = {
+        variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+      }
 
-    await evaluate(
-      engineWith({
-        'footprint . water dependent': {
-          public: 'oui',
-          valeur: {
-            variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+      await evaluate(
+        engineWith({
+          'footprint . water dependent': {
+            public: 'oui',
+            'empreinte eau': 'oui',
+            valeur: value,
           },
-        },
-      }),
-      rules
-    )
+          'footprint . carbon only': { public: 'oui', valeur: value },
+        }),
+        [waterDependent, waterDependentWater, carbonOnly]
+      )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . water dependent',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 10,
-      },
-      {
-        name: 'footprint . water dependent',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 5,
-      },
-    ])
+      expect(
+        await findRuleEvaluations([
+          waterDependent,
+          { ...waterDependent, metric: 'water' as const },
+          carbonOnly,
+        ])
+      ).toEqual([
+        evaluation(waterDependent, { applicable: true, value: 10 }),
+        evaluation(
+          { ...waterDependent, metric: 'water' as const },
+          { applicable: true, value: 5 }
+        ),
+        evaluation(carbonOnly, { applicable: true, value: 10 }),
+      ])
+
+      // Each evaluation references its own rule row.
+      const storedEvaluations = await prisma.ruleEvaluation.findMany({
+        orderBy: { ruleId: 'asc' },
+        select: { ruleId: true },
+      })
+      expect(storedEvaluations.map(({ ruleId }) => ruleId)).toEqual([
+        waterDependent.id,
+        waterDependentWater.id,
+        carbonOnly.id,
+      ])
+
+      // Two rule rows for the water-applicable rule, one for the other.
+      expect(
+        await prisma.rule.count({
+          where: { name: 'footprint . water dependent' },
+        })
+      ).toBe(2)
+      expect(
+        await prisma.rule.count({ where: { name: 'footprint . carbon only' } })
+      ).toBe(1)
+    })
+  })
+
+  // The evaluations are timestamped when evaluated, not by the database.
+  it('stores every evaluation of the simulation with the same time of evaluation', async () => {
+    const evaluatedAt = new Date('2026-01-15T10:00:00.000Z')
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(evaluatedAt)
+    const rules = await storeRules(['footprint . first', 'footprint . second'])
+
+    try {
+      await evaluate(
+        engineWith({
+          'footprint . first': { public: 'oui', valeur: 1 },
+          'footprint . second': { public: 'oui', valeur: 2 },
+        }),
+        rules
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+
+    expect(
+      (await findRuleEvaluations(rules)).map(({ createdAt }) => createdAt)
+    ).toEqual([evaluatedAt, evaluatedAt])
   })
 
   it('evaluates only the public rules it is given', async () => {
-    const [carbonRule] = await storeRules(['footprint . given'])
+    const [given] = await storeRules(['footprint . given'])
 
     await evaluate(
       engineWith({
         'footprint . given': { public: 'oui', valeur: 1 },
         'footprint . not given': { public: 'oui', valeur: 2 },
       }),
-      [carbonRule]
+      [given]
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      expect.objectContaining({ name: 'footprint . given', metric: 'carbon' }),
+    expect(await findRuleEvaluations([given])).toEqual([
+      evaluation(given, { applicable: true, value: 1 }),
     ])
   })
 
   // The rules given are trusted to be public: the model's `public` mark is not
   // checked again.
   it('stores a given rule the model does not mark public like a public one', async () => {
-    const rules = await storeRules(['footprint . private'])
+    const [privateRule] = await storeRules(['footprint . private'])
 
     const result = await evaluate(
       engineWith({ 'footprint . private': { valeur: 3 } }),
-      rules
+      [privateRule]
     )
 
     expect(result).toEqual(success())
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . private',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 3,
-      },
-      {
-        name: 'footprint . private',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 3,
-      },
+    expect(await findRuleEvaluations([privateRule])).toEqual([
+      evaluation(privateRule, { applicable: true, value: 3 }),
     ])
   })
 
@@ -300,53 +342,19 @@ describe('evaluateSimulation', () => {
       scope: 'core.service.evaluateSimulation',
       simulationId: simulation.id,
     })
-    expect(logger.error).toHaveBeenCalledTimes(PUBLIC_RULE_METRICS.length)
+    expect(logger.error).toHaveBeenCalledTimes(1)
   })
 
   it('stores nothing when given no public rules', async () => {
     const result = await evaluate(engineWith({}), [])
 
     expect(result).toEqual(success())
-    expect(await findRuleEvaluations()).toEqual([])
+    expect(await findRuleEvaluations([])).toEqual([])
   })
 
   // The stored evaluations of a simulation are complete for its model: one
   // rule that cannot be evaluated fails them all.
   describe('fails, storing nothing and reporting each public rule that cannot be evaluated', () => {
-    it('when valued true or a string', async () => {
-      const rules = await storeRules([
-        'footprint . number',
-        'footprint . true',
-        'footprint . string',
-      ])
-
-      const result = await evaluate(
-        engineWith({
-          'footprint . number': { public: 'oui', valeur: 1 },
-          'footprint . true': { public: 'oui', valeur: 'oui' },
-          'footprint . string': { public: 'oui', valeur: "'texte'" },
-        }),
-        rules
-      )
-
-      expect(failedRules(result)).toEqual(
-        [
-          { dottedName: 'footprint . true', nodeValue: 'boolean' },
-          { dottedName: 'footprint . string', nodeValue: 'string' },
-        ].flatMap(({ dottedName, nodeValue }) =>
-          PUBLIC_RULE_METRICS.map((metric) =>
-            expect.objectContaining({
-              code: 'unexpected_node_value',
-              dottedName,
-              metric,
-              nodeValue,
-            })
-          )
-        )
-      )
-      expect(await findRuleEvaluations()).toEqual([])
-    })
-
     it('when valued NaN or ±Infinity', async () => {
       // No publicodes formula evaluates to a non-finite number.
       const nonFiniteValues: Record<string, number> = {
@@ -380,45 +388,48 @@ describe('evaluateSimulation', () => {
       const result = await evaluate(nonFiniteEngine, rules)
 
       expect(failedRules(result)).toEqual(
-        Object.entries(nonFiniteValues).flatMap(([dottedName, nodeValue]) =>
-          PUBLIC_RULE_METRICS.map((metric) =>
-            expect.objectContaining({
-              code: 'unexpected_node_value',
-              dottedName,
-              metric,
-              nodeValue: String(nodeValue),
-            })
-          )
+        Object.entries(nonFiniteValues).map(([ruleName, nodeValue]) =>
+          expect.objectContaining({
+            code: 'unexpected_node_value',
+            ruleName,
+            metric: null,
+            nodeValue: String(nodeValue),
+          })
         )
       )
-      expect(await findRuleEvaluations()).toEqual([])
+      expect(await findRuleEvaluations(rules)).toEqual([])
     })
 
-    it('when its evaluation throws', async () => {
-      const rules = await storeRules([
-        'footprint . number',
-        'footprint . throwing',
-      ])
+    it('when its evaluation throws, once per metric it is evaluated for', async () => {
+      const rules = await storeRules(['footprint . number'])
+      const [throwing, throwingWater] = await storeRules(
+        ['footprint . throwing'],
+        true
+      )
 
       const result = await evaluate(
         engineWith({
           'footprint . number': { public: 'oui', valeur: 1 },
           'footprint . throwing': { public: 'oui', valeur: '1 / 0' },
         }),
-        rules
+        [...rules, throwing, throwingWater]
       )
 
-      expect(failedRules(result)).toEqual(
-        PUBLIC_RULE_METRICS.map((metric) =>
-          expect.objectContaining({
-            code: 'rule_evaluation_threw',
-            dottedName: 'footprint . throwing',
-            metric,
-            cause: expect.any(Error),
-          })
-        )
-      )
-      expect(await findRuleEvaluations()).toEqual([])
+      expect(failedRules(result)).toEqual([
+        expect.objectContaining({
+          code: 'rule_evaluation_threw',
+          ruleName: 'footprint . throwing',
+          metric: null,
+          cause: expect.any(Error),
+        }),
+        expect.objectContaining({
+          code: 'rule_evaluation_threw',
+          ruleName: 'footprint . throwing',
+          metric: 'water',
+          cause: expect.any(Error),
+        }),
+      ])
+      expect(await findRuleEvaluations([...rules, throwing])).toEqual([])
     })
 
     it('when missing from the model', async () => {
@@ -432,17 +443,408 @@ describe('evaluateSimulation', () => {
         rules
       )
 
-      expect(failedRules(result)).toEqual(
-        PUBLIC_RULE_METRICS.map((metric) =>
-          expect.objectContaining({
-            code: 'rule_evaluation_threw',
-            dottedName: 'footprint . missing',
-            metric,
-            cause: expect.any(Error),
-          })
-        )
+      expect(failedRules(result)).toEqual([
+        expect.objectContaining({
+          code: 'rule_evaluation_threw',
+          ruleName: 'footprint . missing',
+          metric: null,
+          cause: expect.any(Error),
+        }),
+      ])
+      expect(await findRuleEvaluations(rules)).toEqual([])
+    })
+  })
+
+  describe('missing variables', () => {
+    const findStoredRule = async (name: string, metric?: Metric | null) => {
+      const rule = await findRule({ name, metric })
+      if (!rule) {
+        throw new Error(`Rule ${name} was not stored`)
+      }
+      return rule
+    }
+
+    const findEvaluations = () => findRuleEvaluationsBySimulation(simulation.id)
+
+    const findLinks = () =>
+      prisma.ruleEvaluationMissingVariable.findMany({
+        orderBy: [{ ruleId: 'asc' }, { missingRuleId: 'asc' }],
+      })
+
+    it('stores each missing variable as a rule linked with its weight, without evaluating it', async () => {
+      const rules = await storeRules(['footprint . total'])
+      const [total] = rules
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': { public: 'oui', valeur: 'transport . km * 2' },
+          'transport . km': { question: 'Combien de km ?', unité: 'km' },
+        }),
+        rules
       )
-      expect(await findRuleEvaluations()).toEqual([])
+
+      expect(result).toEqual(success())
+
+      const km = await findStoredRule('transport . km')
+      // The missing variable gets a rule row but no evaluation, and is not public.
+      expect(km.public).toBe(false)
+      expect(await findEvaluations()).toEqual([
+        evaluation(total, { applicable: undefined }),
+      ])
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    // A `par défaut` still reports a missing variable; the rule gets its default value.
+    it('links a missing variable with a default, still without evaluating it', async () => {
+      const rules = await storeRules(['footprint . total'])
+      const [total] = rules
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': { public: 'oui', valeur: 'transport . km * 2' },
+          'transport . km': {
+            question: 'Combien de km ?',
+            unité: 'km',
+            'par défaut': 100,
+          },
+        }),
+        rules
+      )
+
+      expect(result).toEqual(success())
+
+      await findStoredRule('transport . km')
+      expect(await findEvaluations()).toEqual([
+        evaluation(total, { applicable: true, value: 200 }),
+      ])
+    })
+
+    it('stores a missing variable reported by several evaluations once as a rule, linked to each', async () => {
+      const [double, half] = await storeRules([
+        'footprint . double',
+        'footprint . half',
+      ])
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . double': { public: 'oui', valeur: 'transport . km * 2' },
+          'footprint . half': { public: 'oui', valeur: 'transport . km / 2' },
+          'transport . km': { question: 'Combien de km ?', 'par défaut': 10 },
+        }),
+        [double, half]
+      )
+
+      expect(result).toEqual(success())
+
+      const km = await findStoredRule('transport . km')
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(1)
+
+      expect(await findEvaluations()).toEqual(
+        expect.arrayContaining([
+          evaluation(double, { applicable: true, value: 20 }),
+          evaluation(half, { applicable: true, value: 5 }),
+        ])
+      )
+      // No evaluation for the missing variable itself.
+      expect(await findEvaluations()).toHaveLength(2)
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: double.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: half.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('links a rule to itself when it is its own missing variable, a `par défaut` included', async () => {
+      const [self] = await storeRules(['footprint . self'])
+
+      const result = await evaluate(
+        engineWith({ 'footprint . self': { public: 'oui', 'par défaut': 5 } }),
+        [self]
+      )
+
+      expect(result).toEqual(success())
+      expect(await findEvaluations()).toEqual([
+        evaluation(self, { applicable: true, value: 5 }),
+      ])
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: self.id,
+          missingRuleId: self.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('links each metric’s missing variables from that metric’s evaluation row, to the missing variable’s row of that metric when there is one', async () => {
+      const [dependent, dependentWaterRow] = await storeRules(
+        ['footprint . dependent'],
+        true
+      )
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . dependent': {
+            public: 'oui',
+            'empreinte eau': 'oui',
+            valeur: {
+              variations: [
+                { si: "métrique = 'eau'", alors: 'water . question' },
+                { sinon: 'carbon . question' },
+              ],
+            },
+          },
+          'carbon . question': { question: 'Carbone ?' },
+          'water . question': { question: 'Eau ?', 'empreinte eau': 'oui' },
+        }),
+        [dependent, dependentWaterRow]
+      )
+
+      expect(result).toEqual(success())
+
+      const dependentWater = { ...dependent, metric: 'water' as const }
+      const carbonQuestion = await findStoredRule('carbon . question')
+      const waterQuestionWater = await findStoredRule(
+        'water . question',
+        'water'
+      )
+      // One row without the water mark, two with it.
+      expect(
+        await prisma.rule.count({ where: { name: 'carbon . question' } })
+      ).toBe(1)
+      expect(
+        await prisma.rule.count({ where: { name: 'water . question' } })
+      ).toBe(2)
+
+      expect(await findRuleEvaluations([dependent, dependentWater])).toEqual([
+        evaluation(dependent, { applicable: undefined }),
+        evaluation(dependentWater, { applicable: undefined }),
+      ])
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: dependent.id,
+          missingRuleId: carbonQuestion.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: dependentWaterRow.id,
+          missingRuleId: waterQuestionWater.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it("stores the model's `empreinte eau` mark on a missing variable's rule rows", async () => {
+      const [total] = await storeRules(['footprint . total'])
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': { public: 'oui', valeur: 'transport . km * 2' },
+          'transport . km': {
+            question: 'Combien de km ?',
+            unité: 'km',
+            'empreinte eau': 'oui',
+          },
+        }),
+        [total]
+      )
+
+      expect(result).toEqual(success())
+      // Both rows stored, though the missing variable is never evaluated.
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(2)
+      expect(
+        (await findStoredRule('transport . km', 'water')).appliesToWaterMetric
+      ).toBe(true)
+      // The link from the default metric's evaluation points to the default row.
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: (await findStoredRule('transport . km')).id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('links a water evaluation’s missing variable without a water row to its default row', async () => {
+      const [total, totalWaterRow] = await storeRules(
+        ['footprint . total'],
+        true
+      )
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': {
+            public: 'oui',
+            'empreinte eau': 'oui',
+            valeur: 'transport . km * 2',
+          },
+          'transport . km': { question: 'Combien de km ?', unité: 'km' },
+        }),
+        [total, totalWaterRow]
+      )
+
+      expect(result).toEqual(success())
+
+      const km = await findStoredRule('transport . km')
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(1)
+      // Both metrics' evaluations link to the one row of the missing variable.
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: totalWaterRow.id,
+          missingRuleId: km.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('links a missing variable that is a given public rule to its row, without storing it again', async () => {
+      const [total, question] = await storeRules([
+        'footprint . total',
+        'footprint . question',
+      ])
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . total': {
+            public: 'oui',
+            valeur: 'footprint . question * 2',
+          },
+          'footprint . question': {
+            public: 'oui',
+            question: 'Combien ?',
+            unité: 'kgCO2e',
+          },
+        }),
+        [total, question]
+      )
+
+      expect(result).toEqual(success())
+      expect(
+        await prisma.rule.count({ where: { name: 'footprint . question' } })
+      ).toBe(1)
+      expect(await findStoredRule('footprint . question')).toEqual(question)
+      // The unanswered question rule is its own missing variable: a self-link too.
+      expect(await findLinks()).toEqual([
+        {
+          simulationId: simulation.id,
+          ruleId: total.id,
+          missingRuleId: question.id,
+          weight: 1,
+        },
+        {
+          simulationId: simulation.id,
+          ruleId: question.id,
+          missingRuleId: question.id,
+          weight: 1,
+        },
+      ])
+    })
+
+    it('leaves no missing variable rule behind when the caller’s transaction rolls back', async () => {
+      const rules = await storeRules(['footprint . total'])
+      const rolledBack = new Error('Rolled back after the evaluation')
+
+      await expect(
+        transaction(async (session) => {
+          expect(
+            await evaluateSimulation(
+              engineWith({
+                'footprint . total': {
+                  public: 'oui',
+                  valeur: 'transport . km * 2',
+                },
+                'transport . km': { question: 'Combien de km ?', unité: 'km' },
+              }),
+              simulation.id,
+              rules,
+              { session }
+            )
+          ).toEqual(success())
+          throw rolledBack
+        })
+      ).rejects.toBe(rolledBack)
+
+      expect(await findRule({ name: 'transport . km' })).toBeNull()
+      expect(await findEvaluations()).toEqual([])
+      expect(await findLinks()).toEqual([])
+    })
+
+    it('stores nothing, not even the missing variables, when a rule fails', async () => {
+      const rules = await storeRules(['footprint . ok', 'footprint . throwing'])
+
+      const result = await evaluate(
+        engineWith({
+          'footprint . ok': { public: 'oui', valeur: 'missing . var * 2' },
+          'missing . var': { question: '?' },
+          'footprint . throwing': { public: 'oui', valeur: '1 / 0' },
+        }),
+        rules
+      )
+
+      expect(failedRules(result)).toHaveLength(1)
+      expect(await findEvaluations()).toEqual([])
+      expect(
+        await prisma.rule.findMany({ where: { name: 'missing . var' } })
+      ).toEqual([])
+    })
+
+    it('resolves the same missing variable rule once across simulations', async () => {
+      const rules = await storeRules(['footprint . total'])
+      const engine = engineWith({
+        'footprint . total': { public: 'oui', valeur: 'transport . km * 2' },
+        'transport . km': { question: 'Combien de km ?', unité: 'km' },
+      })
+
+      expect(await evaluate(engine, rules)).toEqual(success())
+
+      const otherSimulation = await simulationFactory.completed().create()
+      const result = await transaction((session) =>
+        evaluateSimulation(engine, otherSimulation.id, rules, { session })
+      )
+      expect(result).toEqual(success())
+
+      // One rule row, shared by both simulations.
+      expect(
+        await prisma.rule.count({ where: { name: 'transport . km' } })
+      ).toBe(1)
+      // The other simulation's evaluation links to the same missing variable.
+      expect(
+        await prisma.ruleEvaluationMissingVariable.count({
+          where: { simulationId: otherSimulation.id },
+        })
+      ).toBe(1)
     })
   })
 })

@@ -16,15 +16,15 @@ type Metric = (typeof METRICS)[number]
 
 const valueForMetric = ({
   engine,
-  dottedName,
+  ruleName,
   metric,
 }: {
   engine: Engine
-  dottedName: DottedName
+  ruleName: DottedName
   metric: Metric
 }): number => {
   const value = engine.evaluate({
-    valeur: dottedName,
+    valeur: ruleName,
     contexte: { métrique: `'${metric}'` },
   }).nodeValue
 
@@ -58,17 +58,17 @@ export const getComputedResults = (
     METRICS.map((metric) => [
       metric,
       {
-        bilan: valueForMetric({ engine, dottedName: ROOT_DOTTED_NAME, metric }),
+        bilan: valueForMetric({ engine, ruleName: ROOT_DOTTED_NAME, metric }),
         categories: Object.fromEntries(
           categories.map((category) => [
             category,
-            valueForMetric({ engine, dottedName: category, metric }),
+            valueForMetric({ engine, ruleName: category, metric }),
           ])
         ),
         subcategories: Object.fromEntries(
           subcategories.map((subcategory) => [
             subcategory,
-            valueForMetric({ engine, dottedName: subcategory, metric }),
+            valueForMetric({ engine, ruleName: subcategory, metric }),
           ])
         ),
       },

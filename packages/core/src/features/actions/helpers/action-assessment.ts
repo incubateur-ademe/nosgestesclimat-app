@@ -1,6 +1,11 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
+import { failure, success, type Result } from '../../../lib/result.ts'
+import {
+  UnexpectedNodeValueError,
+  type RuleEvaluationError,
+} from '../../models/errors.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -13,14 +18,12 @@ export const buildRuleIdToDottedName = (
 ): Map<string, DottedName> => {
   const map = new Map<string, DottedName>()
 
-  for (const [dottedName, ruleNode] of Object.entries(
-    engine.getParsedRules()
-  )) {
+  for (const [ruleName, ruleNode] of Object.entries(engine.getParsedRules())) {
     const ruleId = (ruleNode as { rawNode?: { meta?: { id?: string } } })
       .rawNode?.meta?.id
 
     if (ruleId) {
-      map.set(ruleId, dottedName as DottedName)
+      map.set(ruleId, ruleName as DottedName)
     }
   }
 
@@ -54,24 +57,49 @@ export const toNewActionAssessment = (
   return { simulationId, actionId, applicable: undefined, impact: undefined }
 }
 
-/**
- * NaN and ±Infinity are an issue with the model, not with the simulation: the
- * action still applies, its impact unknown.
- */
-export const toActionEvaluation = (
-  applicability: ModelRuleEvaluation
-): ActionEvaluation => {
+/** An action's impact is a number: 0 means no impact, any other value — `false` included — is a modelling mistake. */
+export const evaluateAction = ({
+  engine,
+  ruleName,
+  simulationId,
+  createdAt,
+}: {
+  engine: Engine
+  ruleName: DottedName
+  simulationId: string
+  createdAt: Date
+}): Result<ActionEvaluation, RuleEvaluationError> => {
+  const evaluation = evaluateModelRule({
+    engine,
+    ruleName,
+    simulationId,
+    createdAt,
+  })
+
+  if (!evaluation.success) {
+    return evaluation
+  }
+
+  const applicability = evaluation.data
+
   if (applicability.applicable === true) {
     const { value } = applicability
-    return {
-      applicable: true,
-      impact: Number.isFinite(value) && value !== 0 ? value : undefined,
+
+    if (typeof value !== 'number') {
+      return failure(
+        new UnexpectedNodeValueError({ ruleName, nodeValue: typeof value })
+      )
     }
+
+    return success({
+      applicable: true,
+      impact: value !== 0 ? value : undefined,
+    })
   }
 
   if (applicability.applicable === false) {
-    return { applicable: false, impact: undefined }
+    return success({ applicable: false, impact: undefined })
   }
 
-  return { applicable: undefined, impact: undefined }
+  return success({ applicable: undefined, impact: undefined })
 }

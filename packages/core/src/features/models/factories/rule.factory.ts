@@ -6,11 +6,16 @@ import type { Rule } from '../types/rule.ts'
 
 /** A stored public rule. `create` returns it with the id the database gave. */
 export const ruleFactory = Factory.define<Rule>(({ sequence, onCreate }) => {
-  onCreate(async ({ name, metric }) =>
+  onCreate(async ({ name, public: isPublic, appliesToWaterMetric }) =>
     mapRule(
       await prisma.rule.create({
-        data: { name, metric },
-        select: { id: true, name: true, metric: true },
+        data: { name, public: isPublic, appliesToWaterMetric },
+        select: {
+          id: true,
+          name: true,
+          public: true,
+          appliesToWaterMetric: true,
+        },
       })
     )
   )
@@ -18,6 +23,7 @@ export const ruleFactory = Factory.define<Rule>(({ sequence, onCreate }) => {
   return {
     id: sequence,
     name: `footprint . ${faker.lorem.word()} ${sequence}`,
-    metric: faker.helpers.arrayElement(['carbon', 'water'] as const),
+    public: true,
+    appliesToWaterMetric: false,
   }
 })

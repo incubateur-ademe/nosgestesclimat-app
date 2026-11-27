@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { ruleFactory } from '../../factories/rule.factory.ts'
 import type { Model } from '../../types/model.ts'
 import { createResolvePublicRules } from '../resolve-public-rules.service.ts'
 
@@ -10,16 +11,18 @@ const modelOf = (
   locale: Model['locale'] = 'fr'
 ): Model => ({ locale, region: 'FR', version: { publishedTag } })
 
+/** Raw rows incl. wording: `Rule` drops `title`/`description`. */
 const findRules = () =>
   prisma.rule.findMany({
     select: {
       id: true,
       name: true,
-      metric: true,
+      public: true,
+      appliesToWaterMetric: true,
       title: true,
       description: true,
     },
-    orderBy: [{ name: 'asc' }, { metric: 'asc' }],
+    orderBy: [{ name: 'asc' }, { appliesToWaterMetric: 'asc' }],
   })
 
 /** A model's rules, its public rule worded with `titre`. */
@@ -40,7 +43,7 @@ describe('resolvePublicRules', () => {
     await emptyDatabase(prisma)
   })
 
-  it('stores each public rule for every metric with its French title and description, and returns them', async () => {
+  it('stores each public rule’s default row and the water row, with the French title and description, and returns them', async () => {
     const rules = await resolvePublicRules(
       createTestEngine({
         'footprint . described': {
@@ -50,6 +53,12 @@ describe('resolvePublicRules', () => {
           valeur: 1,
         },
         'footprint . bare': { public: 'oui', valeur: 1 },
+        'footprint . water': {
+          public: 'oui',
+          'empreinte eau': 'oui',
+          titre: 'Bilan eau',
+          valeur: 1,
+        },
       }),
       modelOf('1.0.0')
     )
@@ -59,36 +68,45 @@ describe('resolvePublicRules', () => {
       {
         id: expect.any(Number),
         name: 'footprint . bare',
-        metric: 'carbon',
-        title: null,
-        description: null,
-      },
-      {
-        id: expect.any(Number),
-        name: 'footprint . bare',
-        metric: 'water',
+        public: true,
+        appliesToWaterMetric: false,
         title: null,
         description: null,
       },
       {
         id: expect.any(Number),
         name: 'footprint . described',
-        metric: 'carbon',
+        public: true,
+        appliesToWaterMetric: false,
         title: 'Transport',
         description: 'Les trajets du quotidien',
       },
       {
         id: expect.any(Number),
-        name: 'footprint . described',
-        metric: 'water',
-        title: 'Transport',
-        description: 'Les trajets du quotidien',
+        name: 'footprint . water',
+        public: true,
+        appliesToWaterMetric: false,
+        title: 'Bilan eau',
+        description: null,
+      },
+      {
+        id: expect.any(Number),
+        name: 'footprint . water',
+        public: true,
+        appliesToWaterMetric: true,
+        title: 'Bilan eau',
+        description: null,
       },
     ])
     expect(rules).toHaveLength(stored.length)
     expect(rules).toEqual(
       expect.arrayContaining(
-        stored.map(({ id, name, metric }) => ({ id, name, metric }))
+        stored.map(({ id, name, public: isPublic, appliesToWaterMetric }) => ({
+          id,
+          name,
+          public: isPublic,
+          appliesToWaterMetric,
+        }))
       )
     )
   })
@@ -103,11 +121,8 @@ describe('resolvePublicRules', () => {
       modelOf('1.0.0')
     )
 
-    expect(rules.map(({ name }) => name)).toEqual([
-      'footprint . public',
-      'footprint . public',
-    ])
-    expect(await prisma.rule.count()).toBe(2)
+    expect(rules.map(({ name }) => name)).toEqual(['footprint . public'])
+    expect(await prisma.rule.count()).toBe(1)
   })
 
   it('stores nothing when the model has no public rules', async () => {
@@ -133,8 +148,7 @@ describe('resolvePublicRules', () => {
 
     expect(second).toEqual(first)
     expect(await findRules()).toEqual([
-      expect.objectContaining({ metric: 'carbon', title: 'Transport' }),
-      expect.objectContaining({ metric: 'water', title: 'Transport' }),
+      expect.objectContaining({ title: 'Transport' }),
     ])
   })
 
@@ -151,12 +165,11 @@ describe('resolvePublicRules', () => {
 
     expect(english).toEqual(french)
     expect(await findRules()).toEqual([
-      expect.objectContaining({ metric: 'carbon', title: 'Transport' }),
-      expect.objectContaining({ metric: 'water', title: 'Transport' }),
+      expect.objectContaining({ title: 'Transport' }),
     ])
   })
 
-  it('refreshes the title and description when a new model is first resolved, keeping the rule ids', async () => {
+  it('refreshes the title and description when a new model is first resolved, keeping the default row id and adding the water row', async () => {
     const first = await resolvePublicRules(
       createTestEngine({
         'footprint . described': {
@@ -169,28 +182,85 @@ describe('resolvePublicRules', () => {
       modelOf('1.0.0')
     )
     const second = await resolvePublicRules(
-      engineTitled('Mobilité'),
+      createTestEngine({
+        'footprint . described': {
+          public: 'oui',
+          titre: 'Mobilité',
+          'empreinte eau': 'oui',
+          valeur: 1,
+        },
+      }),
       modelOf('1.1.0')
     )
 
-    expect(second).toEqual(first)
+    // The default row's id is kept, its wording refreshed; the water mark adds the water row.
+    expect(first).toHaveLength(1)
+    expect(second).toEqual([
+      expect.objectContaining({ id: first[0].id, appliesToWaterMetric: false }),
+      expect.objectContaining({ appliesToWaterMetric: true }),
+    ])
     expect(await findRules()).toEqual([
       expect.objectContaining({
-        metric: 'carbon',
+        appliesToWaterMetric: false,
         title: 'Mobilité',
         description: null,
       }),
       expect.objectContaining({
-        metric: 'water',
+        appliesToWaterMetric: true,
         title: 'Mobilité',
         description: null,
       }),
     ])
   })
 
-  // PGlite has a single connection, so the two resolutions interleave rather
-  // than truly race: this proves the upsert is idempotent across separate
-  // resolver caches, not that concurrent transactions are safe.
+  it('marks public a rule first stored as a missing variable, keeping its id', async () => {
+    // As stored when a public rule reported it as a missing variable.
+    const missingVariable = await ruleFactory.create({
+      name: 'footprint . described',
+      public: false,
+    })
+
+    const rules = await resolvePublicRules(
+      engineTitled('Transport'),
+      modelOf('1.0.0')
+    )
+
+    expect(rules).toEqual([{ ...missingVariable, public: true }])
+    expect(await findRules()).toEqual([
+      expect.objectContaining({
+        id: missingVariable.id,
+        public: true,
+        title: 'Transport',
+      }),
+    ])
+  })
+
+  it('resolves only the default row of a rule a new model no longer marks for water, keeping the water row stored', async () => {
+    const first = await resolvePublicRules(
+      createTestEngine({
+        'footprint . water': {
+          public: 'oui',
+          'empreinte eau': 'oui',
+          valeur: 1,
+        },
+      }),
+      modelOf('1.0.0')
+    )
+    const second = await resolvePublicRules(
+      createTestEngine({ 'footprint . water': { public: 'oui', valeur: 1 } }),
+      modelOf('1.1.0')
+    )
+
+    const [defaultRow] = first
+    expect(first).toHaveLength(2)
+    expect(defaultRow).toMatchObject({ appliesToWaterMetric: false })
+    expect(second).toEqual([defaultRow])
+    // Rule rows are never deleted: past evaluations still reference them.
+    expect(await prisma.rule.count()).toBe(2)
+  })
+
+  // PGlite has one connection, so the resolutions interleave rather than race:
+  // this proves idempotence across caches, not concurrent-transaction safety.
   it('resolves the same Rule rows from two resolvers with separate caches', async () => {
     const engine = engineTitled('Transport')
 
@@ -200,7 +270,26 @@ describe('resolvePublicRules', () => {
       createResolvePublicRules()(engine, modelOf('1.0.0')),
     ])
 
+    expect(await prisma.rule.count()).toBe(1)
+    expect(second).toEqual(first)
+  })
+
+  // Same PGlite caveat as above.
+  it('resolves the same rows of a water-marked rule from two resolvers with separate caches', async () => {
+    const engine = createTestEngine({
+      'footprint . water': { public: 'oui', 'empreinte eau': 'oui', valeur: 1 },
+    })
+
+    const [first, second] = await Promise.all([
+      createResolvePublicRules()(engine, modelOf('1.0.0')),
+      createResolvePublicRules()(engine, modelOf('1.0.0')),
+    ])
+
     expect(await prisma.rule.count()).toBe(2)
+    expect(first).toEqual([
+      expect.objectContaining({ appliesToWaterMetric: false }),
+      expect.objectContaining({ appliesToWaterMetric: true }),
+    ])
     expect(second).toEqual(first)
   })
 })

@@ -21,12 +21,12 @@
     "msw": "^2.12.14"
   },
   "devDependencies": {
-    "@faker-js/faker": "^10.4.0",
-    "@playwright/test": "^1.62.1",
-    "@types/pg": "^8.20.0",
-    "dotenv": "^17.3.1",
-    "pg": "^8.20.0",
-    "playwright": "^1.62.1",
+    "@faker-js/faker": "^10.6.0",
+    "@playwright/test": "^1.65.1",
+    "@types/pg": "^8.23.1",
+    "dotenv": "^18.0.10",
+    "pg": "^8.23.1",
+    "playwright": "^1.65.1",
     "typescript": "5.9.3"
   }
 }

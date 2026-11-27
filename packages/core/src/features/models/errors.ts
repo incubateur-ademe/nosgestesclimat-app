@@ -39,21 +39,21 @@ export class OutdatedModelVersionError extends DomainError<'outdated_model_versi
   }
 }
 
-/** The engine evaluated a rule to a value that cannot be stored. */
+/** A nodeValue its reader cannot use: one that cannot be stored, or a non-number action impact. */
 export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value'> {
-  public readonly dottedName: string
-  public readonly metric?: Metric
+  public readonly ruleName: string
+  public readonly metric?: Metric | null
   /** Its type, or the value itself when its type says nothing. */
   public readonly nodeValue: string
 
   constructor(params: {
-    dottedName: string
-    metric?: Metric
+    ruleName: string
     nodeValue: string
+    metric?: Metric | null
   }) {
-    const { dottedName, metric, nodeValue } = params
+    const { ruleName, nodeValue, metric } = params
     super('unexpected_node_value', `Unexpected nodeValue: ${nodeValue}`)
-    this.dottedName = dottedName
+    this.ruleName = ruleName
     if (metric !== undefined) {
       this.metric = metric
     }
@@ -63,13 +63,17 @@ export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value
 
 /** E.g. a rule missing from the model, or a formula the engine cannot evaluate. */
 export class RuleEvaluationThrewError extends DomainError<'rule_evaluation_threw'> {
-  public readonly dottedName: string
-  public readonly metric?: Metric
+  public readonly ruleName: string
+  public readonly metric?: Metric | null
 
-  constructor(params: { dottedName: string; metric?: Metric; cause: unknown }) {
-    const { dottedName, metric, cause } = params
+  constructor(params: {
+    ruleName: string
+    cause: unknown
+    metric?: Metric | null
+  }) {
+    const { ruleName, cause, metric } = params
     super('rule_evaluation_threw', 'Rule evaluation threw')
-    this.dottedName = dottedName
+    this.ruleName = ruleName
     if (metric !== undefined) {
       this.metric = metric
     }

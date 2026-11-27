@@ -1,0 +1,409 @@
+import { faker } from '@faker-js/faker'
+import type Engine from 'publicodes'
+import type { RawPublicodes } from 'publicodes'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import {
+  createTestEngine,
+  METRIC_RULE,
+} from '../../../simulation-computation/factories/engine.factory.ts'
+import {
+  RuleEvaluationThrewError,
+  UnexpectedNodeValueError,
+} from '../../errors.ts'
+import { evaluateModelRule as evaluateModelRuleBase } from '../evaluate-model-rule.ts'
+
+/** The given rules, plus METRIC_RULE so they can be evaluated per metric. */
+const engineWith = (rules: RawPublicodes<string>) =>
+  createTestEngine({ ...METRIC_RULE, ...rules })
+
+const base = {
+  simulationId: faker.string.uuid(),
+  createdAt: new Date('2026-11-23T00:00:00.000Z'),
+}
+
+const evaluate = (
+  args: Omit<Parameters<typeof evaluateModelRuleBase>[0], keyof typeof base>
+) => evaluateModelRuleBase({ ...args, ...base })
+
+/** Every evaluation mocked to return `nodeValue` (and `type` when given): no formula yields a non-finite number or an object. */
+const engineWithNodeValue = (
+  nodeValue: unknown,
+  type?: 'number' | 'boolean' | 'string' | 'date'
+): Engine => {
+  const engine = engineWith({
+    'footprint . rule': { public: 'oui', valeur: 1 },
+  })
+  const evaluate = engine.evaluate.bind(engine)
+  vi.spyOn(engine, 'evaluate').mockImplementation(
+    (expression) =>
+      ({
+        ...evaluate(expression),
+        nodeValue,
+        ...(type === undefined ? {} : { type }),
+      }) as ReturnType<Engine['evaluate']>
+  )
+  return engine
+}
+
+describe('evaluateModelRule', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('evaluates a numeric value as applicable, 0 included', () => {
+    const engine = engineWith({
+      'footprint . zero': { public: 'oui', valeur: 0 },
+      'footprint . number': { public: 'oui', valeur: 12.5 },
+    })
+
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . zero',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . zero',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: 0,
+      },
+    })
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . number',
+        metric: 'water',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . number',
+        metric: 'water',
+        missingVariables: [],
+        applicable: true,
+        value: 12.5,
+      },
+    })
+  })
+
+  it('evaluates a boolean value as applicable, false included', () => {
+    const engine = engineWith({
+      'footprint . yes': { public: 'oui', valeur: 'oui' },
+      'footprint . no': { public: 'oui', valeur: 'non' },
+    })
+
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . yes',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . yes',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: true,
+      },
+    })
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . no',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . no',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: false,
+      },
+    })
+  })
+
+  it('evaluates a string value as applicable, the empty string included', () => {
+    const engine = engineWith({
+      'footprint . text': { public: 'oui', valeur: "'texte'" },
+      'footprint . empty': { public: 'oui', valeur: "''" },
+    })
+
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . text',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . text',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: 'texte',
+      },
+    })
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . empty',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . empty',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: '',
+      },
+    })
+  })
+
+  it('evaluates a null value as not applicable, whatever the rule type', () => {
+    const engine = engineWith({
+      'footprint . non applicable': {
+        public: 'oui',
+        'non applicable si': 'oui',
+        valeur: 3,
+      },
+      'footprint . applicable si non': {
+        public: 'oui',
+        'applicable si': 'non',
+        valeur: "'texte'",
+      },
+    })
+
+    for (const ruleName of [
+      'footprint . non applicable',
+      'footprint . applicable si non',
+    ]) {
+      expect(evaluate({ engine, ruleName })).toEqual({
+        success: true,
+        data: {
+          ...base,
+          name: ruleName,
+          metric: null,
+          missingVariables: [],
+          applicable: false,
+        },
+      })
+    }
+  })
+
+  it('evaluates an undefined value as not defined, an unanswered question or a rule without formula, each reported as its own missing variable', () => {
+    const engine = engineWith({
+      'footprint . unanswered': {
+        public: 'oui',
+        question: 'Combien ?',
+        unité: 'kgCO2e',
+      },
+      'footprint . no formula': { public: 'oui' },
+    })
+
+    for (const ruleName of [
+      'footprint . unanswered',
+      'footprint . no formula',
+    ]) {
+      expect(evaluate({ engine, ruleName, metric: 'water' })).toEqual({
+        success: true,
+        data: {
+          ...base,
+          name: ruleName,
+          metric: 'water',
+          missingVariables: [{ name: ruleName, weight: 1 }],
+          applicable: undefined,
+        },
+      })
+    }
+  })
+
+  it('evaluates the rule in the context of the given metric', () => {
+    const engine = engineWith({
+      'footprint . dependent': {
+        public: 'oui',
+        valeur: {
+          variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+        },
+      },
+    })
+
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . dependent',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . dependent',
+        metric: null,
+        missingVariables: [],
+        applicable: true,
+        value: 10,
+      },
+    })
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . dependent',
+        metric: 'water',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . dependent',
+        metric: 'water',
+        missingVariables: [],
+        applicable: true,
+        value: 5,
+      },
+    })
+  })
+
+  it('reports the missing variables with their weights', () => {
+    const engine = engineWith({
+      'footprint . total': {
+        public: 'oui',
+        valeur: 'transport . km * 2 + transport . km',
+      },
+      'transport . km': { question: 'Combien de km ?', unité: 'km' },
+    })
+
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . total',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . total',
+        metric: null,
+        applicable: undefined,
+        missingVariables: [{ name: 'transport . km', weight: 2 }],
+      },
+    })
+  })
+
+  it('reports the rule as its own missing variable, a `par défaut` included', () => {
+    const engine = engineWith({
+      'footprint . default': { public: 'oui', 'par défaut': 5 },
+    })
+
+    expect(
+      evaluate({
+        engine,
+        ruleName: 'footprint . default',
+      })
+    ).toEqual({
+      success: true,
+      data: {
+        ...base,
+        name: 'footprint . default',
+        metric: null,
+        missingVariables: [{ name: 'footprint . default', weight: 1 }],
+        applicable: true,
+        value: 5,
+      },
+    })
+  })
+
+  describe('fails', () => {
+    it('when the engine throws, a rule missing from the model or an impossible formula', () => {
+      const engine = engineWith({
+        'footprint . division': { public: 'oui', valeur: '1 / 0' },
+      })
+
+      for (const ruleName of ['footprint . missing', 'footprint . division']) {
+        const result = evaluate({
+          engine,
+          ruleName,
+          metric: 'water',
+        })
+        if (result.success) {
+          throw new Error(`Expected ${ruleName} to fail`)
+        }
+        expect(result.error).toBeInstanceOf(RuleEvaluationThrewError)
+        expect(result.error).toMatchObject({
+          code: 'rule_evaluation_threw',
+          ruleName,
+          metric: 'water',
+        })
+        expect(result.error.cause).toBeInstanceOf(Error)
+      }
+    })
+
+    // Named by its value: its type, a number, says nothing.
+    it('when the node value is a non-finite number, named by its value', () => {
+      for (const [label, nodeValue] of [
+        ['NaN', NaN],
+        ['Infinity', Infinity],
+        ['-Infinity', -Infinity],
+      ] as const) {
+        const result = evaluate({
+          engine: engineWithNodeValue(nodeValue),
+          ruleName: 'footprint . rule',
+        })
+        if (result.success) {
+          throw new Error(`Expected ${label} to fail`)
+        }
+        expect(result.error).toBeInstanceOf(UnexpectedNodeValueError)
+        expect(result.error).toMatchObject({
+          code: 'unexpected_node_value',
+          ruleName: 'footprint . rule',
+          metric: null,
+          nodeValue: label,
+        })
+      }
+    })
+
+    it('when the evaluation is a date, named by its type', () => {
+      const result = evaluate({
+        engine: engineWithNodeValue('01/03/2023', 'date'),
+        ruleName: 'footprint . rule',
+      })
+      if (result.success) {
+        throw new Error('Expected a date evaluation to fail')
+      }
+      expect(result.error).toBeInstanceOf(UnexpectedNodeValueError)
+      expect(result.error).toMatchObject({
+        code: 'unexpected_node_value',
+        ruleName: 'footprint . rule',
+        metric: null,
+        nodeValue: 'date',
+      })
+    })
+
+    it('when the node value has an unexpected type, named by its type', () => {
+      const result = evaluate({
+        engine: engineWithNodeValue({ formule: 'impossible' }),
+        ruleName: 'footprint . rule',
+      })
+      if (result.success) {
+        throw new Error('Expected an object node value to fail')
+      }
+      expect(result.error).toBeInstanceOf(UnexpectedNodeValueError)
+      expect(result.error).toMatchObject({
+        code: 'unexpected_node_value',
+        ruleName: 'footprint . rule',
+        metric: null,
+        nodeValue: 'object',
+      })
+    })
+  })
+})

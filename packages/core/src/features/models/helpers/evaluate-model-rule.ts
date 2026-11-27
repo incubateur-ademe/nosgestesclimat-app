@@ -4,51 +4,66 @@ import {
   RuleEvaluationThrewError,
   UnexpectedNodeValueError,
 } from '../errors.ts'
-import type { ModelRuleEvaluationResult } from '../types/model-rule-evaluation.ts'
+import type { NewRuleEvaluationResult } from '../types/rule-evaluation.ts'
 import type { Metric } from '../types/rule.ts'
 
-/** The value the model's `métrique` rule takes for each metric. */
-const MODEL_METRIC = {
-  carbon: 'carbone',
-  water: 'eau',
-} as const satisfies Record<Metric, string>
-
-/**
- * Evaluates a rule of the model, for `metric` when given, as the model computes
- * the footprint of that metric.
- *
- * A non-finite number (NaN, ±Infinity) is an error, not a value: it is an
- * issue with the model, not with the situation.
- */
+/** Evaluates `ruleName` for `metric` in the engine's current situation. */
 export const evaluateModelRule = ({
   engine,
-  dottedName,
-  metric,
+  ruleName,
+  simulationId,
+  createdAt,
+  metric = null,
 }: {
   engine: Engine
-  dottedName: string
-  metric?: Metric
-}): ModelRuleEvaluationResult => {
-  let nodeValue: unknown
+  ruleName: string
+  simulationId: string
+  createdAt: Date
+  /** The metric to evaluate the rule for; none is the default one. */
+  metric?: Metric | null
+}): NewRuleEvaluationResult => {
+  let evaluation: {
+    nodeValue: unknown
+    type?: 'number' | 'boolean' | 'string' | 'date' | 'reference'
+    missingVariables: Record<string, number>
+  }
 
   try {
-    ;({ nodeValue } = engine.evaluate(
-      metric === undefined
-        ? dottedName
-        : {
-            valeur: dottedName,
-            contexte: { métrique: `'${MODEL_METRIC[metric]}'` },
-          }
-    ))
+    evaluation = engine.evaluate({
+      valeur: ruleName,
+      contexte: { métrique: `'${modelMetric(metric)}'` },
+    })
   } catch (cause) {
-    return failure(new RuleEvaluationThrewError({ dottedName, metric, cause }))
+    return failure(new RuleEvaluationThrewError({ ruleName, cause, metric }))
+  }
+
+  const { nodeValue, missingVariables, type } = evaluation
+
+  const rule = {
+    name: ruleName,
+    metric,
+    simulationId,
+    createdAt,
+    // A `par défaut` rule refers to itself: Publicodes lists it among its own
+    // missing variables, and the evaluation keeps it.
+    missingVariables: Object.entries(missingVariables).map(
+      ([name, weight]) => ({ name, weight })
+    ),
+  }
+
+  // A date is not a storable value: its nodeValue is only its text, named by its type.
+  if (type === 'date') {
+    return failure(
+      new UnexpectedNodeValueError({ ruleName, metric, nodeValue: type })
+    )
   }
 
   if (typeof nodeValue === 'number') {
     if (!Number.isFinite(nodeValue)) {
+      // NaN/±Infinity is a modelling error, not a value.
       return failure(
         new UnexpectedNodeValueError({
-          dottedName,
+          ruleName,
           metric,
           // Named by its value: its type, a number, says nothing.
           nodeValue: String(nodeValue),
@@ -56,22 +71,30 @@ export const evaluateModelRule = ({
       )
     }
 
-    return success({ applicable: true, value: nodeValue })
+    return success({ ...rule, applicable: true, value: nodeValue })
   }
 
-  if (nodeValue === null || nodeValue === false) {
-    return success({ applicable: false })
+  if (typeof nodeValue === 'boolean' || typeof nodeValue === 'string') {
+    return success({ ...rule, applicable: true, value: nodeValue })
+  }
+
+  if (nodeValue === null) {
+    return success({ ...rule, applicable: false })
   }
 
   if (nodeValue === undefined) {
-    return success({ applicable: undefined })
+    return success({ ...rule, applicable: undefined })
   }
 
   return failure(
     new UnexpectedNodeValueError({
-      dottedName,
-      metric,
+      ruleName,
       nodeValue: typeof nodeValue,
+      metric,
     })
   )
 }
+
+/** The model's `métrique` value: 'eau' for the water metric, 'carbone' (the default) otherwise. */
+const modelMetric = (metric: Metric | null) =>
+  metric === 'water' ? 'eau' : 'carbone'
