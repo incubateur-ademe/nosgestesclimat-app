@@ -33,6 +33,7 @@ interface Props {
   headingLevel?: 1 | 2 | 3
   className?: string
   beforeInputsHelpText?: React.ReactNode | string | null
+  inputOverride?: React.ReactNode
 }
 
 export default function Question({
@@ -41,6 +42,7 @@ export default function Question({
   headingLevel,
   className,
   beforeInputsHelpText,
+  inputOverride,
 }: Props) {
   const {
     type,
@@ -126,63 +128,64 @@ export default function Question({
         ) : null}
 
         {beforeInputsHelpText}
-        {isOpen && (
-          <>
-            {type === 'number' &&
-              (assistance ? (
-                <NumberInputWithAssistance
-                  {...numberInputProps}
-                  // Unit is required on assistance mode
-                  unit={unit!}
-                  assistance={assistance}
+        {isOpen &&
+          (inputOverride ?? (
+            <>
+              {type === 'number' &&
+                (assistance ? (
+                  <NumberInputWithAssistance
+                    {...numberInputProps}
+                    // Unit is required on assistance mode
+                    unit={unit!}
+                    assistance={assistance}
+                  />
+                ) : (
+                  <NumberInput {...numberInputProps} />
+                ))}
+
+              {type === 'boolean' && (
+                <BooleanInput
+                  value={situationValue}
+                  setValue={(value: string | undefined) =>
+                    setValue(value, { questionDottedName: question })
+                  }
+                  data-testid={question}
+                  label={label || ''}
+                  firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
+                  aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content  ${warningId} notification-message`}
+                  aria-labelledby="question-label"
                 />
-              ) : (
-                <NumberInput {...numberInputProps} />
-              ))}
+              )}
 
-            {type === 'boolean' && (
-              <BooleanInput
-                value={situationValue}
-                setValue={(value: string | undefined) =>
-                  setValue(value, { questionDottedName: question })
-                }
-                data-testid={question}
-                label={label || ''}
-                firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content  ${warningId} notification-message`}
-                aria-labelledby="question-label"
-              />
-            )}
+              {type === 'choices' && (
+                <ChoicesInput
+                  question={question}
+                  choices={choices}
+                  value={situationValue as Evaluation<string>}
+                  setValue={(value) =>
+                    setValue(value, { questionDottedName: question })
+                  }
+                  data-testid={question}
+                  label={label || ''}
+                  firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
+                  aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content ${warningId} notification-message`}
+                  aria-labelledby="question-label"
+                />
+              )}
 
-            {type === 'choices' && (
-              <ChoicesInput
-                question={question}
-                choices={choices}
-                value={situationValue as Evaluation<string>}
-                setValue={(value) =>
-                  setValue(value, { questionDottedName: question })
-                }
-                data-testid={question}
-                label={label || ''}
-                firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content ${warningId} notification-message`}
-                aria-labelledby="question-label"
-              />
-            )}
-
-            {(type === 'numberMosaic' || type === 'selectMosaic') && (
-              <Mosaic
-                question={question}
-                questionsOfMosaic={questionsOfMosaicFromParent}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content  ${warningId} notification-message`}
-                aria-labelledby="question-label"
-                firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
-                label={label || ''}
-                overLimitQuestions={overLimitQuestions}
-              />
-            )}
-          </>
-        )}
+              {(type === 'numberMosaic' || type === 'selectMosaic') && (
+                <Mosaic
+                  question={question}
+                  questionsOfMosaic={questionsOfMosaicFromParent}
+                  aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content  ${warningId} notification-message`}
+                  aria-labelledby="question-label"
+                  firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
+                  label={label || ''}
+                  overLimitQuestions={overLimitQuestions}
+                />
+              )}
+            </>
+          ))}
       </div>
 
       {/* AnimatePresence stays mounted so exit animations play when a warning is removed */}

@@ -10,6 +10,7 @@ import { patchGetByTestId } from './visible-testid'
 export const DEFAULT_FLAGS = {
   'abc-test-layout-catalogue': 'control',
   'abc-test-action-card': 'control',
+  'ab-test-slider-housing-surface': 'control',
 } satisfies DefaultFlagValues
 
 export async function createPage(browser: Browser): Promise<Page> {
