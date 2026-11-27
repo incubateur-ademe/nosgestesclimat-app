@@ -24,7 +24,6 @@ import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
 import Trans from '../translation/trans/TransClient'
 import DontKnowButton from './question/DontKnowButton'
-import NumberInputWithAssistance from './question/NumberInputWithAssistance'
 import Warning from './question/Warning'
 
 interface Props {
@@ -52,7 +51,6 @@ export default function Question({
     setValue,
     isMissing,
     choices,
-    assistance,
     questionsOfMosaicFromParent,
     activeNotifications,
     category,
@@ -128,17 +126,7 @@ export default function Question({
         {beforeInputsHelpText}
         {isOpen && (
           <>
-            {type === 'number' &&
-              (assistance ? (
-                <NumberInputWithAssistance
-                  {...numberInputProps}
-                  // Unit is required on assistance mode
-                  unit={unit!}
-                  assistance={assistance}
-                />
-              ) : (
-                <NumberInput {...numberInputProps} />
-              ))}
+            {type === 'number' && <NumberInput {...numberInputProps} />}
 
             {type === 'boolean' && (
               <BooleanInput

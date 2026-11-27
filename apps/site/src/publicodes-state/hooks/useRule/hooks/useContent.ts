@@ -45,11 +45,6 @@ export default function useContent({ dottedName, rule }: Props) {
   )
   const unit = useMemo<string | undefined>(() => rule?.rawNode['unité'], [rule])
 
-  const assistance = useMemo<DottedName | undefined>(
-    () => rule?.rawNode.aide as DottedName,
-    [rule]
-  )
-
   const plancher = useMemo<number>(() => {
     // By default, the plancher is 0
     const plancherValue = rule?.rawNode.plancher
@@ -104,7 +99,6 @@ export default function useContent({ dottedName, rule }: Props) {
     description,
     icons,
     unit,
-    assistance,
     isInactive,
     suggestions,
     plancher,
