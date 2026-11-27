@@ -1,5 +1,5 @@
-import { MODEL_METRIC, type Metric } from '../../models/types/rule.ts'
-import type { NamedRuleEvaluation } from '../types/rule-evaluation.ts'
+import type { RuleEvaluation } from '../../models/types/rule-evaluation.ts'
+import type { Metric } from '../../models/types/rule.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import { emptyComputedResults } from './empty-computed-results.ts'
 
@@ -15,6 +15,13 @@ const CATEGORIES = [
   'services sociétaux',
 ] as const
 
+/** The stored metric of each `ComputedResults` key: the default metric is
+ * stored as null and maps to `carbone`, the water metric to `eau`. */
+const METRICS: { key: 'carbone' | 'eau'; metric: Metric | null }[] = [
+  { key: 'carbone', metric: null },
+  { key: 'eau', metric: 'water' },
+]
+
 /** A subcategory line: not the `bilan`, not one of the categories. */
 const isSubcategoryLine = (name: string) =>
   name !== BILAN_RULE_NAME && !(CATEGORIES as readonly string[]).includes(name)
@@ -24,15 +31,15 @@ const isSubcategoryLine = (name: string) =>
  * where a non-number becomes 0: a not applicable or not defined line counts
  * as 0, and so does an absent one.
  */
-const numericValue = (evaluation: NamedRuleEvaluation | undefined): number =>
+const numericValue = (evaluation: RuleEvaluation | undefined): number =>
   evaluation?.applicable === true && typeof evaluation.value === 'number'
     ? evaluation.value
     : 0
 
 /**
- * Aggregates a simulation's named rule evaluations into the `computedResults`
- * shape: each stored metric mapped through `MODEL_METRIC` (`carbon` →
- * `carbone`, `water` → `eau`), the `bilan` from the `bilan` evaluation, the five
+ * Aggregates a simulation's rule evaluations into the `computedResults`
+ * shape: the default metric (stored as null) into `carbone`, the water
+ * metric into `eau`, the `bilan` from the `bilan` evaluation, the five
  * output-contract categories from their evaluations, and every remaining
  * evaluation as a subcategory keyed by its full dotted name.
  *
@@ -40,12 +47,12 @@ const numericValue = (evaluation: NamedRuleEvaluation | undefined): number =>
  * Not applicable, not defined and absent lines count as 0.
  */
 export const toComputedResults = (
-  evaluations: NamedRuleEvaluation[]
+  evaluations: RuleEvaluation[]
 ): ComputedResults => {
   const results = emptyComputedResults()
 
-  for (const metric of Object.keys(MODEL_METRIC) as Metric[]) {
-    const metricResults = results[MODEL_METRIC[metric] as 'carbone' | 'eau']
+  for (const { key, metric } of METRICS) {
+    const metricResults = results[key]
     const byName = new Map(
       evaluations
         .filter((evaluation) => evaluation.metric === metric)

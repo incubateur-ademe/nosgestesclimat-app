@@ -1,8 +1,10 @@
 import { ruleFactory } from '../../models/factories/rule.factory.ts'
-import type { Applicability } from '../../models/types/model-rule-evaluation.ts'
+import type {
+  NewRuleEvaluation,
+  RuleEvaluationOutput,
+} from '../../models/types/rule-evaluation.ts'
 import type { Metric, Rule } from '../../models/types/rule.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
-import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
@@ -10,19 +12,28 @@ import type { ComputedResults } from '../validators/computed-results.schema.ts'
 export const evaluateRule = async (
   simulation: Simulation,
   rule: Rule,
-  applicability: Applicability
+  output: RuleEvaluationOutput
 ): Promise<void> => {
   const evaluation: NewRuleEvaluation = {
+    name: rule.name,
+    metric: rule.appliesToWaterMetric ? 'water' : null,
     simulationId: simulation.id,
-    ruleId: rule.id,
-    ...applicability,
+    createdAt: new Date(),
+    ...output,
     missingVariables: [],
   }
-  await createRuleEvaluations([evaluation])
+  await createRuleEvaluations([evaluation], [rule])
 }
 
-export const storeRule = (name: string, metric: Metric): Promise<Rule> =>
-  ruleFactory.create({ name, metric })
+/**
+ * Stores the rule row of a metric: the water-marked one for 'water', the
+ * default one otherwise ('carbon' and null are the same default metric).
+ */
+export const storeRule = (
+  name: string,
+  metric: Metric | 'carbon' | null
+): Promise<Rule> =>
+  ruleFactory.create({ name, appliesToWaterMetric: metric === 'water' })
 
 /** The five zeroed categories of a metric. */
 export const zeroedCategories =

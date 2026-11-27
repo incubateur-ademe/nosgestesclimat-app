@@ -14,7 +14,7 @@ export const getLatestSimulationResult = logger.withSpan(
   'site.action.getLatestSimulationResult',
   async ({
     withTendency,
-    logger: coreLogger,
+    logger,
   }: {
     withTendency: boolean
     logger: Logger
@@ -25,7 +25,7 @@ export const getLatestSimulationResult = logger.withSpan(
     const result = await getLatestSimulationResultService({
       withTendency,
       userId: session.id,
-      logger: coreLogger,
+      logger,
     })
 
     if (!result) notFound()

@@ -1,32 +1,33 @@
 import { describe, expect, it } from 'vitest'
-import type { Applicability } from '../../../models/types/model-rule-evaluation.ts'
+import type {
+  RuleEvaluation,
+  RuleEvaluationOutput,
+} from '../../../models/types/rule-evaluation.ts'
 import type { Metric } from '../../../models/types/rule.ts'
-import type { NamedRuleEvaluation } from '../../types/rule-evaluation.ts'
 import { toComputedResults } from '../to-computed-results.ts'
 
 const SIMULATION_ID = 'simulation'
 
-/** A named evaluation of the simulation, as the joined read returns it. */
+/** An evaluation of the simulation, as the joined read returns it: `null` is
+ * the default (carbon) metric. */
 const named = (
-  ruleId: number,
   name: string,
-  metric: Metric,
-  applicability: Applicability
-): NamedRuleEvaluation => ({
+  metric: Metric | null,
+  output: RuleEvaluationOutput
+): RuleEvaluation => ({
   simulationId: SIMULATION_ID,
-  ruleId,
   createdAt: new Date(),
   name,
   metric,
-  ...applicability,
+  ...output,
 })
 
 describe('toComputedResults', () => {
-  it('maps each metric through the shared model metric mapping and takes the bilan from the bilan evaluation', () => {
+  it('maps each metric to its computed-results key and takes the bilan from the bilan evaluation', () => {
     expect(
       toComputedResults([
-        named(1, 'bilan', 'carbon', { applicable: true, value: 1000 }),
-        named(2, 'bilan', 'water', { applicable: true, value: 500 }),
+        named('bilan', null, { applicable: true, value: 1000 }),
+        named('bilan', 'water', { applicable: true, value: 500 }),
       ])
     ).toEqual({
       carbone: {
@@ -56,15 +57,15 @@ describe('toComputedResults', () => {
 
   it('takes each of the five output-contract categories from its evaluation', () => {
     const results = toComputedResults([
-      named(1, 'alimentation', 'carbon', { applicable: true, value: 300 }),
-      named(2, 'transport', 'carbon', { applicable: true, value: 400 }),
-      named(3, 'logement', 'carbon', { applicable: true, value: 200 }),
-      named(4, 'divers', 'carbon', { applicable: true, value: 50 }),
-      named(5, 'services sociétaux', 'carbon', {
+      named('alimentation', null, { applicable: true, value: 300 }),
+      named('transport', null, { applicable: true, value: 400 }),
+      named('logement', null, { applicable: true, value: 200 }),
+      named('divers', null, { applicable: true, value: 50 }),
+      named('services sociétaux', null, {
         applicable: true,
         value: 50,
       }),
-      named(6, 'transport', 'water', { applicable: true, value: 200 }),
+      named('transport', 'water', { applicable: true, value: 200 }),
     ])
 
     expect(results.carbone.categories).toEqual({
@@ -80,12 +81,12 @@ describe('toComputedResults', () => {
 
   it('keys every remaining evaluation as a subcategory by its full dotted name, per metric', () => {
     const results = toComputedResults([
-      named(1, 'transport . voiture', 'carbon', {
+      named('transport . voiture', null, {
         applicable: true,
         value: 123.5,
       }),
-      named(2, 'transport . avion', 'carbon', { applicable: true, value: 45 }),
-      named(3, 'logement . chauffage', 'water', {
+      named('transport . avion', null, { applicable: true, value: 45 }),
+      named('logement . chauffage', 'water', {
         applicable: true,
         value: 67,
       }),
@@ -102,15 +103,15 @@ describe('toComputedResults', () => {
 
   it('skips boolean and string evaluations: no subcategory line for them', () => {
     const results = toComputedResults([
-      named(1, 'transport . voiture', 'carbon', {
+      named('transport . voiture', null, {
         applicable: true,
         value: true,
       }),
-      named(2, 'transport . immatriculation', 'carbon', {
+      named('transport . immatriculation', null, {
         applicable: true,
         value: 'AB-123-CD',
       }),
-      named(3, 'transport . avion', 'carbon', { applicable: true, value: 45 }),
+      named('transport . avion', null, { applicable: true, value: 45 }),
     ])
 
     expect(results.carbone.subcategories).toEqual({
@@ -120,10 +121,10 @@ describe('toComputedResults', () => {
 
   it('counts not applicable, not defined and absent lines as 0', () => {
     const results = toComputedResults([
-      named(1, 'bilan', 'carbon', { applicable: false }),
-      named(2, 'transport', 'carbon', { applicable: undefined }),
-      named(3, 'logement . chauffage', 'carbon', { applicable: false }),
-      named(4, 'divers . autre', 'carbon', { applicable: undefined }),
+      named('bilan', null, { applicable: false }),
+      named('transport', null, { applicable: undefined }),
+      named('logement . chauffage', null, { applicable: false }),
+      named('divers . autre', null, { applicable: undefined }),
       // No bilan, category nor subcategory evaluation at all for water.
     ])
 
