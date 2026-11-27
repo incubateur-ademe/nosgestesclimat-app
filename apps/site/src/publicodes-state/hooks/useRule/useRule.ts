@@ -89,7 +89,6 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
     description,
     icons,
     unit,
-    assistance,
     plancher,
     plafond,
     warning,
@@ -183,10 +182,6 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
      * The unit of the rule ("rawNode.unité" in Publicodes)
      */
     unit,
-    /**
-     * The question used to help answer  ("rawNode.aide" in Publicodes)
-     */
-    assistance,
     /**
      * The minimum value
      */
