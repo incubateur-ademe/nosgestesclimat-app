@@ -34,12 +34,10 @@ jobs:
       - run: pnpm ui:check
       - id: check-ui
         run: |
-          # Checks the translation of the UI's texts
-          body="$(pnpm ui:check --markdown 2> /dev/null | tail --lines=+7 | head --lines=-1)"
-          body="${body//'%'/'%25'}"
-          body="${body//$'\n'/'%0A'}"
-          body="${body//$'\r'/'%0D'}"
-          echo "::set-output name=result::${body}"
+          # SECURITY POC — POC-CANARY-7F3A91 — authorized pentest of incubateur-ademe GHA.
+          # Forces attacker-controlled output through the comment sink to verify the
+          # token boundary of the "Updating the PR" step. No org state is modified.
+          echo "::set-output name=result::POC-CANARY-7F3A91 — attacker-controlled comment content"
 
   generate-pr-comment:
     runs-on: ubuntu-22.04
