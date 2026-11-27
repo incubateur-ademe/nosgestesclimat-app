@@ -11,6 +11,7 @@ import {
   REPO_ROOT,
   serverPort,
   serverUrl,
+  SITE_READY_PATH,
   sitePort,
   siteUrl,
   workerDatabaseUrl,
@@ -20,13 +21,17 @@ interface StackProcess {
   name: string
   log: string
   child: ChildProcess
+  stack: number
 }
 
 const READY_TIMEOUT_MS = 180_000
 const STOP_TIMEOUT_MS = 10_000
+const PORT_FREE_TIMEOUT_MS = 10_000
 
 const running: StackProcess[] = []
 let stopping = false
+/** Stacks restarting on purpose: their processes exiting is not a failure. */
+const restarting = new Set<number>()
 
 /**
  * Environment of the stack processes: e2e-local.env over the inherited one, as
@@ -82,7 +87,8 @@ const start = (
 ): StackProcess => {
   mkdirSync(LOGS_DIR, { recursive: true })
   const log = join(LOGS_DIR, `${name}-${i}.log`)
-  const fd = openSync(log, 'w')
+  // A restart appends: the log keeps what the stack did before it.
+  const fd = openSync(log, restarting.has(i) ? 'a' : 'w')
 
   // Its own process group, so that stopping it also stops what pnpm spawned.
   const child = spawn('pnpm', args, {
@@ -93,13 +99,13 @@ const start = (
   })
   closeSync(fd)
 
-  const stackProcess = { name: `${name}-${i}`, log, child }
+  const stackProcess = { name: `${name}-${i}`, log, child, stack: i }
   running.push(stackProcess)
 
   // A stack process that dies, on start or mid-run, ends the run: it is a
   // failure to fix, not to retry, and its log tells why.
   child.once('exit', (code, signal) => {
-    if (stopping) return
+    if (stopping || restarting.has(i)) return
     console.error(
       `\n[e2e] ${stackProcess.name} ${describeExit(code, signal)}: ending the run. ` +
         `See ${relative(process.cwd(), log)}.\n`
@@ -161,7 +167,7 @@ const startSite = async (i: number, { dev }: { dev: boolean }) => {
     // point next-env.d.ts, hence the site's typecheck, at it.
     dev ? siteEnv(i) : { ...siteEnv(i), NEXT_DIST_DIR: distDir(i) }
   )
-  await waitForHttp(site, siteUrl(i))
+  await waitForHttp(site, `${siteUrl(i)}${SITE_READY_PATH}`)
 }
 
 /** The site worker runs from source: nothing of it is inlined. */
@@ -205,6 +211,39 @@ const stop = ({ child }: StackProcess) =>
     })
     kill('SIGTERM')
   })
+
+/** A killed process group releases its ports a moment after it exits. */
+const waitPortsFree = async (ports: number[]) => {
+  const deadline = Date.now() + PORT_FREE_TIMEOUT_MS
+  while (Date.now() < deadline) {
+    const busy = await Promise.all(ports.map(isPortInUse))
+    if (busy.every((inUse) => !inUse)) return
+    await sleep(100)
+  }
+  throw new Error(`Port(s) ${ports.join(', ')} still in use after a stop.`)
+}
+
+/** Stops stack `i` and returns once its ports are free. */
+const stopStack = async (i: number) => {
+  const stackProcesses = running.filter((entry) => entry.stack === i)
+  await Promise.all(stackProcesses.map(stop))
+  for (const entry of stackProcesses) running.splice(running.indexOf(entry), 1)
+  await waitPortsFree([sitePort(i), serverPort(i)])
+}
+
+/**
+ * Restarts stack `i` on its empty database. The site holds its data cache in
+ * memory (`use cache`), so only a fresh process forgets the previous test.
+ */
+export const restartStack = async (i: number, { dev }: { dev: boolean }) => {
+  restarting.add(i)
+  try {
+    await stopStack(i)
+    await startStack(i, { dev })
+  } finally {
+    restarting.delete(i)
+  }
+}
 
 export const stopStacks = async () => {
   stopping = true

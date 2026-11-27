@@ -6,10 +6,9 @@ import type Engine from 'publicodes'
 import type { Situation } from 'publicodes'
 import {
   buildRuleIdToDottedName,
-  toActionEvaluation,
+  evaluateAction,
 } from '../../actions/helpers/action-assessment.ts'
 import type { ActionEvaluation } from '../../actions/types/action.ts'
-import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import { createTestEngine } from '../../simulation-computation/factories/engine.factory.ts'
 import { getComputedResults } from '../../simulations/helpers/get-computed-results.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
@@ -62,28 +61,30 @@ const computePersona = (
  */
 const computeActionAssessments = (
   persona: Persona,
-  engine: Engine<DottedName>
+  engine: Engine<DottedName>,
+  simulationId: string
 ): PersonaActionAssessment[] => {
   engine.setSituation(persona.situation)
 
   const ruleIdToDottedName = buildRuleIdToDottedName(engine)
+  const createdAt = new Date()
 
-  const assessments = [...ruleIdToDottedName.entries()].map(
-    ([ruleId, dottedName]) => {
-      const evaluation = evaluateModelRule({ engine, dottedName })
+  return [...ruleIdToDottedName.entries()].map(([ruleId, ruleName]) => {
+    const evaluation = evaluateAction({
+      engine,
+      ruleName,
+      // The evaluation reports its missing variables against this simulation.
+      simulationId,
+      createdAt,
+    })
 
-      return {
-        ruleId,
-        // A rule whose value cannot be read is left unassessed rather than
-        // mis-assessed: "applicability unknown" is the shape that says so.
-        applicability: evaluation.success
-          ? toActionEvaluation(evaluation.data)
-          : ({ applicable: undefined, impact: undefined } as const),
-      }
-    }
-  )
+    const applicability: ActionEvaluation = evaluation.success
+      ? evaluation.data
+      : // A failed evaluation is left unassessed: "applicability unknown".
+        { applicable: undefined, impact: undefined }
 
-  return assessments
+    return { ruleId, applicability }
+  })
 }
 
 let engine: Engine<DottedName> | undefined
@@ -119,13 +120,20 @@ export const getPersonaComputation = (
  * The action assessments of a persona, computed on first ask.
  */
 export const getPersonaActionAssessments = (
-  name: PersonaName
+  name: PersonaName,
+  simulationId: string
 ): PersonaActionAssessment[] => {
   const cached = assessmentCache.get(name)
 
+  // Assessments describe the persona's situation, not the simulation they were
+  // first computed for.
   if (cached) return cached
 
-  const assessments = computeActionAssessments(readPersona(name), getEngine())
+  const assessments = computeActionAssessments(
+    readPersona(name),
+    getEngine(),
+    simulationId
+  )
 
   assessmentCache.set(name, assessments)
 

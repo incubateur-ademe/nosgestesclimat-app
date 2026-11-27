@@ -1,12 +1,28 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { NewRule, Rule } from '../types/rule.ts'
+import type { Metric, NewRule, Rule } from '../types/rule.ts'
 import { mapRule, type RuleRow } from './rule.mapper.ts'
 
+/** Finds a unique rule by its name and metric, the default one when none. */
+export const findRule = async (
+  { name, metric = null }: { name: string; metric?: Metric | null },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<Rule | null> => {
+  const row = await session.rule.findUnique({
+    where: {
+      name_appliesToWaterMetric: {
+        name,
+        appliesToWaterMetric: metric === 'water',
+      },
+    },
+    select: { id: true, name: true, public: true, appliesToWaterMetric: true },
+  })
+  return row ? mapRule(row) : null
+}
+
 /**
- * Safe to run concurrently with itself: rows are locked in a fixed
- * (name, metric) order, so two callers cannot deadlock, and the conflict
- * clause makes the second one update the rows the first one inserted.
+ * Upserts each rule by (name, appliesToWaterMetric) — a stored rule is never
+ * renamed — refreshing wording and `public` on conflict.
  */
 export const upsertRules = async (
   rules: NewRule[],
@@ -14,44 +30,39 @@ export const upsertRules = async (
 ): Promise<Rule[]> => {
   if (rules.length === 0) return []
 
-  // A lock-acquisition order, not a display order: every caller feeds the rows
-  // to the statement in the same fixed (name, metric) order.
-  const sorted = rules.toSorted(
-    (a, b) =>
-      codeUnitCompare(a.name, b.name) || codeUnitCompare(a.metric, b.metric)
+  const rows = rules
+
+  // Fixed lock-acquisition order: concurrent callers feed the rows to the
+  // statement in the same order, so they cannot deadlock.
+  const sorted = rows.toSorted((a, b) =>
+    a.name === b.name
+      ? Number(a.appliesToWaterMetric) - Number(b.appliesToWaterMetric)
+      : codeUnitCompare(a.name, b.name)
   )
 
-  // A raw query because Prisma's typed API has no batch upsert that returns
-  // ids: `upsert` is one row per statement, and `createMany` /
-  // `createManyAndReturn({ skipDuplicates: true })` compiles to
-  // `ON CONFLICT DO NOTHING`, which neither refreshes existing rows nor
-  // returns their ids. Only `INSERT … ON CONFLICT DO UPDATE … RETURNING` does
-  // all three in one round trip, which the caller needs to cache the id of
-  // every rule of a model version.
-  //
-  // The batch travels as one array per column through `unnest` instead of a
-  // `VALUES` list, so it stays a single prepared statement whatever the
-  // number of rules. The arrays are cast via `text[]` because PGlite (the
-  // test database) rejects an enum array parameter, so the metric travels as
-  // text and is cast to "ngc"."Metric" in SQL. The same statement runs
-  // unchanged on the real Postgres adapter in production.
-  const rows = await session.$queryRaw<RuleRow[]>`
-    INSERT INTO "ngc"."Rule" (name, metric, title, description)
-    SELECT name, metric::"ngc"."Metric", title, description
+  // Raw query: Prisma has no batch upsert returning ids (`createMany` compiles to
+  // ON CONFLICT DO NOTHING); INSERT … ON CONFLICT DO UPDATE … RETURNING does both
+  // in one round trip. One array per column via `unnest` keeps a single prepared
+  // statement whatever the number of rules.
+  const stored = await session.$queryRaw<RuleRow[]>`
+    INSERT INTO "ngc"."Rule" (name, "public", "appliesToWaterMetric", title, description)
+    SELECT name, "public", "appliesToWaterMetric", title, description
     FROM unnest(
       ${sorted.map((rule) => rule.name)}::text[],
-      ${sorted.map((rule) => rule.metric)}::text[],
+      ${sorted.map((rule) => rule.public)}::boolean[],
+      ${sorted.map((rule) => rule.appliesToWaterMetric)}::boolean[],
       ${sorted.map((rule) => rule.title)}::text[],
       ${sorted.map((rule) => rule.description)}::text[]
-    ) AS input(name, metric, title, description)
-    ON CONFLICT (name, metric) DO UPDATE
-      SET title = EXCLUDED.title, description = EXCLUDED.description
-    RETURNING id, name, metric
+    ) AS input(name, "public", "appliesToWaterMetric", title, description)
+    ON CONFLICT (name, "appliesToWaterMetric") DO UPDATE
+      SET "public" = EXCLUDED."public",
+          title = EXCLUDED.title,
+          description = EXCLUDED.description
+    RETURNING id, name, "public", "appliesToWaterMetric"
   `
 
-  return rows.map(mapRule)
+  return stored.map(mapRule)
 }
 
-// Not `localeCompare`, which depends on the process locale: every process must
-// lock the rows in the same order.
+// Not `localeCompare` (locale-dependent): every process must lock rows in the same order.
 const codeUnitCompare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)

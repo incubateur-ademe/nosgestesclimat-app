@@ -64,15 +64,16 @@ export const seedActionAssessments = async ({
 }): Promise<void> => {
   const actionIdByRuleId = await readActionIdsByRuleId()
 
-  const assessments = getPersonaActionAssessments(personaName).flatMap(
-    ({ ruleId, applicability }) => {
-      const actionId = actionIdByRuleId.get(ruleId)
+  const assessments = getPersonaActionAssessments(
+    personaName,
+    simulationId
+  ).flatMap(({ ruleId, applicability }) => {
+    const actionId = actionIdByRuleId.get(ruleId)
 
-      if (!actionId) return []
+    if (!actionId) return []
 
-      return [toNewActionAssessment({ simulationId, actionId }, applicability)]
-    }
-  )
+    return [toNewActionAssessment({ simulationId, actionId }, applicability)]
+  })
 
   if (assessments.length === 0) return
 

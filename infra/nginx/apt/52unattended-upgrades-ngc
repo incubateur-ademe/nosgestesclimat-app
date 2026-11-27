@@ -1,0 +1,19 @@
+// Kept out of 20auto-upgrades and 50unattended-upgrades: both are ucf-managed
+// and get three-way merged when the package upgrades.
+
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+
+// nginx and nginx-module-otel come from nginx.org: the module's strict version
+// lock on the binary keeps both out of unattended-upgrades unless this origin
+// is allowed.
+Unattended-Upgrade::Origins-Pattern {
+    "origin=nginx,codename=${distro_codename},label=nginx";
+};
+
+// A reboot is the only way to apply kernel, dbus and CPU microcode updates.
+// 04:15: after the 03:30 upgrade run, at the daily traffic minimum.
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "04:15";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "true";

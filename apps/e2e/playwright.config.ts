@@ -14,9 +14,9 @@ const baseURL = process.env.NEXT_PUBLIC_SITE_URL!
  * PR. The preprod suite has its own config: playwright.preprod.config.ts.
  *
  * globalSetup starts one stack per worker (database, API, site, site worker,
- * see stack/); each test empties its worker's database, then seeds the data it
- * needs (core factories and services) and signs in through
- * tests/helpers/session. No setup project.
+ * see stack/); each test empties its worker's database and restarts its stack,
+ * then seeds the data it needs (core factories and services) and signs in
+ * through tests/helpers/session. No setup project.
  */
 export default defineConfig({
   ...sharedConfig,

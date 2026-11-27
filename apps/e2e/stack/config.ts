@@ -38,6 +38,16 @@ export const serverPort = (i: number) => 3200 + i
 export const siteUrl = (i: number) => `http://localhost:${sitePort(i)}`
 export const serverUrl = (i: number) => `http://localhost:${serverPort(i)}`
 
+/** Local endpoint of the process that owns the stacks: see control.ts. */
+export const CONTROL_PORT = 3300
+
+/**
+ * What the readiness probe of a site fetches: a static file, which neither
+ * the proxy nor a render serves. A page would cache a read of the empty
+ * database.
+ */
+export const SITE_READY_PATH = '/favicon.ico'
+
 /** Next.js build directory of site `i`, relative to apps/site. */
 export const distDir = (i: number) => `.next-e2e-${i}`
 

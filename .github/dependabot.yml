@@ -16,6 +16,14 @@ updates:
       interval: "weekly"
     # A grouped PR counts as one, majors get their own slots.
     open-pull-requests-limit: 10
+    rebase-strategy: auto
+    ignore:
+      # From 1.10.2 the package ships .mjs only but still exports .js paths:
+      # TypeScript and Node cannot resolve `@publicodes/tools/migration`.
+      - dependency-name: "@publicodes/tools"
+      # Model bumps rename rules, which surface as `DottedName` type errors:
+      # .github/workflows/common:update-model.yaml owns those.
+      - dependency-name: "@incubateur-ademe/nosgestesclimat"
     # Minor and patch bumps land in a single PR; majors keep their own.
     groups:
       minor-and-patch:
@@ -24,6 +32,11 @@ updates:
         update-types:
           - "minor"
           - "patch"
+        # `packages/core/src/test-utils/db.ts` patches pglite internals, and pglite
+        # is 0.x: its minors are breaking. Bump these two by hand.
+        exclude-patterns:
+          - "@electric-sql/pglite"
+          - "pglite-prisma-adapter"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -32,6 +45,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    rebase-strategy: auto
     groups:
       github-actions:
         patterns:

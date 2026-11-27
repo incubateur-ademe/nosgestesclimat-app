@@ -1,6 +1,7 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { test as base } from '@playwright/test'
+import { requestStackRestart } from '../../stack/control.ts'
 
 /**
  * Empties the worker's database (ngc_e2e_<i>, see
@@ -21,6 +22,9 @@ export async function resetDatabase() {
   }
 
   await emptyDatabase(prisma)
+  // The app holds cached reads of the deleted data in memory: only a fresh
+  // process forgets them.
+  await requestStackRestart()
 }
 
 interface DatabaseFixtures {
@@ -33,9 +37,9 @@ interface DatabaseFixtures {
 }
 
 /**
- * Each test starts on an empty database and seeds everything it needs. Safe
- * with `fullyParallel`: a worker runs one test at a time, and its database is
- * used by no other worker.
+ * Each test starts on an empty database and a restarted stack, and seeds
+ * everything it needs. Safe with `fullyParallel`: a worker runs one test at a
+ * time, and its database is used by no other worker.
  */
 export const test = base.extend<DatabaseFixtures>({
   resetDatabase: [true, { option: true }],
