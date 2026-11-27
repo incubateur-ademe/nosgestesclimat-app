@@ -1,9 +1,9 @@
 'use client'
 
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useRule } from '@/publicodes-state'
+import { useOptionalSimulation, useRule, useUser } from '@/publicodes-state'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const SURFACE_SLIDER_ID = 'housing-surface-slider'
 const SURFACE_SLIDER_MIN = 10
@@ -22,12 +22,30 @@ export function useHousingSurfaceSlider(question: DottedName) {
   const {
     value: ruleValue,
     situationValue,
+    isFolded,
     setValue: setRuleValue,
   } = useRule(question)
+
+  const simulation = useOptionalSimulation()
+  const { updateCurrentSimulation } = useUser()
 
   const [surface, setSurface] = useState(() =>
     getInitialSurface({ situationValue, ruleValue })
   )
+
+  /**
+   * The default value is displayed as the answer, so the question is folded on
+   * mount: the "Suivant" button is enabled on the first visit without any
+   * slider interaction. The situation is left untouched, so results keep using
+   * the model default until the user commits a value.
+   */
+  useEffect(() => {
+    if (!simulation || isFolded) return
+
+    updateCurrentSimulation({
+      foldedStepToAdd: { foldedStep: question },
+    })
+  }, [isFolded, question, simulation, updateCurrentSimulation])
 
   const handleValueCommit = useCallback(
     (nextSurface: number) => {
